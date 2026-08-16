@@ -7,9 +7,9 @@
 - Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
 - Last control update: 2026-08-16
 - Current integrated branch: `main`
-- Current integrated commit: `c0c6244abcea30255ead52fdfdea65c559f8eed1`
-- Current project phase: **SET 0 closure integrated and formally closed; SET 1 readiness gate pending**
-- SET 1 execution: **NOT STARTED**
+- Current integrated commit: `3547193`
+|- Current project phase: **SET 0 formally closed; SET 1 active and executing**
+|- SET 1 execution: **ACTIVE**
 
 ---
 
@@ -25,7 +25,7 @@ PROJECT
 │   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 1 — Tensor / Byte-Level Audit
-│   🔒 NOT STARTED
+│   🟢 ACTIVE
 │
 ├── SET 2 — Hardware Reconnaissance
 │   🔒 NOT STARTED
@@ -75,7 +75,7 @@ PROJECT
 | SET | Objective | Status | Responsibility |
 |---|---|---|---|
 | SET 0 | Establish verified model/source-of-truth foundation | ✅ TECHNICAL COMPLETE | 🧠 LUNA + 🛠 EXECUTOR |
-| SET 1 | Audit tensor representation and byte-level properties | 🔒 NOT STARTED | 🧠 LUNA |
+| SET 1 | Audit tensor representation and byte-level properties | 🟢 ACTIVE | 🧠 LUNA |
 | SET 2 | Characterize target hardware capabilities/constraints | 🔒 NOT STARTED | 🧠 LUNA |
 | SET 3 | Define operator and computation model | 🔒 NOT STARTED | 🧠 LUNA |
 | SET 4 | Define runtime memory model | 🔒 NOT STARTED | 🧠 LUNA |
@@ -247,7 +247,17 @@ Formal SET 0 closure:              ✅ COMPLETE
 ### Status
 
 ```text
-🔒 NOT STARTED
+🟢 ACTIVE
+
+SET1-READINESS-GATE ✅ PASS
+SET1-T1.1          ✅ PASS (raw metadata acquisition)
+SET1-T1.2          ✅ PASS (raw metadata verification)
+SET1-T1.4          ✅ PASS (tensor shape / dtype / offset audit)
+SET1-T1.5-R1       ✅ PASS (tensor parameter reconstruction)
+SET1-T1.6          ✅ PASS (tensor byte accounting)
+
+NEXT:
+🔜 SET1-T1.7
 ```
 
 ### Responsibility
@@ -288,14 +298,37 @@ This is **planned scope only**. No SET 1 execution has started.
 
 ```text
 SET1-READINESS-GATE
-🔒 NOT STARTED
+✅ PASS
 🧠 LUNA
 Dependency: SET 0 technical closure + ROADMAP persistence
 
-SET1-RAW-METADATA-ACQUISITION
-🔒 NOT STARTED
-🛠 EXECUTOR under 🧠 LUNA direction
+SET1-T1.1 — Raw Metadata Acquisition
+✅ PASS
+🧠 LUNA
 Dependency: SET1-READINESS-GATE PASS
+
+SET1-T1.2 — Raw Metadata Verification
+✅ PASS
+🧠 LUNA
+Dependency: SET1-T1.1 PASS
+
+SET1-T1.4 — Tensor Shape / Dtype / Offset Audit
+✅ PASS
+🧠 LUNA
+Dependency: SET1-T1.2 PASS
+
+SET1-T1.5-R1 — Tensor Parameter Reconstruction
+✅ PASS
+🧠 LUNA
+Dependency: SET1-T1.4 PASS
+
+SET1-T1.6 — Tensor Byte Accounting
+✅ PASS
+🧠 LUNA
+Dependency: SET1-T1.5-R1 PASS
+
+NEXT:
+🔜 SET1-T1.7
 ```
 
 ---
@@ -475,28 +508,25 @@ CURRENT SET:
 SET 0 — Model Reconnaissance
 
 CURRENT TECHNICAL STATE:
-COMPLETE
+COMPLETE (SET 0)
 
 INTEGRATION STATE:
 MERGED TO MAIN
 
 MAIN HEAD:
-c0c6244abcea30255ead52fdfdea65c559f8eed1
+3547193
 
 CURRENT NEXT TASK:
-SET1-READINESS-GATE
+SET1-T1.7
 
 NEXT TASK OWNER:
 🧠 LUNA
 
-NEXT CONTROL TASK AFTER ROADMAP PERSISTENCE:
-(no pending transition — SET 0 formally closed; gate is SET1-READINESS-GATE)
-
 SET 1 EXECUTION:
-NOT STARTED
+ACTIVE (through SET1-T1.6 ✅ PASS)
 
 RAW METADATA ACQUISITION:
-NOT STARTED
+COMPLETE (SET1-T1.1 ✅ PASS)
 ```
 
 ---
@@ -543,7 +573,7 @@ NEXT ATOMIC TASK
 6. The official upstream model artifact remains the authoritative source for model facts.
 7. The GitHub repository is the shared persistent project Source of Truth.
 8. `UNKNOWN` must not be silently converted into an assumption.
-9. SET 1 execution must remain `NOT STARTED` until its readiness gate passes.
+9. SET 1 is ACTIVE; downstream SETs must not begin until SET 1 closure.
 
 ---
 
@@ -600,10 +630,11 @@ DERIVED ACCOUNTING / ANALYSIS
 # 7. Current Stop Condition
 
 ```text
-SET 0 technical integration is complete.
-ROADMAP persistence is the current control task.
-SET 1 execution has NOT started.
-No raw metadata acquisition has been performed as SET 1 work.
-```
+Current stop condition:
 
-**Do not begin SET 1 until `ROADMAP-PERSIST-MAIN` and the subsequent `SET1-READINESS-GATE` both pass.**
+```text
+SET 0 technical integration is complete and formally closed.
+SET 1 is ACTIVE and executing through SET1-T1.6 (✅ PASS).
+T1.7 is the next atomic task and has NOT been started.
+Do not begin T1.7 until SET1-T1.7 is explicitly selected by the control layer.
+```

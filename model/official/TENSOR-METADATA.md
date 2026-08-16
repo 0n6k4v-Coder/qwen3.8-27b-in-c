@@ -96,7 +96,7 @@ The acquired header metadata was cross-checked against
 | Check | Result |
 |---|---|
 | 1. Every indexed tensor resolves to a shard | PASS |
-| 2. Every resolved tensor has metadata | FAIL |
+| 2. Every resolved tensor has metadata | PASS |
 | 3. Tensor names agree with index | PASS |
 | 4. Shapes available for all tensors | PASS |
 | 5. Dtypes available for all tensors | PASS |

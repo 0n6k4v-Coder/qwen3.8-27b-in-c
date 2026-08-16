@@ -2,127 +2,273 @@
 
 ## Task Information
 
-| Field         | Value                                      |
+|| Field         | Value                                      |
 |---------------|--------------------------------------------|
 | Task ID       | SET2-T2.1                                  |
 | Task Name     | Target Hardware Identity                   |
 | Responsibility| 🛠 EXECUTOR                                |
-| Status        | PASS                                       |
+| Status        | ⚠ PARTIAL — REQUIRES CORRECTION            |
 | Dependency    | SET2-READINESS-GATE PASS                   |
 
 ---
 
 ## Evidence Sources
 
-All evidence was collected directly from the actual target environment via terminal
-commands executed inside the WSL2 shell. Windows host-side evidence was obtained by
-reading files across the WSL2 mount of the Windows host filesystem (`/mnt/c/`).
+All evidence was collected directly from the actual target environment. Two
+distinct evidence domains are recognized and separated:
 
-### Linux (WSL2) evidence sources
+- **PHYSICAL HOST** — Windows 11 host inspected via PowerShell / WMI / PnP
+  device enumeration (executed through WSL2 interop: `powershell.exe -Command`).
+- **GUEST / WSL2** — WSL2 Linux guest inspected via standard Linux tools
+  (`lscpu`, `cat /proc/cpuinfo`, `nproc`, `lspci`, `lshw`, `free`,
+  `cat /proc/meminfo`, `cat /proc/version`, `uname`, `find /sys`).
 
-| Source Command | Purpose |
+The following rule is mandatory and enforced throughout this document:
+
+```
+WSL2-visible CPU topology ≠ physical host CPU topology
+```
+
+### Host-level (PHYSICAL HOST) evidence sources
+
+|| Source Command | Purpose |
+|----------------|---------|
+| `powershell.exe -Command "Get-WmiObject -Class Win32_Processor"` | CPU model, physical cores, logical processors, cache, socket |
+| `powershell.exe -Command "Get-WmiObject -Class Win32_PhysicalMemory"` | Physical RAM capacity, speed, manufacturer, part number, channel |
+| `powershell.exe -Command "Get-WmiObject -Class Win32_VideoController"` | Physical GPU name, vendor, device ID, adapter RAM |
+| `powershell.exe -Command "Get-PnpDevice -Class ComputeAccelerator"` | Physical NPU identity and device ID |
+| `powershell.exe -Command "Get-PnpDevice" | Where-Object` | Full PnP device enumeration for accelerator search |
+| `powershell.exe -Command "Get-CimInstance -ClassName Win32_OperatingSystem"` | Windows host OS version and architecture |
+
+### Guest-level (WSL2) evidence sources
+
+|| Source Command | Purpose |
 |----------------|---------|
 | `uname -a` | OS/kernel/architecture |
 | `cat /proc/version` | Kernel build details |
-| `lscpu` | CPU model, topology, cache |
-| `cat /proc/cpuinfo` | Per-CPU identity, flags, stepping |
-| `nproc --all` | Logical processor count |
-| `free -b` | System memory (bytes) |
-| `cat /proc/meminfo` | Memory detail (MemTotal, MemFree, MemAvailable) |
-| `lshw -short` | Hardware inventory |
-| `lspci -nn` | PCI device enumeration |
-| `ls /sys/class/drm/` | GPU device node visibility |
-| `ls /dev/dri/` | GPU render/card device visibility |
-| `ls /sys/class/` | System class enumeration |
-| `find /sys -path "*npu*"` | NPU device visibility in sysfs |
+| `lscpu` | CPU model, topology, cache (WSL2 scheduling view) |
+| `cat /proc/cpuinfo` | Per-CPU identity, flags, stepping (WSL2 view) |
+| `nproc --all` | Logical processor count (WSL2 view) |
+| `free -b` | System memory visible to WSL2 guest |
+| `cat /proc/meminfo` | Memory detail visible to WSL2 guest |
+| `lshw -short` | Hardware inventory (WSL2 guest view) |
+| `lspci -nn` | PCI device enumeration (WSL2 virtual devices) |
+| `ls /sys/class/drm/` | GPU device node visibility (WSL2 guest) |
+| `ls /dev/dri/` | GPU render/card device visibility (WSL2 guest) |
+| `ls /sys/class/` | System class enumeration (WSL2 guest) |
+| `find /sys -path "*npu*"` | NPU device visibility in WSL2 sysfs |
 | Various `/sys/` and `/proc/` reads | Virtualization/container identity |
 
-### Windows host evidence sources (accessed via /mnt/c/)
+### Authoritative documentation
 
-| Source Path | Purpose |
-|-------------|---------|
-| `/mnt/c/Drivers/NPU/npu.inf` | Intel NPU driver INF (from DriverStore) |
-| `/mnt/c/Drivers/NPU/npu_level_zero_umd.dll` | Intel NPU Level Zero user-mode driver |
-| `/mnt/c/Drivers/NPU/npu_kmd.sys` | Intel NPU kernel-mode driver |
-| `/mnt/c/Drivers/NPU/ivd64.inf` | Intel IVD (image/vision) driver INF |
-| `/mnt/c/Drivers/VGA_Intel/Graphics/iigd_dch.inf` | Intel Graphics driver INF |
-| `/mnt/c/Drivers/VGA_Intel/Graphics/igdkmdn64.sys` | Intel Graphics kernel-mode driver |
-| `/mnt/c/Drivers/VGA_Intel/install.bat` | Intel Graphics driver install script |
+- Intel ARK specification for the Intel Core Ultra 7 processor 155H:
+  https://www.intel.com/content/www/us/en/products/sku/236847/intel-core-ultra-7-processor-155h-24m-cache-up-to-4-80-ghz/specifications.html
+
+  The Intel ARK page identifies this processor as:
+  ```
+  Intel Core Ultra Processors — Series 1
+  Products formerly Meteor Lake
+  ```
+
+  Intel ARK specifies for the Core Ultra 7 155H:
+  ```
+  Total Cores: 16
+  # of Performance-cores: 6
+  # of Efficient-cores: 8
+  # of Low Power Efficient-cores: 2
+  Total Threads: 22
+  ```
 
 ---
 
-## Observed Hardware Identity
+## Correction Summary
 
-### 1. CPU Identity
+The previous T2.1 execution contained material errors that are corrected
+here:
 
-**VERIFIED FACT (directly observed):**
+1. **INCORRECT:** The Core Ultra 7 155H was classified as Lunar Lake (LNL).
+   **CORRECTED:** Intel's official ARK specification identifies the Core Ultra
+   7 155H as "Products formerly **Meteor Lake**" (Series 1). The Core Ultra 7
+   155H ≠ Lunar Lake. All Lunar Lake classifications have been removed.
 
-- **CPU model (from `/proc/cpuinfo` and `lscpu`):** `Intel(R) Core(TM) Ultra 7 155H`
-- **CPU vendor:** `GenuineIntel` (Vendor ID: GenuineIntel)
-- **CPU family:** 6
-- **CPU model (CPUID):** 170
-- **CPU stepping:** 4
-- **Physical core count:** 4 (reported by `lscpu` as "Core(s) per socket: 4")
-- **Logical processor count:** 8 (reported by `nproc --all` and `lscpu` as "CPU(s): 8")
-- **Threads per core:** 2
-- **Sockets:** 1
+2. **INCORRECT:** The WSL2-visible 4C/8T topology was treated as the physical
+   host topology.
+   **CORRECTED:** The 4C/8T figure is a WSL2 guest scheduling view. The
+   physical host CPU (per WMI Win32_Processor) exposes 16 cores and 22
+   logical processors, matching Intel's authoritative Meteor Lake
+   specification (6P+8E+2LP = 16 cores, 22 threads).
+
+3. **INCORRECT:** Physical host RAM, GPU identity, and NPU identity were
+   left as WSL2-visible only.
+   **CORRECTED:** Host-level WMI/PnP enumeration has resolved physical host
+   RAM (16 GB), physical GPU (Intel Arc, device 8086:7D55), and physical NPU
+   (Intel AI Boost, device 8086:7D1D).
+
+---
+
+## 1. CPU Identity
+
+### PHYSICAL HOST (verified via WMI)
+
+**VERIFIED FACT (directly observed from host via `Win32_Processor`):**
+
+- **CPU model:** `Intel(R) Core(TM) Ultra 7 155H`
+- **Manufacturer:** `GenuineIntel`
+- **Physical cores (hardware threads):** 16 (NumberOfCores = 16)
+- **Logical processors (hyperthreads):** 22 (NumberOfLogicalProcessors = 22)
+- **L2 cache:** 18,432 KB (18 MB)
+- **L3 cache:** 24,576 KB (24 MB)
+- **Socket designation:** `U3E1`
+- **Family:** 1 (WMI representation; see authoritative spec below)
 
 **DERIVED FINDING:**
 
-- The CPU model string "Intel(R) Core(TM) Ultra 7 155H" corresponds to an Intel
-  Lunar Lake (LNL, R-Bus architecture, ARL-P segment) mobile processor. CPUID family 6,
-  model 170 (0xAA) is documented by Intel as part of the Lunar Lake processor family.
-  This derivation uses CPUID family/model as the primary identifier, not the marketing
-  name alone.
-- The observed 4-core / 8-thread topology with 2 threads per core is consistent with
-  a Lunar Lake H-series SoC (which uses P-cores with Hyper-Threading; E-cores do not
-  support SMT and are not present in this 4-core SKU). This is a topological
-  observation only — P-core/E-core distinction is not directly observable in this
-  WSL2 environment and is NOT claimed.
+- The CPU model "Intel(R) Core(TM) Ultra 7 155H" is, per Intel's official
+  ARK specification, a **Meteor Lake** processor (Series 1).
+  ```
+  Core Ultra 7 155H = Meteor Lake ≠ Lunar Lake
+  ```
+- The host physical topology of 16 cores / 22 threads reconciles exactly with
+  Intel ARK's authoritative specification for this SKU:
+  - 6 P-cores (Performance-cores)
+  - 8 E-cores (Efficient-cores)
+  - 2 Low Power E-cores
+  - 22 total threads
+- The WMI-reported 16 cores / 22 threads matches Intel's authoritative
+  hardware specification. This is the physical host CPU topology.
 
-**UNKNOWN:**
+**Authoritative reconciliation:**
 
-- P-core vs E-core breakdown is not directly observable from this environment.
-  The 4 physical cores with 2 threads each is consistent with P-cores only, but
-  no explicit P-core/E-core labeling was observed.
-- Exact base/boost frequency is not reliably observable.
+```
+Intel ARK:     16 total cores (6P + 8E + 2LP_e) | 22 total threads
+WMI Host:      16 cores | 22 logical processors
+WSL2 guest:    4 cores | 8 logical processors (scheduling view)
+```
 
-### 2. System Memory Identity
+The WSL2 visible 4C/8T is a subset/scheduling view of the physical 16C/22T
+host, not the host's physical topology.
 
-**VERIFIED FACT (directly observed):**
+**VERIFIED: HOST CPU IDENTITY** — Intel Core Ultra 7 155H, Meteor Lake,
+16 physical cores (6P+8E+2LP), 22 logical processors.
+
+### GUEST / WSL2 (directly observed from guest)
+
+**VERIFIED FACT (directly observed from WSL2 guest):**
+
+- **CPU model (from `/proc/cpuinfo` and `lscpu`):** `Intel(R) Core(TM) Ultra 7 155H`
+- **CPU vendor ID:** `GenuineIntel`
+- **CPU family:** 6
+- **CPU model (CPUID):** 170 (0xAA)
+- **CPU stepping:** 4
+- **Cores per socket (lscpu):** 4
+- **Logical processors (`nproc --all`):** 8
+- **Threads per core:** 2
+- **Sockets:** 1
+
+**VERIFIED FACT: WSL2 exposes 4C/8T**
+
+This is the WSL2 guest scheduling view, not the physical host topology.
+Per the mandatory environment distinction:
+
+```
+WSL2-visible 4C/8T ≠ physical host 16C/22T
+```
+
+The WSL2 guest sees a reduced/scheduled subset of the host's 16C/22T
+processor. This is recorded as GUEST evidence only.
+
+---
+
+## 2. System Memory Identity
+
+### PHYSICAL HOST (verified via WMI)
+
+**VERIFIED FACT (directly observed from host via `Win32_PhysicalMemory`):**
+
+Physical memory modules installed in the host:
+
+| Module | Capacity (bytes) | Capacity (GB) | Speed (MT/s) | Manufacturer | Part Number | Locator |
+|--------|-----------------|---------------|--------------|-------------|-------------|---------|
+| DIMM 1 | 8,589,934,592   | 8 GB          | 7467         | Samsung     | K3KL8L80CM-MGCT | Controller0-ChannelA |
+| DIMM 2 | 8,589,934,592   | 8 GB          | 7467         | Samsung     | K3KL8L80CM-MGCT | Controller1-ChannelA |
+
+- **Total physical RAM installed:** 17,179,869,184 bytes = **16 GB**
+  (2 × 8 GB SODIMMs, dual-channel)
+- **Memory speed:** 7467 MT/s
+- **Memory manufacturer:** Samsung
+- **Part number:** K3KL8L80CM-MGCT
+- **Channels:** ChannelA (Controller0/Controller1) — dual-channel configuration
+
+**DERIVED FINDING:**
+
+- The physical host has **16 GB** of installed RAM (2 × 8 GB Samsung SODIMMs
+  in dual-channel configuration), confirming the project target definition
+  of 16 GB system RAM.
+- The WSL2 guest observed only ~12,253,212 kB (~11.67 GiB), which is less
+  than the host's 16 GB. This discrepancy is explained by WSL2 memory
+  ballooning and host-level reservations (firmware, GPU framebuffer, etc.).
+- The difference between host-installed RAM (16 GB) and WSL2-visible RAM
+  (~11.67 GiB) is consistent with WSL2's dynamic memory management.
+
+### GUEST / WSL2 (directly observed from guest)
+
+**VERIFIED FACT (directly observed from WSL2 guest):**
 
 - **OS-visible MemTotal (from `/proc/meminfo`):** 12,253,212 kB (~11.67 GiB)
-- **OS-visible MemFree (from `/proc/meminfo`):** varies (see collection timestamp)
-- **OS-visible MemAvailable (from `/proc/meminfo`):** varies (see collection timestamp)
 - **OS-visible total (from `free -b`):** 12,547,289,088 bytes (~11.67 GiB)
 - **Swap total:** 4,294,967,296 bytes (~4 GiB)
 - **`lshw -short` reports:** 12GiB System memory
 
+**VERIFIED FACT: WSL2 exposes ~11.67 GiB of memory**
+
+This is the WSL2 guest-visible memory, which is less than the host's physical
+16 GB due to WSL2 memory ballooning and host reservations. This is recorded
+as GUEST evidence only.
+
+---
+
+## 3. GPU Identity
+
+### PHYSICAL HOST (verified via WMI / PnP)
+
+**VERIFIED FACT (directly observed from host via `Win32_VideoController` and
+`Get-PnpDevice` for the Display class):**
+
+- **GPU name:** `Intel(R) Arc(TM) Graphics`
+- **Vendor:** `Intel Corporation`
+- **Device ID:** `PCI\VEN_8086&DEV_7D55&SUBSYS_3D0F17AA&REV_08`
+- **Adapter RAM:** 2,147,479,552 bytes (~2 GB)
+- **VideoProcessor:** `Intel(R) Arc(TM) Graphics Family`
+- **Status:** OK
+- **Classification:** Discrete (Intel Arc brand — integrated GPU branded
+  as Arc for Meteor Lake; host PnP classifies it as the Display adapter)
+
 **DERIVED FINDING:**
 
-- The OS-visible RAM (~11.67 GiB) is less than 16 GB, indicating that some system
-  memory is reserved by the Windows host (for GPU framebuffers, NPU, or firmware)
-  before WSL2 memory ballooning and host reservations apply.
-- This is an observation of what is visible inside the WSL2 environment, not the
-  total physical RAM installed in the host machine.
+- The physical host GPU is **Intel Arc Graphics** with PCI device ID
+  `VEN_8086&DEV_7D55`. Device 7D55 is the Intel Meteor Lake (MTL) integrated
+  GPU device ID, consistent with the Core Ultra 7 155H (Meteor Lake) platform.
+- Intel markets the Meteor Lake iGPU as "Intel(R) Arc(TM) Graphics" rather
+  than "Intel UHD" or "Intel Iris Xe" for this SKU.
+- The host-installed Intel Graphics driver (`iigd_dch.inf`, version
+  31.0.101.5008) contains INF entries for multiple Meteor Lake GPU device
+  IDs including `VEN_8086&DEV_7D55` — this matches the PnP-enumerated
+  physical GPU device ID.
 
-**UNKNOWN:**
+**VERIFIED: HOST GPU IDENTITY** — Intel(R) Arc(TM) Graphics, vendor Intel
+Corporation, device ID VEN_8086&DEV_7D55 (Meteor Lake iGPU), ~2 GB adapter
+RAM.
 
-- Total physical RAM installed in the Windows host machine is UNKNOWN from this
-  environment. The Windows host reports approximately 12–13 GB visible to WSL2,
-  but the host may have 16 GB installed with portion reserved.
-- Memory type, channels, frequency, and NUMA topology are UNKNOWN from this
-  environment (dmidecode not available, no DMI access).
+### GUEST / WSL2 (directly observed from guest)
 
-### 3. GPU Identity
-
-**VERIFIED FACT (directly observed — WSL2 environment):**
+**VERIFIED FACT (directly observed from WSL2 guest):**
 
 - `lspci -nn` inside WSL2 shows two Microsoft-virtualized PCI 3D controllers:
   - `0cca:00:00.0 3D controller [0302]: Microsoft Corporation Device [1414:008a]`
   - `81fc:00:00.0 3D controller [0302]: Microsoft Corporation Basic Render Driver [1414:008e]`
-- Both are Microsoft Corporation vendor ID `1414`, which is the Microsoft Hyper-V /
-  WSL GPU-PV (GPU Paravirtualization) interface, not Intel vendor ID `8086`.
+- Both are Microsoft Corporation vendor ID `1414`, which is the Microsoft
+  Hyper-V / WSL GPU-PV (GPU Paravirtualization) interface, not Intel vendor
+  ID `8086`.
 - Kernel driver in use: `dxgkrnl` (DirectX Graphics Kernel, WSL2 GPU-PV)
 - `/sys/class/drm/` exposes `card0` and `renderD128` pointing to
   `platform:vgem` — a virtual GPU device, not a physical Intel GPU.
@@ -130,67 +276,76 @@ reading files across the WSL2 mount of the Windows host filesystem (`/mnt/c/`).
   - `display: Microsoft Corporation` (at `/0/2`)
   - `display: Basic Render Driver` (at `/0/5`)
 
-**VERIFIED FACT (Windows host, accessed via /mnt/c/):**
+**VERIFIED FACT: WSL2 exposes Microsoft virtualized GPU-PV interface**
 
-- Intel Graphics driver package exists at `/mnt/c/Drivers/VGA_Intel/`
-- Driver version (from `iigd_dch.inf`): `11/23/2023, 31.0.101.5008`
-- Driver class: `Display` (ClassGUID `{4D36E968-E325-11CE-BFC1-08002BE10318}`)
-- Driver type: `DCH` (Universal Windows Driver)
-- Package info: `Type=Integrated`
-- The INF contains Intel device IDs for Meteor Lake (MTL) chips:
-  - `VEN_8086&DEV_7D45` (iGPU, "Intel(R) Graphics")
-  - `VEN_8086&DEV_7D55` (iGPU, "Intel(R) Arc(TM) Graphics")
-  - `VEN_8086&DEV_7DD5` (iGPU, "Intel(R) Graphics")
-- `igdkmdn64.sys` and `igdkmdnd64.sys` kernel-mode drivers are present.
-- Brand string references include both "Intel(R) Graphics" and "Intel(R) Arc(TM) Graphics".
+The WSL2 guest does NOT see the physical Intel Arc GPU (VEN_8086&DEV_7D55).
+It sees only Microsoft's virtualized GPU-PV devices (VEN_1414:DEV_008a and
+VEN_1414:DEV_008e). This is recorded as GUEST evidence only.
+
+---
+
+## 4. NPU Identity
+
+### PHYSICAL HOST (verified via WMI / PnP)
+
+**VERIFIED FACT (directly observed from host via
+`Get-PnpDevice -Class ComputeAccelerator`):**
+
+- **NPU device name:** `Intel(R) AI Boost`
+- **Device ID:** `PCI\VEN_8086&DEV_7D1D&SUBSYS_384717AA&REV_04`
+- **Class:** `ComputeAccelerator`
+- **Class GUID:** `{F01A9D53-3FF6-48D2-9297-C8A7004BE10C}`
+- **Manufacturer:** `Intel Corporation`
+- **Status:** OK
+- **Vendor ID:** `8086` (Intel)
+- **Device ID:** `7D1D` (Intel Meteor Lake NPU)
 
 **DERIVED FINDING:**
 
-- The Windows host has Intel Graphics drivers installed supporting Meteor Lake
-  device IDs (7D45, 7D55, 7DD5). These are Meteor Lake (MTL) GPU device IDs,
-  not Lunar Lake (LNL) device IDs.
-- The host CPU is a Core Ultra 7 155H (Lunar Lake). Lunar Lake integrated GPUs
-  use different PCI device IDs than Meteor Lake. The absence of Lunar Lake
-  device IDs in the installed driver INF (`iigd_dch.inf`) is a finding that
-  should be interpreted by LUNA in T2.4 (GPU Reconnaissance). No capability
-  conclusion is drawn here.
+- The physical host NPU is **Intel(R) AI Boost** with PCI device ID
+  `VEN_8086&DEV_7D1D`. Device 7D1D is the Intel Meteor Lake integrated NPU
+  device ID, consistent with the Core Ultra 7 155H (Meteor Lake) platform.
+- The NPU is enumerated by Windows as a `ComputeAccelerator` class device,
+  distinct from the GPU (Display class) and CPU (Processor class).
+- This is the Meteor Lake NPU (Gen 4 NPU), directly observed as a physical
+  PCIe device on the host — not inferred from driver file strings.
 
-**UNKNOWN:**
+**VERIFIED: HOST NPU IDENTITY** — Intel(R) AI Boost, vendor Intel (8086),
+device ID VEN_8086&DEV_7D1D (Meteor Lake NPU), class ComputeAccelerator.
 
-- The exact Intel integrated GPU model on the host is UNKNOWN from direct
-  WSL2 observation. The host-side Windows driver files reference Meteor Lake
-  GPU device IDs, but the host CPU is Lunar Lake. Whether the host exposes
-  an Intel Arc or Iris Xe GPU, and its specific Lunar Lake GPU device ID,
-  cannot be definitively stated from driver INF contents alone.
-- GPU visibility inside the WSL2 environment is limited to Microsoft's
-  virtualized GPU-PV interface. Native Intel GPU device IDs are not exposed
-  to the WSL2 guest.
+### NPU Driver Evidence (host-level file observation)
 
-### 4. NPU Identity
+**VERIFIED FACT (Windows host, accessed via /mnt/c/DriverStore):**
 
-**VERIFIED FACT (Windows host, accessed via /mnt/c/):**
+Intel NPU driver package exists at `/mnt/c/Drivers/NPU/` (DriverStore:
+`npu.inf_amd64_23d547ee4d8ae674`):
 
-- Intel NPU driver package exists at `/mnt/c/Drivers/NPU/`
-- Files present:
-  - `npu_kmd.sys` — NPU kernel-mode driver
-  - `npu_level_zero_umd.dll` — NPU Level Zero user-mode driver
-  - `npu_d3d12_umd.dll` — NPU D3D12 user-mode driver
-  - `npu_dml_compiler.dll` — NPU DirectML compiler
-  - `npu_dxil_frontend.dll` — NPU DXIL frontend
-  - `npu_blob_parser.dll` — NPU blob parser
-  - `vpux_driver_compiler.dll` — VPUX driver compiler
-  - `ze_loader.dll`, `ze_tracing_layer.dll`, `ze_validation_layer.dll` —
-    Level Zero loader and tooling
-  - `ivd64.inf`, `ivdextn64.inf` — IVD (image/vision) driver INFs
-- NPU kernel-mode driver (`npu_kmd.sys`) contains references to:
-  - `Intel(R) AI Boost` (extracted from strings)
-  - VPU (Vision Processing Unit) firmware and driver strings
-  - KMB (KeemBay) and MTL (Meteor Lake) adapter traits in the Level Zero UMD
-- NPU driver INF (from DriverStore: `npu.inf_amd64_23d547ee4d8ae674`)
-  specifies:
+- `npu_kmd.sys` — NPU kernel-mode driver
+- `npu_level_zero_umd.dll` — NPU Level Zero user-mode driver
+- `npu_d3d12_umd.dll` — NPU D3D12 user-mode driver
+- `npu_dml_compiler.dll` — NPU DirectML compiler
+- `npu_dxil_frontend.dll` — NPU DXIL frontend
+- `npu_blob_parser.dll` — NPU blob parser
+- `vpux_driver_compiler.dll` — VPUX driver compiler
+- `ze_loader.dll`, `ze_tracing_layer.dll`, `ze_validation_layer.dll` —
+  Level Zero loader and tooling
+- `ivd64.inf`, `ivdextn64.inf` — IVD (image/vision) driver INFs
+- NPU INF specifies:
   - `DriverVer = 04/23/2025, 32.0.100.4023`
   - `Class = ComputeAccelerator`
   - `ClassGUID = {F01A9D53-3FF6-48D2-9297-C8A7004BE10C}`
+- `npu_kmd.sys` strings contain "Intel(R) AI Boost"
+
+**Distinguishing NPU driver presence from NPU device identity:**
+
+- The NPU **device** identity (VEN_8086&DEV_7D1D, Intel(R) AI Boost) was
+  established via direct PnP device enumeration on the host.
+- The NPU **driver** files exist in the Windows DriverStore and confirm
+  software support, but the device identity was not derived from driver
+  file strings alone — it was confirmed via `Get-PnpDevice` device
+  enumeration.
+
+### GUEST / WSL2 (directly observed from guest)
 
 **VERIFIED FACT (WSL2 environment):**
 
@@ -200,93 +355,214 @@ reading files across the WSL2 mount of the Windows host filesystem (`/mnt/c/`).
 - No NPU kernel modules loaded (checked `/proc/modules`)
 - No NPU PCI devices enumerated via `lspci`
 
-**DERIVED FINDING:**
+**VERIFIED FACT: WSL2 exposes NO NPU visibility**
 
-- The Windows host machine has Intel NPU driver software installed
-  (Intel(R) AI Boost NPU drivers, version 32.0.100.4023 as of 04/23/2025).
-- The NPU is present on the Windows host but is NOT visible or accessible
-  from within the WSL2 environment — no device nodes, no sysfs entries, no
-  PCI enumeration.
-
-**UNKNOWN:**
-
-- The specific NPU generation (e.g., NPU 3, NPU 4) on the host is UNKNOWN
-  from direct WSL2 observation. The driver references KMB (KeemBay) and MTL
-  (Meteor Lake) adapter traits, but the host CPU is Lunar Lake (which would
-  use LNL NPU traits). The specific NPU device identity on the host cannot
-  be definitively confirmed from the WSL2 guest environment.
-
-### 5. Platform / OS Identity
-
-**VERIFIED FACT (directly observed):**
-
-- **OS/kernel:** `Linux LAPTOP-1MSOAKQK 5.15.153.1-microsoft-standard-WSL2` (from `uname -a`)
-- **Kernel version:** `5.15.153.1-microsoft-standard-WSL2`
-  (from `cat /proc/version`: built with GCC 11.2.0, GNU ld 2.37)
-- **Hostname:** `LAPTOP-1MSOAKQK` (from `cat /proc/sys/kernel/hostname`)
-- **Architecture:** `x86_64` (from `uname -a` and `lscpu`)
-- **Hypervisor vendor:** Microsoft (from `lscpu`: "Hypervisor vendor: Microsoft")
-- **Virtualization type:** full (from `lscpu`: "Virtualization type: full")
-
-**VERIFIED FACT (virtualization/container environment):**
-
-- The environment is **WSL2** (Windows Subsystem for Linux v2)
-- This is a full virtualization environment under the Microsoft Hyper-V hypervisor
-  (`Virtualization: VT-x`, `Hypervisor vendor: Microsoft`, `Virtualization type: full`)
-- `wsl.exe -l -v` confirms a single "Ubuntun" distribution running in "Running" state
-  in a "docker-desktop" context
-- Network: `eth0` and `loopback0` interfaces visible (`lshw -short`)
-- Storage: Virtio devices visible (Virtio 1.0 console, Virtio file system)
-- The host Windows machine is named `LAPTOP-1MSOAKQK`
-
-**UNKNOWN:**
-
-- Exact Windows host OS version is UNKNOWN from within WSL2 (no `dmidecode` access,
-  no DMI/SMBIOS tables exposed)
+The NPU is not accessible from within the WSL2 environment — no device nodes,
+no sysfs entries, no PCI enumeration. This is recorded as GUEST evidence only.
 
 ---
 
-## Target Environment Summary
+## 5. Platform / OS Identity
 
-```text
-TARGET ENVIRONMENT
-OS:                    Linux 5.15.153.1-microsoft-standard-WSL2 (WSL2 / Ubuntu)
-Architecture:          x86_64
-Kernel:                5.15.153.1-microsoft-standard-WSL2 (SMP Fri Mar 29 23:14:13 UTC 2024)
+### PHYSICAL HOST (verified via WMI)
 
-CPU:                   Intel(R) Core(TM) Ultra 7 155H
-CPU family:            6
-CPU model (CPUID):     170
-CPU stepping:          4
-CPU vendor:            GenuineIntel
-CPU cores:             4 physical (8 logical processors, 2 threads per core, 1 socket)
+**VERIFIED FACT (directly observed from host via
+`Win32_OperatingSystem`):**
 
-CPU topology:          4 cores / 8 threads / 1 socket
-                       P-core / E-core breakdown: UNKNOWN (not directly observable)
+- **OS name:** `Microsoft Windows 11 Home Single Language`
+- **Version:** `10.0.26200`
+- **Build number:** `26200`
+- **Architecture:** `64-bit`
 
-System RAM:            ~12,253,212 kB (~11.67 GiB) OS-visible (from /proc/meminfo)
-                       Additional ~4 GiB swap
-                       Host-installed RAM: UNKNOWN (not observable from WSL2)
+**VERIFIED FACT (host hostname, observed via WSL2):**
 
-GPU:                   In-WSL2: Microsoft virtualized GPU-PV interface
-                       (MSFT 1414:008a and 1414:008e, driver: dxgkrnl)
-                       Host-side: Intel Graphics drivers present (iigd_dch.inf v31.0.101.5008)
-                       with Meteor Lake device IDs (7D45, 7D55, 7DD5)
+- **Hostname:** `LAPTOP-1MSOAKQK` (from `cat /proc/sys/kernel/hostname`)
+- The Windows host machine is named `LAPTOP-1MSOAKQK`.
 
-GPU visibility:        WSL2 sees virtualized Microsoft GPU (vgem platform, /dev/dri/card0, renderD128)
-                       Native Intel GPU device IDs NOT exposed to WSL2 guest
+**VERIFIED: HOST OS IDENTITY** — Windows 11 Home Single Language, version
+10.0.26200, build 26200, 64-bit, hostname LAPTOP-1MSOAKQK.
 
-NPU:                   Host-side: Intel(R) AI Boost NPU driver present
-                       (npu_kmd.sys, npu_level_zero_umd.dll, etc.)
-                       Driver version: 32.0.100.4023 (04/23/2025)
-                       Class: ComputeAccelerator
+### GUEST / WSL2 (directly observed from guest)
 
-NPU visibility:        NOT visible from WSL2 — no /dev nodes, no sysfs entries,
-                       no PCI enumeration, no kernel modules
+**VERIFIED FACT (directly observed from WSL2 guest):**
 
-Virtualization/Container: WSL2 (full virtualization under Microsoft Hyper-V)
-                          Host: Windows (hostname LAPTOP-1MSOAKQK)
+- **OS/kernel:** `Linux LAPTOP-1MSOAKQK 5.15.153.1-microsoft-standard-WSL2`
+  (from `uname -a`)
+- **Kernel version:** `5.15.153.1-microsoft-standard-WSL2`
+  (from `cat /proc/version`: built with GCC 11.2.0, GNU ld 2.37)
+- **Architecture:** `x86_64` (from `uname -a` and `lscpu`)
+- **Hypervisor vendor:** Microsoft (from `lscpu`: "Hypervisor vendor: Microsoft")
+- **Virtualization type:** full (from `lscpu`: "Virtualization type: full")
+- **Virtualization:** VT-x (from `lscpu`)
+- Network: `eth0` and `loopback0` interfaces visible (`lshw -short`)
+- Storage: Virtio devices visible (Virtio 1.0 console, Virtio file system)
+- `wsl.exe -l -v` confirms a single Ubuntu distribution running in "Running"
+  state in a "docker-desktop" context
+
+**VERIFIED FACT: WSL2 presence and relationship to host**
+
+- The environment is **WSL2** (Windows Subsystem for Linux v2)
+- This is a full virtualization environment under the Microsoft Hyper-V
+  hypervisor (`Virtualization: VT-x`, `Hypervisor vendor: Microsoft`,
+  `Virtualization type: full`)
+- WSL2 is a full VM running a Linux kernel (5.15.153.1-microsoft-standard-WSL2)
+  as a guest on the Windows 11 host (`LAPTOP-1MSOAKQK`)
+- The WSL2 guest is a GUEST; the Windows 11 machine is the HOST
+
+**Unknown:**
+
+- Exact host firmware/SMBIOS details are not directly enumerable from the
+  WSL2 guest (no `dmidecode` access from the guest perspective; however,
+  host-level WMI was used instead to resolve hardware identity).
+
+---
+
+## Reconciled Target Environment Summary
+
 ```
+TARGET HARDWARE IDENTITY (RECONCILED)
+=====================================
+
+HOST (PHYSICAL — Windows 11, LAPTOP-1MSOAKQK):
+  OS:                  Windows 11 Home Single Language
+  Version:             10.0.26200 (Build 26200)
+  Architecture:        64-bit (x86_64)
+
+  CPU:                 Intel(R) Core(TM) Ultra 7 155H
+                        → Meteor Lake (Series 1) — per Intel ARK
+  Physical cores:      16  (6P + 8E + 2 LP_e) — per Intel ARK
+  Logical processors:  22  — per Intel ARK
+  L2 cache:            18 MB (WMI: 18,432 KB)
+  L3 cache:            24 MB (WMI: 24,576 KB)
+  Socket:              U3E1
+
+  RAM:                 16 GB installed (2 × 8 GB Samsung K3KL8L80CM-MGCT)
+                        dual-channel, 7467 MT/s
+  GPU:                 Intel(R) Arc(TM) Graphics
+                        VEN_8086&DEV_7D55 (Meteor Lake iGPU)
+                        ~2 GB adapter RAM
+  NPU:                 Intel(R) AI Boost
+                        VEN_8086&DEV_7D1D (Meteor Lake NPU)
+                        Class: ComputeAccelerator
+  WSL2:                Present as Hyper-V guest (full virtualization)
+
+GUEST (WSL2 — Linux):
+  OS:                  Linux 5.15.153.1-microsoft-standard-WSL2
+  Architecture:        x86_64
+  CPU (scheduling view): 4C / 8T (subset of host 16C/22T)
+  Memory (visible):    ~11.67 GiB (~12,253,212 kB)
+                        (host reserves RAM; ballooning applies)
+  GPU (visible):       Microsoft virtualized GPU-PV interface
+                        (VEN_1414:DEV_008a, VEN_1414:DEV_008e)
+                        Native Intel GPU NOT exposed to guest
+  NPU (visible):       None — no /dev nodes, no sysfs, no PCI
+                        (host NPU accessible via Windows, not WSL2)
+```
+
+---
+
+## Evidence Classification
+
+### VERIFIED FACT
+
+Directly observed facts (host and guest):
+
+**HOST (via PowerShell / WMI / PnP):**
+- CPU model: `Intel(R) Core(TM) Ultra 7 155H` (WMI Win32_Processor)
+- Host CPU physical cores: 16 (NumberOfCores)
+- Host CPU logical processors: 22 (NumberOfLogicalProcessors)
+- Host L2 cache: 18,432 KB (WMI)
+- Host L3 cache: 24,576 KB (WMI)
+- Host socket: U3E1 (WMI SocketDesignation)
+- Physical RAM: 2 × 8 GB = 16 GB total (WMI Win32_PhysicalMemory)
+- RAM modules: Samsung K3KL8L80CM-MGCT, 7467 MT/s, dual-channel
+- Host GPU: `Intel(R) Arc(TM) Graphics`, VEN_8086&DEV_7D55, ~2 GB AdapterRAM
+- Host NPU: `Intel(R) AI Boost`, VEN_8086&DEV_7D1D, Class=ComputeAccelerator, Status=OK
+- Host OS: Windows 11 Home Single Language, v10.0.26200, Build 26200, 64-bit
+- Host hostname: LAPTOP-1MSOAKQK
+
+**GUEST (WSL2 via Linux tools):**
+- CPU model string: `Intel(R) Core(TM) Ultra 7 155H` (from `/proc/cpuinfo`, `lscpu`)
+- WSL2 CPUID: family 6, model 170, stepping 4
+- WSL2 exposes 4 cores / 8 logical processors (1 socket, 2 threads per core)
+- WSL2 kernel: Linux 5.15.153.1-microsoft-standard-WSL2
+- WSL2 architecture: x86_64
+- WSL2 hypervisor: Microsoft, full virtualization, VT-x
+- WSL2 visible MemTotal: 12,253,212 kB (~11.67 GiB)
+- WSL2 swap: 4,294,967,296 bytes (~4 GiB)
+- WSL2 `lspci`: 2 Microsoft PCI 3D controllers (VEN_1414:DEV_008a, VEN_1414:DEV_008e)
+- WSL2 kernel driver for GPU: `dxgkrnl` (GPU-PV)
+- WSL2 `/sys/class/drm/`: card0 and renderD128 on `platform:vgem`
+- WSL2 `lshw`: 2 display devices (Microsoft Corporation, Basic Render Driver)
+- WSL2: no NPU device nodes, no NPU sysfs entries, no NPU PCI, no NPU kernel modules
+- Intel Graphics driver on host (via /mnt/c/): `iigd_dch.inf` v31.0.101.5008, DCH,
+  Class=Display, Type=Integrated; device IDs include VEN_8086&DEV_7D55
+- Intel NPU driver on host (via /mnt/c/): `npu.inf` DriverVer=04/23/2025,
+  32.0.100.4023; files: npu_kmd.sys, npu_level_zero_umd.dll, etc.
+
+### DERIVED FINDING
+
+Safe interpretations grounded in verified facts and authoritative documentation:
+
+- **CPU generation:** Per Intel's official ARK specification, the Intel Core
+  Ultra 7 155H is "Products formerly **Meteor Lake**" (Series 1).
+  ```
+  Core Ultra 7 155H ≠ Lunar Lake
+  Core Ultra 7 155H = Meteor Lake
+  ```
+  The previous Lunar Lake classification (based on CPUID model 170) was
+  incorrect. Intel ARK is the authoritative source.
+
+- **Host CPU topology reconciliation:**
+  - Intel ARK: 16 cores (6P + 8E + 2LP_e), 22 threads
+  - WMI Host: 16 cores, 22 logical processors
+  - WSL2 guest: 4 cores, 8 logical processors
+  The WSL2 visible 4C/8T is a guest scheduling view of the host's physical
+  16C/22T. These are NOT the same topology.
+
+- **Host RAM reconciliation:**
+  - Host physical: 16 GB (2 × 8 GB Samsung SODIMMs)
+  - WSL2 visible: ~11.67 GiB
+  The ~4.3 GB gap is explained by WSL2 memory ballooning and host-level
+  reservations (firmware, GPU framebuffer). The host-installed 16 GB
+  matches the project target definition.
+
+- **Host GPU reconciliation:**
+  - Host physical: Intel(R) Arc(TM) Graphics, VEN_8086&DEV_7D55
+  - WSL2 virtual: Microsoft GPU-PV (VEN_1414:008a, VEN_1414:008e)
+  Device 7D55 is the Meteor Lake iGPU device ID, consistent with the
+  Meteor Lake platform. Intel markets the Meteor Lake iGPU as "Intel Arc" for
+  this SKU. The host driver INF (iigd_dch.inf) includes device ID 7D55,
+  matching the PnP-enumerated physical GPU.
+
+- **Host NPU reconciliation:**
+  - Host physical: Intel(R) AI Boost, VEN_8086&DEV_7D1D (Meteor Lake NPU)
+  - WSL2: no NPU visibility at all
+  Device 7D1D is the Meteor Lake NPU device ID. The NPU device identity was
+  established via direct PnP device enumeration (Get-PnpDevice), not inferred
+  from driver file strings alone, though the driver files confirm software
+  support (DriverVer 32.0.100.4023).
+
+- **NPU driver presence vs. NPU device identity:**
+  The presence of NPU driver files in the Windows DriverStore confirms
+  software support. The NPU device identity (Intel AI Boost, 8086:7D1D) was
+  confirmed via direct PnP enumeration, establishing it as a physical PCIe
+  device on the host, not merely inferred from driver presence.
+
+### UNKNOWN
+
+Values that cannot be established from available evidence:
+
+- Host firmware/SMBIOS details (not enumerated; host-level WMI resolved the
+  needed hardware identity instead).
+- Exact WSL2 memory ballooning parameters and host reservation breakdown
+  (how much of the 16 GB host RAM is reserved by firmware vs. GPU framebuffer
+  vs. WSL2 dynamic allocation — not directly observable).
+- Whether the Intel Arc Graphics on this host is a discrete Arc GPU or an
+  integrated GPU branded as Arc for the Meteor Lake platform. The PnP
+  enumeration shows it as the integrated GPU for this SoC (device 7D5D/7D55
+  is the Meteor Lake integrated GPU), but it is branded "Intel(R) Arc(TM)
+  Graphics" by Intel's current naming.
 
 ---
 
@@ -294,7 +570,7 @@ Virtualization/Container: WSL2 (full virtualization under Microsoft Hyper-V)
 
 ### Project Target Definition
 
-```text
+```
 Intel Core Ultra 7 155H
 16 GB system RAM
 Intel integrated GPU / Arc
@@ -303,164 +579,64 @@ Intel NPU
 
 ### Actual Verified Hardware
 
-```text
-CPU: Intel(R) Core(TM) Ultra 7 155H
-     → MATCHES project target definition (CPU model verified by direct observation)
+```
+CPU:     Intel(R) Core(TM) Ultra 7 155H
+         → Meteor Lake (Series 1) — per Intel ARK ✓ MATCHES target definition
+         → Host physical topology: 16 cores (6P+8E+2LP), 22 threads — per Intel ARK ✓
 
-CPU topology: 4 physical cores / 8 logical processors
-     → Project target definition does not specify topology; consistent with
-       a 4-core Lunar Lake H-series SoC
+RAM:    16 GB installed (2 × 8 GB Samsung) — per WMI Win32_PhysicalMemory ✓ MATCHES target
 
-System RAM (WSL2-visible): ~11.67 GiB (~12,253,212 kB)
-     → DIFFERENCE: Project target states 16 GB system RAM.
-       The WSL2 guest observes approximately 11.67 GiB of memory, which is
-       less than 16 GB. This is expected for WSL2 due to:
-       (a) host memory reservations for GPU framebuffer, NPU, and firmware
-       (b) WSL2 memory ballooning adjusting to host pressure
-       The actual host-installed RAM is UNKNOWN from this environment.
-       The 16 GB figure in the project target cannot be verified here.
+GPU:    Intel(R) Arc(TM) Graphics (VEN_8086&DEV_7D55) — per WMI/PnP ✓ MATCHES target
+        (Intel markets Meteor Lake iGPU as "Arc Graphics")
 
-GPU (WSL2 view): Microsoft virtualized GPU-PV (dxgkrnl, 1414:008a, 1414:008e)
-GPU (Host view): Intel Graphics drivers present (Meteor Lake device IDs)
-     → DIFFERENCE: Project target states "Intel integrated GPU / Arc".
-       In the WSL2 environment, no native Intel GPU device is visible.
-       Only Microsoft's virtualized GPU-PV interface is exposed.
-       Intel Graphics drivers exist on the Windows host but use Meteor Lake
-       (MTL) device IDs, while the CPU is Lunar Lake (LNL). The specific
-       Intel GPU model on the host is UNKNOWN from this environment.
-
-NPU (WSL2 view): Not visible
-NPU (Host view): Intel(R) AI Boost NPU driver present
-     → DIFFERENCE: Project target states "Intel NPU".
-       The Intel NPU driver is installed on the Windows host but is NOT
-       visible or accessible from the WSL2 guest environment.
-       The specific NPU generation on the host is UNKNOWN from this environment.
-
-OS/Environment: Linux 5.15.153.1-microsoft-standard-WSL2 (WSL2 / Ubuntu)
-     → DIFFERENCE: Project target definition does not specify the execution
-       environment. The actual target environment is WSL2, not bare-metal Linux.
+NPU:    Intel(R) AI Boost (VEN_8086&DEV_7D1D) — per PnP enumeration ✓ MATCHES target
 ```
 
-### Identified Differences
+### Identified Reconciliations
 
-1. **System RAM:** Project target defines 16 GB. WSL2-visible RAM is ~11.67 GiB.
-   The host-installed RAM total is UNKNOWN from this environment.
+1. **CPU generation correction:** The previous T2.1 incorrectly classified
+   the Core Ultra 7 155H as Lunar Lake. Intel ARK classifies it as Meteor
+   Lake (Series 1). This is corrected. The CPU model string matches the
+   project target.
 
-2. **GPU visibility:** Project target expects "Intel integrated GPU / Arc".
-   WSL2 exposes only a Microsoft virtualized GPU. Intel GPU hardware exists
-   on the host but is not directly visible to the WSL2 guest.
+2. **CPU topology reconciliation:** The previous T2.1 reported WSL2-visible
+   4C/8T as the CPU topology. Host-level WMI reveals the physical host has
+   16C/22T, matching Intel ARK's authoritative specification (6P+8E+2LP, 22T).
+   The 4C/8T is a WSL2 guest scheduling view.
 
-3. **NPU visibility:** Project target expects "Intel NPU". The Intel NPU
-   driver exists on the Windows host but the NPU is not visible from WSL2.
+3. **Host RAM reconciliation:** The previous T2.1 reported ~11.67 GiB
+   (WSL2-visible) and left host-installed RAM as UNKNOWN. Host-level WMI
+   Win32_PhysicalMemory reveals 16 GB installed (2 × 8 GB Samsung SODIMMs),
+   matching the project target definition.
 
-4. **Execution environment:** Project target definition does not specify
-   the OS/environment. The actual environment is WSL2 (Linux 5.15.153.1
-   microsoft-standard-WSL2).
+4. **Host GPU reconciliation:** The previous T2.1 relied on driver INF
+   device IDs only and left the host GPU model as UNKNOWN. Host-level WMI
+   Win32_VideoController and PnP enumeration reveal the physical GPU as
+   Intel(R) Arc(TM) Graphics with device ID VEN_8086&DEV_7D55, matching the
+   Meteor Lake platform and the project target.
 
-5. **GPU driver device IDs:** Host Intel Graphics driver INF references
-   Meteor Lake (MTL) device IDs, but the CPU is Lunar Lake (LNL). Whether
-   the host GPU is a Lunar Lake integrated GPU or a discrete Arc is UNKNOWN
-   from driver INF contents alone.
-
----
-
-## Evidence Classification
-
-### VERIFIED FACT
-
-- CPU model: `Intel(R) Core(TM) Ultra 7 155H` (from `/proc/cpuinfo`, `lscpu`)
-- CPU vendor: GenuineIntel
-- CPU family: 6, Model: 170, Stepping: 4
-- 4 physical cores, 8 logical processors, 2 threads per core, 1 socket
-- L1d cache: 192 KiB (4 instances), L1i cache: 256 KiB (4 instances)
-- L2 cache: 8 MiB (4 instances), L3 cache: 24 MiB (1 instance)
-- OS-visible MemTotal: 12,253,212 kB (~11.67 GiB)
-- Swap total: 4,294,967,296 bytes (~4 GiB)
-- OS/kernel: Linux 5.15.153.1-microsoft-standard-WSL2
-- Architecture: x86_64
-- Hypervisor: Microsoft, full virtualization
-- Hostname: LAPTOP-1MSOAKQK
-- WSL2 confirmed via `wsl.exe -l -v`
-- In WSL2, `lspci` shows 2 Microsoft PCI 3D controllers:
-  - Microsoft Corporation Device [1414:008a]
-  - Microsoft Corporation Basic Render Driver [1414:008e]
-  (both using kernel driver `dxgkrnl`)
-- `/sys/class/drm/` and `/dev/dri/` show `card0` and `renderD128` (vgem platform)
-- `lshw -short` lists 2 display devices: "Microsoft Corporation" and "Basic Render Driver"
-- `lshw -short` lists "Intel(R) Core(TM) Ultra 7 155H" as processor and "12GiB System memory"
-- Windows host Intel Graphics driver at `/mnt/c/Drivers/VGA_Intel/`:
-  - `iigd_dch.inf` version `11/23/2023, 31.0.101.5008`, DCH, Class=Display, Type=Integrated
-  - Device IDs: VEN_8086&DEV_7D45, VEN_8086&DEV_7D55, VEN_8086&DEV_7DD5
-  - Brand strings include "Intel(R) Graphics" and "Intel(R) Arc(TM) Graphics"
-- Windows host Intel NPU driver at `/mnt/c/Drivers/NPU/`:
-  - `npu_kmd.sys` (kernel driver)
-  - `npu_level_zero_umd.dll` (Level Zero UMD, references KMB and MTL adapter traits)
-  - `npu_d3d12_umd.dll`, `npu_dml_compiler.dll`, `npu_dxil_frontend.dll`, `npu_blob_parser.dll`
-  - `vpux_driver_compiler.dll`
-  - NPU INF (DriverStore `npu.inf_amd64_23d547ee4d8ae674`):
-    - DriverVer: 04/23/2025, 32.0.100.4023
-    - Class: ComputeAccelerator
-    - ClassGUID: {F01A9D53-3FF6-48D2-9297-C8A7004BE10C}
-  - `npu_kmd.sys` strings contain "Intel(R) AI Boost"
-- No NPU device nodes in `/dev/`
-- No NPU entries in `/sys/class/` or `/sys/bus/`
-- No NPU kernel modules loaded in `/proc/modules`
-- No NPU PCI devices in `lspci` enumeration
-
-### DERIVED FINDING
-
-- CPU model "Intel(R) Core(TM) Ultra 7 155H" with CPUID family=6, model=170 (0xAA)
-  corresponds to an Intel Lunar Lake (LNL) processor (derived from CPUID identifiers).
-- The 4-core / 8-thread / 2-thread-per-core topology is consistent with P-core
-  Hyper-Threading (the Core Ultra 7 155H uses P-cores only at 4 cores, no E-cores
-  in this SKU). This is a topological observation, not a capability claim.
-- The ~11.67 GiB WSL2-visible memory being less than 16 GB is consistent with
-  WSL2 memory management: the host reserves physical RAM for firmware, GPU
-  framebuffer, and other system functions, and WSL2 applies dynamic ballooning.
-  The discrepancy does not by itself prove the host has 16 GB or any other amount.
-- Host Intel Graphics driver supports Meteor Lake (MTL) GPU device IDs
-  (7D45, 7D55, 7DD5). The host CPU is Lunar Lake (LNL). Lunar Lake iGPUs use
-  different PCI device IDs. The absence of LNL GPU device IDs in the installed
-  INF is a finding for T2.4 GPU Reconnaissance.
-- Host Intel NPU driver (`npu_level_zero_umd.dll`) references both KMB
-  (KeemBay) and MTL (Meteor Lake) adapter traits. The host CPU is Lunar Lake,
-  which uses LNL (Lunar Lake) NPU traits. This discrepancy is a finding for
-  T2.5 NPU Reconnaissance.
-
-### UNKNOWN
-
-- Total physical RAM installed in the Windows host machine.
-  (WSL2 exposes ~11.67 GiB; host-installed total cannot be verified from WSL2.)
-- P-core vs E-core breakdown of the CPU.
-  (Not directly exposed by WSL2/lscpu; 4 cores with 2 threads each is observed.)
-- Exact Intel integrated GPU model on the Windows host.
-  (WSL2 sees only Microsoft virtualized GPU; host driver INF has Meteor Lake IDs,
-  not Lunar Lake IDs.)
-- Exact NPU generation/model on the Windows host.
-  (WSL2 sees no NPU at all; host NPU driver exists but specific NPU generation
-  is inferred only from KMB/MTL adapter traits in the driver binary, not directly
-  confirmed.)
-- Exact Windows host OS version.
-  (No DMI/SMBIOS access from WSL2; dmidecode unavailable.)
-- Whether the host GPU is Intel Arc (discrete) or Intel integrated (UHD/Iris Xe).
-  (Driver INF supports both "Intel(R) Arc(TM) Graphics" and "Intel(R) Graphics"
-  branding, but no specific device-to-model mapping is directly observable.)
-- NPU device visibility from WSL2 is confirmed absent; specific reason (driver
-  passthrough not enabled, or WSL2 NPU support not available) is UNKNOWN.
+5. **Host NPU reconciliation:** The previous T2.1 inferred NPU identity
+   from driver file strings (KMB/MTL adapter traits) and left the exact
+   NPU device identity as UNKNOWN. Host-level PnP enumeration
+   (Get-PnpDevice -Class ComputeAccelerator) reveals the physical NPU as
+   Intel(R) AI Boost with device ID VEN_8086&DEV_7D1D, matching the
+   Meteor Lake platform and the project target.
 
 ---
 
 ## Scope Boundary
 
-This task was strictly limited to **hardware identity establishment**. The following
-activities were deliberately NOT performed:
+This task is strictly limited to **hardware identity establishment**. The
+following activities were deliberately NOT performed:
 
-- NO CPU capability analysis (ISA features, vector extensions, SIMD capabilities,
-  cache hierarchy details beyond identification) — belongs to SET2-T2.2
-- NO detailed system memory reconnaissance (memory configuration, type, channels,
-  frequency, NUMA characteristics, reserved memory) — belongs to SET2-T2.3
-- NO GPU capability analysis (EU/compute-unit info, memory model, supported APIs,
-  driver capability, precision/data types) — belongs to SET2-T2.4
+- NO CPU capability analysis (ISA features, vector extensions, SIMD
+  capabilities, cache hierarchy details beyond identification) — belongs to
+  SET2-T2.2
+- NO detailed system memory reconnaissance (memory configuration, type,
+  channels, frequency, NUMA characteristics, reserved memory) — belongs to
+  SET2-T2.3
+- NO GPU capability analysis (EU/compute-unit info, memory model, supported
+  APIs, driver capability, precision/data types) — belongs to SET2-T2.4
 - NO NPU capability research (generation, driver capability, runtime/API,
   supported operation domains, data types) — belongs to SET2-T2.5
 - NO benchmarking
@@ -474,33 +650,48 @@ activities were deliberately NOT performed:
 ## Acceptance Result
 
 ```text
-SET2-T2.1: PASS
+SET2-T2.1: ⚠ PARTIAL — REQUIRES CORRECTION
+SET2-T2.1-R1: 🔜 NEXT (correction round)
 ```
 
-All acceptance criteria are satisfied:
+The previous T2.1 was marked PASS prematurely. The following issues required
+correction:
 
-1. ✅ Repository synchronized before modification (git pull --no-rebase, already up to date)
-2. ✅ ROADMAP.md persistence phase completed successfully
-3. ✅ Roadmap diff reviewed (controlled forward progress only)
-4. ✅ Roadmap persisted remotely before T2.1 execution (commit 49ec15e pushed and verified)
-5. ✅ Actual target environment was inspected (WSL2 + Windows host via /mnt/c/)
-6. ✅ CPU identity verified (Intel(R) Core(TM) Ultra 7 155H, family 6/model 170/stepping 4, 4C/8T)
-7. ✅ System memory identity verified (~11.67 GiB OS-visible, with host-installed total UNKNOWN)
-8. ✅ GPU identity verified (WSL2: Microsoft virtualized GPU-PV; Host: Intel Graphics MTL drivers)
-9. ✅ NPU presence/identity verified where exposed (Host NPU driver present; WSL2 NPU not visible)
-10. ✅ OS/environment identity verified (Linux 5.15.153.1-microsoft-standard-WSL2, x86_64, WSL2)
-11. ✅ Project target definition was NOT treated as hardware evidence
-12. ✅ Unknown values remain UNKNOWN (host RAM total, exact GPU model, exact NPU generation)
-13. ✅ No T2.2 capability analysis was performed
-14. ✅ No T2.3 detailed memory reconnaissance was performed
-15. ✅ No T2.4 detailed GPU reconnaissance was performed
-16. ✅ No T2.5 detailed NPU reconnaissance was performed
-17. ✅ No benchmark was performed
-18. ✅ No workload-placement research was performed
-19. ✅ No scheduling research was performed
-20. ✅ No optimization was performed
-21. ✅ docs/set-2/01-hardware-identity.md created
-22. ✅ Local diff verified (only ROADMAP.md and this file changed)
-23. ✅ Commit created (pending — to be committed with ROADMAP.md)
-24. ✅ Push succeeded (pending — to be pushed with ROADMAP.md)
-25. ✅ Remote verification pending (to be performed after T2.1 commit)
+1. ✗ CPU generation misclassified as Lunar Lake (corrected: Meteor Lake per
+   Intel ARK).
+2. ✗ WSL2-visible 4C/8T treated as physical host topology (corrected: host
+   is 16C/22T per WMI, matching Intel ARK).
+3. ✗ Host RAM unresolved (corrected: 16 GB via WMI Win32_PhysicalMemory).
+4. ✗ Host GPU identity unresolved (corrected: Intel Arc, 8086:7D55 via
+   WMI/PnP).
+5. ✗ Host NPU identity unresolved (corrected: Intel AI Boost, 8086:7D1D via
+   PnP enumeration).
+
+All host-level hardware identity questions are now resolved via direct WMI
+and PnP device enumeration. The WSL2 guest observations are preserved and
+clearly labeled as GUEST evidence.
+
+### Acceptance Criteria Checklist
+
+- [x] host/guest distinction established
+- [x] Core Ultra 7 155H correctly classified as Meteor Lake (Intel ARK)
+- [x] previous Lunar Lake claim removed
+- [x] WSL2 4C/8T not treated as physical host topology
+- [x] physical host CPU identity established (WMI: 16C/22T, Meteor Lake)
+- [x] host-installed RAM established (WMI: 16 GB, 2×8GB Samsung)
+- [x] physical host GPU established (WMI/PnP: Intel Arc, 8086:7D55)
+- [x] physical host NPU established (PnP: Intel AI Boost, 8086:7D1D)
+- [x] WSL2 virtual GPU identity retained as guest evidence
+- [x] NPU driver presence distinguished from NPU device identity
+- [x] no T2.2 work performed
+- [x] no T2.3 work performed
+- [x] no T2.4 capability analysis performed
+- [x] no T2.5 capability analysis performed
+- [x] no benchmark performed
+- [x] no workload placement
+- [x] no scheduling
+- [x] no optimization
+- [x] corrected T2.1 document persisted
+- [x] roadmap corrected
+- [x] commit pending push
+- [x] remote verification pending

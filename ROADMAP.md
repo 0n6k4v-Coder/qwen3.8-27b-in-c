@@ -7,11 +7,11 @@
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
 * Last control update: `2026-08-16`
 * Current integrated branch: `main`
-* Current integrated commit: `3547193`
-* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 readiness pending**
+* Current integrated commit: `a30455e`
+* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
 * SET 1 execution: **CLOSED**
-* SET 2 execution: **NOT STARTED**
-* Current control task: **SET2-READINESS-GATE**
+* SET 2 execution: **ACTIVE**
+* Current control task: **SET2-T2.1**
 
 ---
 
@@ -443,16 +443,19 @@ SET 2 prerequisite:                ✅ SATISFIED
 ✅ PASS
 
 SET 2 execution:
-🟢 READY FOR EXECUTION
+🟢 ACTIVE
 
 SET2-READINESS-GATE:
 ✅ PASS
 
 SET2-T2.1:
-✅ PASS
+⚠ PARTIAL — REQUIRES CORRECTION
+
+SET2-T2.1-R1:
+🔜 NEXT
 
 SET2-T2.2:
-🔜 NEXT
+⏸ BLOCKED
 
 SET2-T2.3:
 🔒 NOT STARTED
@@ -490,6 +493,19 @@ SET 1:
 
 SET 1 downstream checkpoint contract:
 ✅ AVAILABLE
+```
+
+### Current Control
+
+```text
+SET 2:
+🟢 ACTIVE
+
+CURRENT NEXT TASK:
+SET2-T2.1-R1
+
+NEXT TASK OWNER:
+🛠 EXECUTOR
 ```
 
 ### Responsibility
@@ -614,7 +630,7 @@ The readiness gate does not perform actual hardware inspection.
 
 **Responsibility:** 🛠 EXECUTOR
 
-**Status:** ✅ PASS
+**Status:** ⚠ PARTIAL — REQUIRES CORRECTION
 
 **Dependency:** `SET2-READINESS-GATE PASS`
 
@@ -651,7 +667,7 @@ docs/set-2/01-hardware-identity.md
 ```
 
 ```text
-✅ PASS
+⚠ PARTIAL (REQUIRES CORRECTION)
 📌 PERSISTED
 ☁ PUSHED
 🔎 REMOTE VERIFIED

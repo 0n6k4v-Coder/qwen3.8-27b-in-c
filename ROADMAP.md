@@ -2,14 +2,14 @@
 
 ## Document Status
 
-- Document: `ROADMAP.md`
-- Role: Project Control / Roadmap State
-- Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
-- Last control update: 2026-08-16
-- Current integrated branch: `main`
-- Current integrated commit: `3547193`
-|- Current project phase: **SET 0 formally closed; SET 1 active and executing**
-|- SET 1 execution: **ACTIVE**
+* Document: `ROADMAP.md`
+* Role: Project Control / Roadmap State
+* Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
+* Last control update: `2026-08-16`
+* Current integrated branch: `main`
+* Current integrated commit: `3547193`
+* Current project phase: **SET 0 formally closed; SET 1 active and executing**
+* SET 1 execution: **ACTIVE**
 
 ---
 
@@ -72,24 +72,24 @@ PROJECT
 
 ## Overall Responsibility Model
 
-| SET | Objective | Status | Responsibility |
-|---|---|---|---|
-| SET 0 | Establish verified model/source-of-truth foundation | ✅ TECHNICAL COMPLETE | 🧠 LUNA + 🛠 EXECUTOR |
-| SET 1 | Audit tensor representation and byte-level properties | 🟢 ACTIVE | 🧠 LUNA |
-| SET 2 | Characterize target hardware capabilities/constraints | 🔒 NOT STARTED | 🧠 LUNA |
-| SET 3 | Define operator and computation model | 🔒 NOT STARTED | 🧠 LUNA |
-| SET 4 | Define runtime memory model | 🔒 NOT STARTED | 🧠 LUNA |
-| SET 5 | Build correctness-first reference inference engine | 🔒 NOT STARTED | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 6 | Validate numerical/correctness behavior | 🔒 NOT STARTED | 🧠 LUNA + 🛠 EXECUTOR |
-| SET 7 | Enable execution under memory constraints | 🔒 NOT STARTED | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 8 | Introduce streaming/data movement strategy | 🔒 NOT STARTED | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 9 | Optimize CPU execution | 🔒 NOT STARTED | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 10 | Intel Arc GPU execution | 🔒 NOT STARTED | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 11 | Intel NPU execution | 🔒 NOT STARTED | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 12 | Coordinate heterogeneous execution | 🔒 NOT STARTED | 🧠 LUNA |
-| SET 13 | Scheduling/workload placement | 🔒 NOT STARTED | 🧠 LUNA |
-| SET 14 | End-to-end system optimization | 🔒 NOT STARTED | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 15 | Final benchmark and validation | 🔒 NOT STARTED | 🧠 LUNA |
+| SET    | Objective                                                                        | Status               | Responsibility        |
+| ------ | -------------------------------------------------------------------------------- | -------------------- | --------------------- |
+| SET 0  | Establish verified model/source-of-truth foundation                              | ✅ TECHNICAL COMPLETE | 🧠 LUNA + 🛠 EXECUTOR |
+| SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth | 🟢 ACTIVE            | 🧠 LUNA               |
+| SET 2  | Characterize target hardware capabilities/constraints                            | 🔒 NOT STARTED       | 🧠 LUNA               |
+| SET 3  | Define operator and computation model                                            | 🔒 NOT STARTED       | 🧠 LUNA               |
+| SET 4  | Define runtime memory model                                                      | 🔒 NOT STARTED       | 🧠 LUNA               |
+| SET 5  | Build correctness-first reference inference engine                               | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 6  | Validate numerical/correctness behavior                                          | 🔒 NOT STARTED       | 🧠 LUNA + 🛠 EXECUTOR |
+| SET 7  | Enable execution under memory constraints                                        | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 8  | Introduce streaming/data movement strategy                                       | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 9  | Optimize CPU execution                                                           | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 10 | Intel Arc GPU execution                                                          | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 11 | Intel NPU execution                                                              | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 12 | Coordinate heterogeneous execution                                               | 🔒 NOT STARTED       | 🧠 LUNA               |
+| SET 13 | Scheduling/workload placement                                                    | 🔒 NOT STARTED       | 🧠 LUNA               |
+| SET 14 | End-to-end system optimization                                                   | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 15 | Final benchmark and validation                                                   | 🔒 NOT STARTED       | 🧠 LUNA               |
 
 ---
 
@@ -189,24 +189,17 @@ Corrected subtotal:
 849,398,784 bytes
 ```
 
-### SET 0 Evidence Files
+### SET 0 Evidence Boundary
+
+The historical SET 0 documents may reference the removed:
 
 ```text
-model/official/SOURCE.md
-model/official/config.json
-model/official/model.safetensors.index.json
 model/official/TENSOR-METADATA.md
-
-docs/set-0/01-artifact-provenance.md
-docs/set-0/02-model-identity.md
-docs/set-0/03-core-architecture.md
-docs/set-0/04-attention-architecture.md
-docs/set-0/05-mlp-architecture.md
-docs/set-0/06-vision-and-mtp.md
-docs/set-0/07-layer-topology.md
-docs/set-0/08-tensor-shape-mapping.md
-docs/set-0/09-parameter-byte-accounting.md
 ```
+
+This file is intentionally removed and must not be recreated.
+
+The provenance issue is retained as historical documentation state and does not alter the verified SET 0 accounting result.
 
 ### SET 0 Boundary
 
@@ -242,94 +235,425 @@ Formal SET 0 closure:              ✅ COMPLETE
 
 ## SET 1 — Tensor / Byte-Level Audit
 
-**Objective:** Produce a raw, reproducible, byte-level tensor audit grounded directly in the pinned official checkpoint metadata, with explicit provenance and cross-checkability.
+**Objective:** Establish a verified, reproducible, tensor-level and byte-level representation of the pinned `Qwen/Qwen3.8-27B` checkpoint so that subsequent SETs can treat tensor structure, parameter counts, logical bytes, shard placement, and checkpoint-storage facts as established project evidence without re-inferring them.
 
-### Status
+### SET 1 Technical Boundary
+
+SET 1 establishes:
+
+```text
+Official Checkpoint
+        ↓
+RAW Metadata
+        ↓
+Tensor Truth
+        ↓
+Parameter Truth
+        ↓
+Logical Byte Truth
+        ↓
+Shard / Storage Truth
+        ↓
+Canonical SET 1 Evidence
+        ↓
+Downstream Input Contract
+```
+
+SET 1 does not establish:
+
+```text
+❌ Hardware capability
+❌ RAM / GPU / NPU capacity
+❌ Runtime memory
+❌ KV-cache memory
+❌ Activation memory
+❌ Runtime MTP execution
+❌ Operator implementation
+❌ Runtime scheduling
+❌ CPU / GPU / NPU placement
+❌ Performance characteristics
+❌ Inference execution
+```
+
+These belong to downstream SETs.
+
+### SET 1 Status
 
 ```text
 🟢 ACTIVE
 
+Technical Evidence Track:
 SET1-READINESS-GATE ✅ PASS
-SET1-T1.1          ✅ PASS (raw metadata acquisition)
-SET1-T1.2          ✅ PASS (raw metadata verification)
-SET1-T1.4          ✅ PASS (tensor shape / dtype / offset audit)
-SET1-T1.5-R1       ✅ PASS (tensor parameter reconstruction)
-SET1-T1.6          ✅ PASS (tensor byte accounting)
+SET1-T1.1          ✅ PASS
+SET1-T1.2          ✅ PASS
+SET1-T1.4          ✅ PASS
+SET1-T1.5-R1       ✅ PASS
+SET1-T1.6          ✅ PASS
+SET1-T1.7          ✅ PASS
 
-NEXT:
-🔜 SET1-T1.7
+Current:
+🔜 SET1-T1.8
+
+Remaining:
+🔒 SET1-T1.9
+🔒 SET1-CLOSE
 ```
 
-### Responsibility
+### SET 1 Responsibility Model
 
 ```text
-Primary owner: 🧠 LUNA
-Execution dependency: 🧠→🛠 LUNA → EXECUTOR
-```
-
-### Entry Conditions
-
-SET 1 must not begin until:
-
-```text
-[x] ROADMAP.md is persisted to the shared repository
-[x] ROADMAP.md is remotely verified
-[x] SET 0 remains consistent with main
-[ ] SET 1 readiness gate passes
-```
-
-### Planned Initial Evidence Acquisition
-
-The first SET 1 evidence task is expected to acquire **raw checkpoint metadata** directly from the pinned official artifact without downloading full tensor payloads.
-
-Planned acquisition scope:
-
-```text
-config.json
-model.safetensors.index.json
-Safetensors shard headers
-```
-
-The expected method is header-only / ranged acquisition where feasible, followed by independent cross-checking against the index artifact.
-
-This is **planned scope only**. No SET 1 execution has started.
-
-### Current SET 1 Tasks
-
-```text
-SET1-READINESS-GATE
-✅ PASS
+Primary owner:
 🧠 LUNA
-Dependency: SET 0 technical closure + ROADMAP persistence
 
+EXECUTOR:
+🛠 owns explicitly delegated environment access,
+execution, evidence acquisition, filesystem operations,
+and persistence operations.
+
+ORCHESTRATOR:
+🔄 coordination/control only.
+```
+
+### SET 1 Atomic Tasks
+
+```text
+SET1-READINESS-GATE — SET 1 Readiness
+🧠 LUNA
+✅ PASS
+Dependency: SET 0 technical closure + required roadmap state
+
+Objective:
+Confirm model identity, pinned revision, source-of-truth,
+upstream artifact, evidence path, prerequisites, and blockers.
+
+Result:
+READY FOR SET 1
+```
+
+```text
 SET1-T1.1 — Raw Metadata Acquisition
+🛠 EXECUTOR
 ✅ PASS
-🧠 LUNA
 Dependency: SET1-READINESS-GATE PASS
 
+Objective:
+Acquire and persist raw checkpoint metadata directly from the
+pinned official artifact without downloading full tensor payloads.
+
+Required evidence:
+config.json
+manifest.json
+model.safetensors.index.json
+18 Safetensors shard headers
+
+Execution boundary:
+Evidence acquisition only.
+```
+
+```text
 SET1-T1.2 — Raw Metadata Verification
-✅ PASS
 🧠 LUNA
+✅ PASS
 Dependency: SET1-T1.1 PASS
 
+Objective:
+Verify provenance, pinned revision, completeness, integrity,
+header structure, index presence, and source-of-truth validity.
+
+Result:
+RAW evidence = TRUSTWORTHY
+```
+
+```text
 SET1-T1.4 — Tensor Shape / Dtype / Offset Audit
-✅ PASS
 🧠 LUNA
+✅ PASS
 Dependency: SET1-T1.2 PASS
 
+Objective:
+Establish canonical tensor structural truth.
+
+Verified scope:
+tensor names
+tensor shapes
+tensor dtypes
+data_offsets
+tensor-to-shard assignments
+RAW ↔ official index reconciliation
+
+Verified inventory:
+1,199 tensors
+18 shards
+0 missing
+0 duplicate
+0 unassigned
+```
+
+```text
 SET1-T1.5-R1 — Tensor Parameter Reconstruction
-✅ PASS
 🧠 LUNA
+✅ PASS
 Dependency: SET1-T1.4 PASS
 
-SET1-T1.6 — Tensor Byte Accounting
-✅ PASS
+Objective:
+Reconstruct parameter counts directly from RAW tensor shapes.
+
+Accounting rule:
+parameter_count = product(shape dimensions)
+
+Required reconciliation:
+tensor
+→ shard
+→ subsystem
+→ global
+
+Special groups:
+MTP
+embed_tokens
+lm_head
+
+Verified global:
+27,781,427,952 parameters
+```
+
+```text
+SET1-T1.6 — Tensor Logical Byte Accounting
 🧠 LUNA
+✅ PASS
 Dependency: SET1-T1.5-R1 PASS
 
-NEXT:
-🔜 SET1-T1.7
+Objective:
+Reconstruct logical tensor bytes from RAW shape + RAW dtype.
+
+Accounting rule:
+logical_bytes =
+parameter_count × bytes_per_element(dtype)
+
+Verified dtype:
+BF16
+
+Verified width:
+2 bytes / element
+
+Verified global:
+55,562,855,904 logical bytes
+
+Boundary:
+logical checkpoint bytes only
+not runtime memory
 ```
+
+```text
+SET1-T1.7 — Final Evidence Reconciliation
+🧠 LUNA
+✅ PASS
+Dependency: SET1-T1.6 PASS
+
+Objective:
+Reconcile the complete T1.4 → T1.5-R1 → T1.6 evidence chain.
+
+Required checks:
+RAW foundation
+parameter reconciliation
+byte reconciliation
+MTP reconciliation
+embedding reconciliation
+LM-head reconciliation
+SET 1 document consistency
+SET 0 historical cross-check
+provenance consistency
+
+Result:
+VERIFIED PASS
+READY FOR CLOSURE CONSIDERATION
+```
+
+```text
+SET1-T1.8 — Checkpoint Storage / Physical Layout Reconciliation
+🧠 LUNA → 🛠 EXECUTOR
+🔜 NEXT
+Dependency: SET1-T1.7 PASS
+
+Objective:
+Establish the verified boundary between logical tensor bytes
+and physical checkpoint storage representation.
+
+Scope:
+header structure
+tensor payload regions
+data-offset spans
+per-shard storage layout
+known storage overhead
+logical-versus-physical accounting boundary
+
+Required classification:
+KNOWN
+DERIVED FINDING
+UNKNOWN
+
+Hard rule:
+Do not represent logical tensor bytes as physical checkpoint
+file size without evidence.
+
+Do not enter runtime memory analysis.
+```
+
+```text
+SET1-T1.9 — SET 1 Boundary / Completeness Audit
+🧠 LUNA
+🔒 NOT STARTED
+Dependency: SET1-T1.8 PASS
+
+Objective:
+Determine whether SET 1 has completed everything required
+by its technical objective and boundary.
+
+Coverage:
+model identity
+pinned revision
+tensor inventory
+tensor shapes
+tensor dtypes
+tensor offsets
+shard assignment
+parameter counts
+logical bytes
+MTP
+embedding
+LM head
+aggregation
+storage boundary
+provenance
+known / unknown boundary
+
+Negative boundary:
+Confirm that runtime, hardware, performance,
+scheduling, and implementation claims were not introduced.
+
+Result:
+SET 1 TECHNICAL EVIDENCE = COMPLETE / INCOMPLETE
+```
+
+```text
+SET1-CLOSE — Formal SET 1 Acceptance
+🧠 LUNA
+🔒 NOT STARTED
+Dependency: SET1-T1.9 COMPLETE
+
+Objective:
+Perform the formal acceptance decision for SET 1.
+
+Acceptance requires:
+all required atomic tasks PASS
+no unresolved contradiction
+no blocking UNKNOWN
+scope satisfied
+boundary satisfied
+
+Result:
+SET 1 CLOSED / NOT CLOSED
+```
+
+### SET 1 Current Verified Facts
+
+```text
+Model:
+Qwen/Qwen3.8-27B
+
+Pinned revision:
+1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0
+
+Tensor count:
+1,199
+
+Shard count:
+18
+
+Dtype:
+BF16
+
+Global parameters:
+27,781,427,952
+
+Global logical BF16 bytes:
+55,562,855,904
+
+MTP:
+15 tensors
+424,699,392 parameters
+849,398,784 logical bytes
+
+embed_tokens:
+1,271,398,400 parameters
+2,542,796,800 logical bytes
+
+lm_head:
+1,271,398,400 parameters
+2,542,796,800 logical bytes
+```
+
+### SET 1 Output Contract
+
+When SET 1 is formally closed, downstream SETs may treat the following as established project evidence:
+
+```text
+Tensor Truth
+    │
+    ├── tensor inventory
+    ├── tensor shapes
+    ├── tensor dtypes
+    ├── tensor offsets
+    └── shard assignment
+          │
+          ▼
+Parameter Truth
+    │
+    ├── per-tensor parameters
+    ├── per-shard parameters
+    ├── subsystem parameters
+    ├── MTP parameters
+    ├── embedding parameters
+    ├── LM-head parameters
+    └── global parameters
+          │
+          ▼
+Byte Truth
+    │
+    ├── logical tensor bytes
+    ├── per-shard logical bytes
+    ├── subsystem logical bytes
+    ├── MTP logical bytes
+    ├── embedding bytes
+    ├── LM-head bytes
+    └── global logical bytes
+          │
+          ▼
+Storage Truth
+    │
+    └── verified checkpoint storage / shard-layout boundary
+```
+
+### SET 1 Completion Boundary
+
+SET 1 is not considered complete merely because a numerical
+reconciliation task passes.
+
+Formal completion requires:
+
+```text
+T1.7
+  ↓
+T1.8
+  ↓
+T1.9
+  ↓
+SET1-CLOSE
+  ↓
+SET 1 CLOSED
+```
+
+The purpose of formal closure is to freeze the verified checkpoint
+representation as a downstream input contract.
 
 ---
 
@@ -341,7 +665,7 @@ NEXT:
 
 **Responsibility:** 🧠 LUNA
 
-**Dependency:** SET 1 completion / required tensor facts available
+**Dependency:** SET 1 formal closure / verified tensor and storage facts available
 
 ---
 
@@ -505,28 +829,40 @@ NEXT:
 
 ```text
 CURRENT SET:
-SET 0 — Model Reconnaissance
+SET 1 — Tensor / Byte-Level Audit
 
 CURRENT TECHNICAL STATE:
-COMPLETE (SET 0)
+VERIFIED THROUGH SET1-T1.7
 
-INTEGRATION STATE:
+CURRENT INTEGRATION STATE:
 MERGED TO MAIN
 
 MAIN HEAD:
 3547193
 
 CURRENT NEXT TASK:
-SET1-T1.7
+SET1-T1.8
 
 NEXT TASK OWNER:
 🧠 LUNA
 
-SET 1 EXECUTION:
-ACTIVE (through SET1-T1.6 ✅ PASS)
+EXECUTION SUPPORT:
+🛠 EXECUTOR
 
-RAW METADATA ACQUISITION:
-COMPLETE (SET1-T1.1 ✅ PASS)
+SET 1:
+🟢 ACTIVE
+
+SET 1 TECHNICAL EVIDENCE:
+VERIFIED THROUGH T1.7
+
+SET 1 FORMAL CLOSURE:
+NOT YET REACHED
+
+SET 2:
+🔒 NOT STARTED
+
+ROADMAP.md:
+PERSISTED AFTER THIS TASK
 ```
 
 ---
@@ -536,7 +872,7 @@ COMPLETE (SET1-T1.1 ✅ PASS)
 ```text
 CURRENT RESULT
       ↓
-ROADMAP UPDATE
+UPDATE CONVERSATION ROADMAP
       ↓
 NEXT ATOMIC TASK
       ↓
@@ -548,7 +884,7 @@ GENERATE ROLE-SPECIFIC PROMPT
       ↓
 EXECUTE
       ↓
-PERSIST EVIDENCE
+PERSIST EVIDENCE WHEN REQUIRED
       ↓
 COMMIT
       ↓
@@ -558,7 +894,7 @@ REMOTE CROSS-CHECK
       ↓
 LUNA VERIFICATION / INTERPRETATION
       ↓
-ROADMAP UPDATE
+UPDATE CONVERSATION ROADMAP
       ↓
 NEXT ATOMIC TASK
 ```
@@ -573,7 +909,10 @@ NEXT ATOMIC TASK
 6. The official upstream model artifact remains the authoritative source for model facts.
 7. The GitHub repository is the shared persistent project Source of Truth.
 8. `UNKNOWN` must not be silently converted into an assumption.
-9. SET 1 is ACTIVE; downstream SETs must not begin until SET 1 closure.
+9. SET 1 remains ACTIVE until formal closure.
+10. SET 2 must not begin before `SET1-CLOSE` is accepted.
+11. Every Atomic Task has exactly one primary responsibility owner.
+12. ORCHESTRATOR may coordinate and enforce control flow but must not replace LUNA's technical research, interpretation, or acceptance authority.
 
 ---
 
@@ -609,19 +948,43 @@ VERIFIED PROJECT DOCUMENT
 DERIVED ACCOUNTING / ANALYSIS
 ```
 
+`ROADMAP.md` persistence is intentionally batched.
+
+LUNA-owned tasks normally update the Conversation Roadmap only.
+
+Before a dedicated Executor task begins after accumulated roadmap changes:
+
+```text
+PULL / SYNC
+    ↓
+UPDATE ROADMAP.md
+    ↓
+REVIEW DIFF
+    ↓
+COMMIT
+    ↓
+PUSH
+    ↓
+REMOTE VERIFY
+    ↓
+BEGIN DEDICATED EXECUTOR TASK
+```
+
+Executor must use the exact roadmap state supplied by LUNA and must not redesign it.
+
 ---
 
 # 6. Status Legend
 
 ```text
-✅ PASS        completed and accepted
-❌ FAIL        failed acceptance criteria
-⚠ PARTIAL     partially completed / unresolved
-⏸ BLOCKED     cannot proceed because dependency is unresolved
-🔒 NOT STARTED no execution has begun
-🔜 NEXT       next atomic task selected by control layer
-📌 PERSISTED   durable artifact committed to repository
-☁ PUSHED      commit pushed to remote
+✅ PASS          completed and accepted
+❌ FAIL          failed acceptance criteria
+⚠ PARTIAL       partially completed / unresolved
+⏸ BLOCKED       cannot proceed because dependency is unresolved
+🔒 NOT STARTED   no execution has begun
+🔜 NEXT          next atomic task selected by control layer
+📌 PERSISTED     durable artifact committed to repository
+☁ PUSHED        commit pushed to remote
 🔎 REMOTE VERIFIED remote state independently checked
 ```
 
@@ -632,9 +995,20 @@ DERIVED ACCOUNTING / ANALYSIS
 ```text
 Current stop condition:
 
-```text
 SET 0 technical integration is complete and formally closed.
-SET 1 is ACTIVE and executing through SET1-T1.6 (✅ PASS).
-T1.7 is the next atomic task and has NOT been started.
-Do not begin T1.7 until SET1-T1.7 is explicitly selected by the control layer.
+
+SET 1 technical evidence is VERIFIED through:
+SET1-T1.7 ✅ PASS
+
+The next selected task is:
+SET1-T1.8 — Checkpoint Storage / Physical Layout Reconciliation
+
+SET1-T1.9 has not started.
+SET1-CLOSE has not started.
+SET 2 has not started.
+
+Do not begin SET 2 until SET 1 formal closure is accepted.
+
+ROADMAP.md persistence:
+PERSISTED AFTER THIS TASK
 ```

@@ -449,10 +449,10 @@ SET2-READINESS-GATE:
 ✅ PASS
 
 SET2-T2.1:
-🔜 NEXT
+✅ PASS
 
 SET2-T2.2:
-🔒 NOT STARTED
+🔜 NEXT
 
 SET2-T2.3:
 🔒 NOT STARTED
@@ -614,7 +614,7 @@ The readiness gate does not perform actual hardware inspection.
 
 **Responsibility:** 🛠 EXECUTOR
 
-**Status:** 🔜 NEXT
+**Status:** ✅ PASS
 
 **Dependency:** `SET2-READINESS-GATE PASS`
 
@@ -643,6 +643,18 @@ Output:
 
 ```text
 TARGET HARDWARE IDENTITY
+```
+
+Evidence:
+```text
+docs/set-2/01-hardware-identity.md
+```
+
+```text
+✅ PASS
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
 ```
 
 ---
@@ -1367,12 +1379,15 @@ SET2-READINESS-GATE:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.1
+SET2-T2.2
 
 NEXT TASK OWNER:
 🛠 EXECUTOR
 
 SET2-T2.1:
+✅ PASS
+
+SET2-T2.2:
 🔜 NEXT
 
 SET 3:
@@ -1530,10 +1545,10 @@ SET 2:
 🟢 READY FOR EXECUTION
 
 Current next task:
-SET2-T2.1
+SET2-T2.2
 
 SET2-T2.1:
-🔜 NEXT
+✅ PASS
 
 SET 3:
 🔒 NOT STARTED
@@ -1541,5 +1556,5 @@ SET 3:
 Do not begin SET 3.
 
 ROADMAP.md:
-PERSISTED BEFORE SET2 EXECUTION
+PERSISTED
 ```

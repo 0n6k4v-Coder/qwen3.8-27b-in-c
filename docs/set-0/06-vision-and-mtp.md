@@ -2,7 +2,7 @@
 
 ## Document Status
 
-* Document: `07-vision-and-mtp.md`
+* Document: `06-vision-and-mtp.md`
 * SET: `SET 0 — Model Reconnaissance`
 * Source Tasks: `SET0-T09`, updated by `SET0-T14`
 * Status: VERIFIED

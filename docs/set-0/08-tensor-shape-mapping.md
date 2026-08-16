@@ -2,7 +2,7 @@
 
 ## Document Status
 
-* Document: `09-tensor-shape-mapping.md`
+* Document: `08-tensor-shape-mapping.md`
 * SET: `SET 0 — Model Reconnaissance`
 * Source Task: `SET0-T15`
 * Status: VERIFIED

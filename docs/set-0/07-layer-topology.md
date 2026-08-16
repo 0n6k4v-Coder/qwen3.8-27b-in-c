@@ -2,7 +2,7 @@
 
 ## Document Status
 
-- Document: `08-layer-topology.md`
+- Document: `07-layer-topology.md`
 - SET: `SET 0 — Model Reconnaissance`
 - Source Task: `SET0-T10`
 - Status: VERIFIED

@@ -2,7 +2,7 @@
 
 ## Document Status
 
-- Document: `06-mlp-architecture.md`
+- Document: `05-mlp-architecture.md`
 - SET: `SET 0 — Model Reconnaissance`
 - Source Task: `SET0-T08`
 - Status: VERIFIED

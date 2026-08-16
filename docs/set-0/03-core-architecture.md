@@ -2,7 +2,7 @@
 
 ## Document Status
 
-- Document: `04-core-architecture.md`
+- Document: `03-core-architecture.md`
 - SET: `SET 0 — Model Reconnaissance`
 - Source Task: `SET0-T06`
 - Status: VERIFIED

@@ -2,7 +2,7 @@
 
 ## Document Status
 
-- Document: `10-parameter-byte-accounting.md`
+- Document: `09-parameter-byte-accounting.md`
 - SET: `SET 0 — Model Reconnaissance`
 - Source Task: `SET0-T18` (final reconciliation)
 - Status: **CANONICAL FINAL — SET 0 CLOSED**

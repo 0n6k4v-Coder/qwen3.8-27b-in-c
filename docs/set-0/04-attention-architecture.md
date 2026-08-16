@@ -2,7 +2,7 @@
 
 ## Document Status
 
-- Document: `05-attention-architecture.md`
+- Document: `04-attention-architecture.md`
 - SET: `SET 0 — Model Reconnaissance`
 - Source Task: `SET0-T07`
 - Status: VERIFIED

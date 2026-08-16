@@ -8,8 +8,10 @@
 * Last control update: `2026-08-16`
 * Current integrated branch: `main`
 * Current integrated commit: `3547193`
-* Current project phase: **SET 0 formally closed; SET 1 active and executing**
-* SET 1 execution: **ACTIVE**
+* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 readiness pending**
+* SET 1 execution: **CLOSED**
+* SET 2 execution: **NOT STARTED**
+* Current control task: **SET2-READINESS-GATE**
 
 ---
 
@@ -25,10 +27,12 @@ PROJECT
 │   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 1 — Tensor / Byte-Level Audit
-│   🟢 ACTIVE
+│   ✅ TECHNICAL COMPLETE
+│   ✅ EVIDENCE COMPLETE
+│   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 2 — Hardware Reconnaissance
-│   🔒 NOT STARTED
+│   🔜 NEXT — READINESS GATE
 │
 ├── SET 3 — Operator / Computation Model
 │   🔒 NOT STARTED
@@ -72,24 +76,24 @@ PROJECT
 
 ## Overall Responsibility Model
 
-| SET    | Objective                                                                        | Status               | Responsibility        |
-| ------ | -------------------------------------------------------------------------------- | -------------------- | --------------------- |
-| SET 0  | Establish verified model/source-of-truth foundation                              | ✅ TECHNICAL COMPLETE | 🧠 LUNA + 🛠 EXECUTOR |
-| SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth | 🟢 ACTIVE            | 🧠 LUNA               |
-| SET 2  | Characterize target hardware capabilities/constraints                            | 🔒 NOT STARTED       | 🧠 LUNA               |
-| SET 3  | Define operator and computation model                                            | 🔒 NOT STARTED       | 🧠 LUNA               |
-| SET 4  | Define runtime memory model                                                      | 🔒 NOT STARTED       | 🧠 LUNA               |
-| SET 5  | Build correctness-first reference inference engine                               | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 6  | Validate numerical/correctness behavior                                          | 🔒 NOT STARTED       | 🧠 LUNA + 🛠 EXECUTOR |
-| SET 7  | Enable execution under memory constraints                                        | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 8  | Introduce streaming/data movement strategy                                       | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 9  | Optimize CPU execution                                                           | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 10 | Intel Arc GPU execution                                                          | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 11 | Intel NPU execution                                                              | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 12 | Coordinate heterogeneous execution                                               | 🔒 NOT STARTED       | 🧠 LUNA               |
-| SET 13 | Scheduling/workload placement                                                    | 🔒 NOT STARTED       | 🧠 LUNA               |
-| SET 14 | End-to-end system optimization                                                   | 🔒 NOT STARTED       | 🧠 LUNA → 🛠 EXECUTOR |
-| SET 15 | Final benchmark and validation                                                   | 🔒 NOT STARTED       | 🧠 LUNA               |
+| SET    | Objective                                                                                            | Status                   | Responsibility        |
+| ------ | ---------------------------------------------------------------------------------------------------- | ------------------------ | --------------------- |
+| SET 0  | Establish verified model/source-of-truth foundation                                                  | ✅ CLOSED                 | 🧠 LUNA + 🛠 EXECUTOR |
+| SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth                     | ✅ CLOSED                 | 🧠 LUNA               |
+| SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | 🔜 NEXT — READINESS GATE | 🧠 LUNA + 🛠 EXECUTOR |
+| SET 3  | Define operator and computation model                                                                | 🔒 NOT STARTED           | 🧠 LUNA               |
+| SET 4  | Define runtime memory model                                                                          | 🔒 NOT STARTED           | 🧠 LUNA               |
+| SET 5  | Build correctness-first reference inference engine                                                   | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 6  | Validate numerical/correctness behavior                                                              | 🔒 NOT STARTED           | 🧠 LUNA + 🛠 EXECUTOR |
+| SET 7  | Enable execution under memory constraints                                                            | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 8  | Introduce streaming/data movement strategy                                                           | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 9  | Optimize CPU execution                                                                               | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 10 | Intel Arc GPU execution                                                                              | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 11 | Intel NPU execution                                                                                  | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 12 | Coordinate heterogeneous execution                                                                   | 🔒 NOT STARTED           | 🧠 LUNA               |
+| SET 13 | Scheduling/workload placement                                                                        | 🔒 NOT STARTED           | 🧠 LUNA               |
+| SET 14 | End-to-end system optimization                                                                       | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 15 | Final benchmark and validation                                                                       | 🔒 NOT STARTED           | 🧠 LUNA               |
 
 ---
 
@@ -189,17 +193,24 @@ Corrected subtotal:
 849,398,784 bytes
 ```
 
-### SET 0 Evidence Boundary
-
-The historical SET 0 documents may reference the removed:
+### SET 0 Evidence Files
 
 ```text
+model/official/SOURCE.md
+model/official/config.json
+model/official/model.safetensors.index.json
 model/official/TENSOR-METADATA.md
+
+docs/set-0/01-artifact-provenance.md
+docs/set-0/02-model-identity.md
+docs/set-0/03-core-architecture.md
+docs/set-0/04-attention-architecture.md
+docs/set-0/05-mlp-architecture.md
+docs/set-0/06-vision-and-mtp.md
+docs/set-0/07-layer-topology.md
+docs/set-0/08-tensor-shape-mapping.md
+docs/set-0/09-parameter-byte-accounting.md
 ```
-
-This file is intentionally removed and must not be recreated.
-
-The provenance issue is retained as historical documentation state and does not alter the verified SET 0 accounting result.
 
 ### SET 0 Boundary
 
@@ -235,336 +246,78 @@ Formal SET 0 closure:              ✅ COMPLETE
 
 ## SET 1 — Tensor / Byte-Level Audit
 
-**Objective:** Establish a verified, reproducible, tensor-level and byte-level representation of the pinned `Qwen/Qwen3.8-27B` checkpoint so that subsequent SETs can treat tensor structure, parameter counts, logical bytes, shard placement, and checkpoint-storage facts as established project evidence without re-inferring them.
+**Objective:** Produce a raw, reproducible, byte-level tensor audit grounded directly in the pinned official checkpoint metadata, with explicit provenance and cross-checkability.
 
-### SET 1 Technical Boundary
-
-SET 1 establishes:
+### Status
 
 ```text
-Official Checkpoint
-        ↓
-RAW Metadata
-        ↓
-Tensor Truth
-        ↓
-Parameter Truth
-        ↓
-Logical Byte Truth
-        ↓
-Shard / Storage Truth
-        ↓
-Canonical SET 1 Evidence
-        ↓
-Downstream Input Contract
+✅ FORMALLY CLOSED
 ```
 
-SET 1 does not establish:
+### Responsibility
 
 ```text
-❌ Hardware capability
-❌ RAM / GPU / NPU capacity
-❌ Runtime memory
-❌ KV-cache memory
-❌ Activation memory
-❌ Runtime MTP execution
-❌ Operator implementation
-❌ Runtime scheduling
-❌ CPU / GPU / NPU placement
-❌ Performance characteristics
-❌ Inference execution
+Primary owner: 🧠 LUNA
+Execution dependency: 🧠→🛠 LUNA → EXECUTOR
 ```
 
-These belong to downstream SETs.
-
-### SET 1 Status
+### Atomic Task State
 
 ```text
-🟢 ACTIVE
-
-Technical Evidence Track:
-SET1-READINESS-GATE ✅ PASS
-SET1-T1.1          ✅ PASS
-SET1-T1.2          ✅ PASS
-SET1-T1.4          ✅ PASS
-SET1-T1.5-R1       ✅ PASS
-SET1-T1.6          ✅ PASS
-SET1-T1.7          ✅ PASS
-SET1-T1.8          ✅ PASS
-
-Current:
-🔜 SET1-T1.9
-
-Remaining:
-🔒 SET1-CLOSE
-```
-
-### SET 1 Responsibility Model
-
-```text
-Primary owner:
-🧠 LUNA
-
-EXECUTOR:
-🛠 owns explicitly delegated environment access,
-execution, evidence acquisition, filesystem operations,
-and persistence operations.
-
-ORCHESTRATOR:
-🔄 coordination/control only.
-```
-
-### SET 1 Atomic Tasks
-
-```text
-SET1-READINESS-GATE — SET 1 Readiness
-🧠 LUNA
+SET1-READINESS-GATE
 ✅ PASS
-Dependency: SET 0 technical closure + required roadmap state
+🧠 LUNA
+Dependency: SET 0 technical closure + ROADMAP persistence
 
-Objective:
-Confirm model identity, pinned revision, source-of-truth,
-upstream artifact, evidence path, prerequisites, and blockers.
-
-Result:
-READY FOR SET 1
-```
-
-```text
 SET1-T1.1 — Raw Metadata Acquisition
-🛠 EXECUTOR
 ✅ PASS
+🛠 EXECUTOR
 Dependency: SET1-READINESS-GATE PASS
 
-Objective:
-Acquire and persist raw checkpoint metadata directly from the
-pinned official artifact without downloading full tensor payloads.
-
-Required evidence:
-config.json
-manifest.json
-model.safetensors.index.json
-18 Safetensors shard headers
-
-Execution boundary:
-Evidence acquisition only.
-```
-
-```text
 SET1-T1.2 — Raw Metadata Verification
-🧠 LUNA
 ✅ PASS
+🧠 LUNA
 Dependency: SET1-T1.1 PASS
 
-Objective:
-Verify provenance, pinned revision, completeness, integrity,
-header structure, index presence, and source-of-truth validity.
-
-Result:
-RAW evidence = TRUSTWORTHY
-```
-
-```text
 SET1-T1.4 — Tensor Shape / Dtype / Offset Audit
-🧠 LUNA
 ✅ PASS
+🧠 LUNA
 Dependency: SET1-T1.2 PASS
 
-Objective:
-Establish canonical tensor structural truth.
-
-Verified scope:
-tensor names
-tensor shapes
-tensor dtypes
-data_offsets
-tensor-to-shard assignments
-RAW ↔ official index reconciliation
-
-Verified inventory:
-1,199 tensors
-18 shards
-0 missing
-0 duplicate
-0 unassigned
-```
-
-```text
 SET1-T1.5-R1 — Tensor Parameter Reconstruction
-🧠 LUNA
 ✅ PASS
+🧠 LUNA
 Dependency: SET1-T1.4 PASS
 
-Objective:
-Reconstruct parameter counts directly from RAW tensor shapes.
-
-Accounting rule:
-parameter_count = product(shape dimensions)
-
-Required reconciliation:
-tensor
-→ shard
-→ subsystem
-→ global
-
-Special groups:
-MTP
-embed_tokens
-lm_head
-
-Verified global:
-27,781,427,952 parameters
-```
-
-```text
-SET1-T1.6 — Tensor Logical Byte Accounting
-🧠 LUNA
+SET1-T1.6 — Tensor Byte Accounting
 ✅ PASS
+🧠 LUNA
 Dependency: SET1-T1.5-R1 PASS
 
-Objective:
-Reconstruct logical tensor bytes from RAW shape + RAW dtype.
-
-Accounting rule:
-logical_bytes =
-parameter_count × bytes_per_element(dtype)
-
-Verified dtype:
-BF16
-
-Verified width:
-2 bytes / element
-
-Verified global:
-55,562,855,904 logical bytes
-
-Boundary:
-logical checkpoint bytes only
-not runtime memory
-```
-
-```text
 SET1-T1.7 — Final Evidence Reconciliation
-🧠 LUNA
 ✅ PASS
+🧠 LUNA
 Dependency: SET1-T1.6 PASS
 
-Objective:
-Reconcile the complete T1.4 → T1.5-R1 → T1.6 evidence chain.
-
-Required checks:
-RAW foundation
-parameter reconciliation
-byte reconciliation
-MTP reconciliation
-embedding reconciliation
-LM-head reconciliation
-SET 1 document consistency
-SET 0 historical cross-check
-provenance consistency
-
-Result:
-VERIFIED PASS
-READY FOR CLOSURE CONSIDERATION
-```
-
-```text
 SET1-T1.8 — Checkpoint Storage / Physical Layout Reconciliation
-🧠 LUNA → 🛠 EXECUTOR
 ✅ PASS
+🧠 LUNA → 🛠 EXECUTOR
 Dependency: SET1-T1.7 PASS
 
-Objective:
-Establish the verified boundary between logical tensor bytes
-and physical checkpoint storage representation.
-
-Scope:
-header structure
-tensor payload regions
-data-offset spans
-per-shard storage layout
-known storage overhead
-logical-versus-physical accounting boundary
-
-Required classification:
-KNOWN
-DERIVED FINDING
-UNKNOWN
-
-Hard rule:
-Do not represent logical tensor bytes as physical checkpoint
-file size without evidence.
-
-Do not enter runtime memory analysis.
-```
-
-```text
 SET1-T1.9 — SET 1 Boundary / Completeness Audit
+✅ PASS / COMPLETE
 🧠 LUNA
-✅ PASS
-Technical Result:
-COMPLETE
 Dependency: SET1-T1.8 PASS
 
-Objective:
-Determine whether SET 1 has completed everything required
-by its technical objective and boundary.
-
-Coverage:
-model identity
-pinned revision
-tensor inventory
-tensor shapes
-tensor dtypes
-tensor offsets
-shard assignment
-parameter counts
-logical bytes
-MTP
-embedding
-LM head
-aggregation
-storage boundary
-provenance
-known / unknown boundary
-
-Negative boundary:
-Confirm that runtime, hardware, performance,
-scheduling, and implementation claims were not introduced.
-
-Result:
-SET 1 TECHNICAL EVIDENCE = COMPLETE / INCOMPLETE
-```
-
-```text
 SET1-CLOSE — Formal SET 1 Acceptance
+✅ CLOSED
 🧠 LUNA
-🔒 NOT STARTED
 Dependency: SET1-T1.9 COMPLETE
-
-Objective:
-Perform the formal acceptance decision for SET 1.
-
-Acceptance requires:
-all required atomic tasks PASS
-no unresolved contradiction
-no blocking UNKNOWN
-scope satisfied
-boundary satisfied
-
-Result:
-SET 1 CLOSED / NOT CLOSED
 ```
 
-### SET 1 Current Verified Facts
+### SET 1 Technical Acceptance
 
 ```text
-Model:
-Qwen/Qwen3.8-27B
-
-Pinned revision:
-1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0
-
 Tensor count:
 1,199
 
@@ -595,8 +348,6 @@ lm_head:
 ```
 
 ### SET 1 Output Contract
-
-When SET 1 is formally closed, downstream SETs may treat the following as established project evidence:
 
 ```text
 Tensor Truth
@@ -635,39 +386,767 @@ Storage Truth
     └── verified checkpoint storage / shard-layout boundary
 ```
 
-### SET 1 Completion Boundary
+### SET 1 Boundary
 
-SET 1 is not considered complete merely because a numerical
-reconciliation task passes.
-
-Formal completion requires:
+SET 1 does not establish:
 
 ```text
-T1.7
-  ↓
-T1.8
-  ↓
-T1.9
-  ↓
-SET1-CLOSE
-  ↓
-SET 1 CLOSED
+❌ Hardware capability
+❌ RAM / GPU / NPU capacity
+❌ Runtime memory
+❌ KV-cache memory
+❌ Activation memory
+❌ Runtime MTP execution
+❌ Operator implementation
+❌ Runtime scheduling
+❌ CPU / GPU / NPU placement
+❌ Performance characteristics
+❌ Inference execution
+❌ Loader implementation
+❌ Memory-mapping implementation
+❌ Streaming strategy
+❌ Runtime optimization
 ```
 
-The purpose of formal closure is to freeze the verified checkpoint
-representation as a downstream input contract.
+These belong to downstream SETs.
+
+### SET 1 Evidence Files
+
+```text
+docs/set-1/01-raw-metadata-verification.md
+docs/set-1/02-parameter-reconstruction.md
+docs/set-1/03-tensor-byte-accounting.md
+docs/set-1/04-checkpoint-storage-layout-reconciliation.md
+docs/set-1/05-set1-boundary-completeness-audit.md
+```
+
+### SET 1 Final Control State
+
+```text
+Technical work:                    ✅ COMPLETE
+Technical evidence:                ✅ COMPLETE
+Technical completeness:            ✅ VERIFIED
+Formal acceptance:                 ✅ CLOSED
+Downstream input contract:         ✅ ESTABLISHED
+SET 2 prerequisite:                ✅ SATISFIED
+```
 
 ---
 
 ## SET 2 — Hardware Reconnaissance
 
-**Objective:** Establish verified CPU/GPU/NPU capabilities and constraints for the target machine.
+**Objective:** Establish a verified Hardware Truth Layer for the actual target machine and authoritative hardware/software sources, identifying hardware resources, compute capabilities, system-memory characteristics, accelerator availability, driver/runtime accessibility, and data-movement constraints without making workload-placement, scheduling, optimization, or runtime-implementation decisions.
 
-**Status:** 🔒 NOT STARTED
+### Status
+
+```text
+🔜 NEXT — READINESS GATE
+
+SET 2 execution:
+🔒 NOT STARTED
+```
+
+### Dependency
+
+```text
+SET 1:
+✅ FORMALLY CLOSED
+
+SET 1 downstream checkpoint contract:
+✅ AVAILABLE
+```
+
+### Responsibility
+
+```text
+Primary responsibility model:
+
+🧠 LUNA
+Research
+Interpretation
+Capability modeling
+Constraint synthesis
+Sequencing
+Acceptance
+
+🛠 EXECUTOR
+Hardware inspection
+Terminal execution
+OS inspection
+Device enumeration
+Driver inspection
+Environment inspection
+Measurements where explicitly delegated
+Evidence persistence
+
+🔄 ORCHESTRATOR
+Coordination / control enforcement only
+```
+
+---
+
+### SET 2 Scope
+
+SET 2 establishes:
+
+```text
+Hardware Identity
+      ↓
+CPU Capability
+      ↓
+System Memory
+      ↓
+Integrated GPU Capability
+      ↓
+NPU Capability
+      ↓
+Driver / Runtime / API Availability
+      ↓
+Interconnect / Data-Movement Characteristics
+      ↓
+Capability Matrix
+      ↓
+Constraint Matrix
+      ↓
+Hardware Truth Contract
+```
+
+SET 2 must not establish:
+
+```text
+❌ workload placement
+❌ scheduling policy
+❌ operator implementation
+❌ kernel optimization
+❌ inference runtime
+❌ actual model throughput
+❌ latency benchmarks
+❌ memory-constrained execution strategy
+❌ streaming strategy
+❌ heterogeneous execution strategy
+❌ CPU optimization
+❌ GPU optimization
+❌ NPU optimization
+```
+
+---
+
+### SET2-READINESS-GATE — SET 2 Readiness
 
 **Responsibility:** 🧠 LUNA
 
-**Dependency:** SET 1 formal closure / verified tensor and storage facts available
+**Status:** 🔜 NEXT
+
+**Dependency:** `SET1-CLOSE PASS`
+
+**Objective:**
+
+Confirm that SET 2 can begin without unsupported hardware assumptions.
+
+Required conditions:
+
+```text
+[ ] SET 1 formally closed
+[ ] SET 1 output contract available
+[ ] target hardware sufficiently identifiable
+[ ] actual target environment can be accessed
+[ ] Executor can inspect the target environment
+[ ] hardware inspection scope is defined
+[ ] authoritative hardware sources are available
+[ ] evidence requirements are defined
+[ ] responsibility is assignable
+[ ] no blocking prerequisite remains
+```
+
+Result:
+
+```text
+READY FOR SET 2
+```
+
+or:
+
+```text
+NOT READY
+```
+
+The readiness gate does not perform actual hardware inspection.
+
+---
+
+### SET2-T2.1 — Target Hardware Identity
+
+**Responsibility:** 🛠 EXECUTOR
+
+**Status:** 🔒 NOT STARTED
+
+**Dependency:** `SET2-READINESS-GATE PASS`
+
+**Objective:**
+
+Verify that the inspected environment is the actual target machine and establish its hardware/software identity.
+
+Required evidence:
+
+```text
+CPU model
+CPU family / stepping where observable
+physical CPU topology
+logical processor topology
+installed RAM
+GPU identity
+NPU presence / identity
+platform / motherboard identity where relevant
+OS
+kernel
+architecture
+virtualization / container environment
+```
+
+Output:
+
+```text
+TARGET HARDWARE IDENTITY
+```
+
+---
+
+### SET2-T2.2 — CPU Capability Reconnaissance
+
+**Responsibility:** 🛠 EXECUTOR
+
+**Interpretation:** 🧠 LUNA
+
+**Status:** 🔒 NOT STARTED
+
+**Dependency:** `SET2-T2.1 PASS`
+
+**Objective:**
+
+Establish the actual CPU capability profile.
+
+Required scope:
+
+```text
+core topology
+P-core / E-core topology where applicable
+logical processors
+hardware threading
+ISA features
+vector extensions
+SIMD capabilities
+cache hierarchy
+relevant instruction-set support
+frequency information where reliably observable
+```
+
+Relevant examples:
+
+```text
+AVX2
+AVX-512
+AMX
+FMA
+VNNI
+other verified instruction extensions
+```
+
+Do not infer ISA support solely from CPU model assumptions.
+
+Output:
+
+```text
+CPU CAPABILITY MATRIX
+```
+
+---
+
+### SET2-T2.3 — System Memory Reconnaissance
+
+**Responsibility:** 🛠 EXECUTOR
+
+**Status:** 🔒 NOT STARTED
+
+**Dependency:** `SET2-T2.1 PASS`
+
+**Objective:**
+
+Establish actual system-memory state.
+
+Required scope:
+
+```text
+installed RAM
+OS-visible RAM
+usable RAM
+available RAM
+memory configuration
+memory type where observable
+memory channels where observable
+frequency / data rate where observable
+bandwidth information where authoritative
+NUMA characteristics where relevant
+reserved memory where observable
+```
+
+Required distinction:
+
+```text
+Installed Memory
+≠
+Usable Memory
+≠
+Currently Available Memory
+```
+
+Output:
+
+```text
+SYSTEM MEMORY CAPABILITY / CONSTRAINT PROFILE
+```
+
+---
+
+### SET2-T2.4 — Intel Integrated GPU Reconnaissance
+
+**Responsibility:** 🛠 EXECUTOR
+
+**Status:** 🔒 NOT STARTED
+
+**Dependency:** `SET2-T2.1 PASS`
+
+**Objective:**
+
+Establish the actual integrated Intel GPU capability and software visibility.
+
+Required scope:
+
+```text
+GPU identity
+architecture / generation
+EU / compute-unit information where exposed
+GPU memory model
+shared-system-memory relationship
+driver
+device visibility
+supported APIs
+hardware acceleration interfaces
+supported precision / data types where authoritative
+relevant verified execution features
+```
+
+Maintain these distinctions:
+
+```text
+GPU hardware exists
+
+≠
+
+GPU is visible to current environment
+
+≠
+
+software stack exposes usable capability
+```
+
+Output:
+
+```text
+INTEL GPU CAPABILITY MATRIX
+```
+
+---
+
+### SET2-T2.5 — Intel NPU Reconnaissance
+
+**Responsibility:** 🛠 EXECUTOR
+
+**Status:** 🔒 NOT STARTED
+
+**Dependency:** `SET2-T2.1 PASS`
+
+**Objective:**
+
+Establish the actual NPU presence, capability, and accessibility.
+
+Required scope:
+
+```text
+NPU presence
+NPU identity
+generation
+driver
+runtime/API availability
+device visibility
+supported operation domains where authoritative
+supported data types / precision where documented
+available system access path
+```
+
+Maintain:
+
+```text
+NPU hardware capability
+≠
+NPU software accessibility
+```
+
+Output:
+
+```text
+NPU CAPABILITY MATRIX
+```
+
+---
+
+### SET2-T2.6 — Driver / Runtime / API Availability
+
+**Responsibility:** 🧠 LUNA
+
+**Execution Support:** 🛠 EXECUTOR
+
+**Status:** 🔒 NOT STARTED
+
+**Dependency:** T2.2 + T2.4 + T2.5 evidence
+
+**Objective:**
+
+Determine which verified hardware capabilities are actually accessible through the current software environment.
+
+CPU scope:
+
+```text
+OS support
+runtime access
+```
+
+GPU scope:
+
+```text
+driver
+oneAPI where relevant
+Level Zero
+SYCL
+OpenCL where relevant
+other authoritative accelerator interfaces
+```
+
+NPU scope:
+
+```text
+driver
+NPU runtime/API
+device access
+```
+
+OS/environment scope:
+
+```text
+kernel/device interfaces
+permissions
+device visibility
+container visibility
+```
+
+Do not execute the model.
+
+Output:
+
+```text
+HARDWARE SOFTWARE-ACCESSIBILITY MATRIX
+```
+
+Example structure:
+
+| Resource | Hardware | Driver   | Runtime/API | Visible  | Usable             |
+| -------- | -------- | -------- | ----------- | -------- | ------------------ |
+| CPU      | VERIFIED | VERIFIED | VERIFIED    | VERIFIED | VERIFIED           |
+| GPU      | VERIFIED | VERIFIED | VERIFIED    | VERIFIED | VERIFIED / UNKNOWN |
+| NPU      | VERIFIED | VERIFIED | VERIFIED    | VERIFIED | VERIFIED / UNKNOWN |
+
+---
+
+### SET2-T2.7 — Interconnect / Data-Movement Reconnaissance
+
+**Responsibility:** 🧠 LUNA
+
+**Execution Support:** 🛠 EXECUTOR
+
+**Status:** 🔒 NOT STARTED
+
+**Dependency:** T2.3 + T2.4 + T2.5 + T2.6
+
+**Objective:**
+
+Establish how system resources are connected and what data-movement pathways are supported by evidence.
+
+Required scope:
+
+```text
+CPU ↔ RAM
+CPU ↔ iGPU
+CPU ↔ NPU
+GPU ↔ shared memory
+NPU ↔ shared/system memory
+device-local / shared-memory model
+coherency characteristics where authoritative
+memory transfer pathways
+```
+
+This is not a performance benchmark.
+
+Do not infer bandwidth without authoritative evidence or explicit measurement.
+
+Unknown bandwidth remains:
+
+```text
+UNKNOWN
+```
+
+Output:
+
+```text
+HARDWARE DATA-MOVEMENT / INTERCONNECT MODEL
+```
+
+---
+
+### SET2-T2.8 — Hardware Capability & Constraint Synthesis
+
+**Responsibility:** 🧠 LUNA
+
+**Execution Support:** 🛠 EXECUTOR
+
+**Status:** 🔒 NOT STARTED
+
+**Dependency:** T2.2–T2.7
+
+**Objective:**
+
+Synthesize:
+
+```text
+CPU
+RAM
+GPU
+NPU
+Drivers
+Runtime / APIs
+Interconnect
+Data movement
+```
+
+into:
+
+```text
+HARDWARE CAPABILITY CONTRACT
+```
+
+Target structure:
+
+```text
+                       TARGET MACHINE
+                              │
+          ┌───────────────────┼───────────────────┐
+          ↓                   ↓                   ↓
+         CPU                 GPU                 NPU
+          │                   │                   │
+      ISA / Cache        Compute / Memory     Compute / API
+          │                   │                   │
+          └───────────────────┼───────────────────┘
+                              ↓
+                       System Memory
+                              ↓
+                    Data-Movement Model
+                              ↓
+                  Software Accessibility
+                              ↓
+                 Capability / Constraint Matrix
+```
+
+Hard boundary:
+
+Do not determine workload placement.
+
+Do not produce rules such as:
+
+```text
+GPU = attention
+CPU = MLP
+NPU = embedding
+```
+
+Placement and scheduling belong to downstream SETs.
+
+---
+
+### SET2-T2.9 — SET 2 Boundary / Completeness Audit
+
+**Responsibility:** 🧠 LUNA
+
+**Status:** 🔒 NOT STARTED
+
+**Dependency:** `SET2-T2.8 PASS`
+
+**Objective:**
+
+Determine whether SET 2 has established all hardware truth required by its defined scope and whether its downstream contract is complete.
+
+Coverage:
+
+```text
+hardware identity
+CPU
+system memory
+GPU
+NPU
+drivers
+runtime/API access
+interconnect
+data movement
+capability matrix
+constraint matrix
+provenance
+known / unknown boundary
+```
+
+Negative boundary:
+
+```text
+❌ no workload placement
+❌ no scheduling
+❌ no optimization
+❌ no benchmarking
+❌ no inference
+❌ no operator mapping
+❌ no runtime memory execution model
+❌ no kernel design
+```
+
+Output:
+
+```text
+SET 2 TECHNICAL EVIDENCE:
+COMPLETE / INCOMPLETE
+```
+
+---
+
+### SET2-CLOSE — Formal SET 2 Acceptance
+
+**Responsibility:** 🧠 LUNA
+
+**Status:** 🔒 NOT STARTED
+
+**Dependency:** `SET2-T2.9 COMPLETE`
+
+`T2.9 COMPLETE` does not automatically close SET 2.
+
+Formal acceptance requires:
+
+```text
+T2.1
+T2.2
+T2.3
+T2.4
+T2.5
+T2.6
+T2.7
+T2.8
+T2.9
+   ↓
+SET2-CLOSE
+```
+
+---
+
+### SET 2 Evidence Track
+
+Canonical technical evidence:
+
+```text
+docs/set-2/
+├── 01-hardware-identity.md
+├── 02-cpu-capability-reconnaissance.md
+├── 03-system-memory-reconnaissance.md
+├── 04-intel-gpu-reconnaissance.md
+├── 05-intel-npu-reconnaissance.md
+├── 06-driver-runtime-api-availability.md
+├── 07-interconnect-data-movement.md
+├── 08-hardware-capability-synthesis.md
+└── 09-set2-boundary-completeness-audit.md
+```
+
+Formal acceptance remains a separate control task:
+
+```text
+SET2-CLOSE
+```
+
+Technical evidence and formal acceptance remain separate:
+
+```text
+Technical Evidence
+        ≠
+Formal Acceptance
+```
+
+---
+
+### SET 2 Output Contract
+
+When formally closed, SET 2 should provide downstream sets with:
+
+```text
+┌────────────────────────────────────────────┐
+│          SET 2 HARDWARE TRUTH              │
+├────────────────────────────────────────────┤
+│ Target Hardware Identity                   │
+│ CPU Capability                             │
+│ System Memory                              │
+│ Intel GPU Capability                       │
+│ Intel NPU Capability                       │
+│ Driver / Runtime / API Availability        │
+│ Interconnect / Data-Movement Constraints   │
+│ Capability Matrix                          │
+│ Constraint Matrix                          │
+└────────────────────────────────────────────┘
+                     ↓
+              DOWNSTREAM CONTRACT
+                     ↓
+             SET 3 / SET 4 / SET 5+
+```
+
+Evidence must preserve:
+
+```text
+VERIFIED FACT
+DERIVED FINDING
+UNKNOWN
+```
+
+Unknowns must not be silently converted into assumptions.
+
+---
+
+### SET 2 Hard Boundary
+
+```text
+SET 2 STOP
+        │
+        ├── ❌ No inference
+        ├── ❌ No benchmark
+        ├── ❌ No throughput
+        ├── ❌ No latency
+        ├── ❌ No workload placement
+        ├── ❌ No scheduling
+        ├── ❌ No operator mapping
+        ├── ❌ No kernel design
+        ├── ❌ No optimization
+        ├── ❌ No streaming
+        ├── ❌ No runtime memory model
+        └── ❌ No implementation
+```
 
 ---
 
@@ -679,7 +1158,7 @@ representation as a downstream input contract.
 
 **Responsibility:** 🧠 LUNA
 
-**Dependency:** SET 0 + SET 1 verified model/tensor evidence
+**Dependency:** SET 1 + SET 2 verified evidence
 
 ---
 
@@ -831,34 +1310,34 @@ representation as a downstream input contract.
 
 ```text
 CURRENT SET:
-SET 1 — Tensor / Byte-Level Audit
+SET 2 — Hardware Reconnaissance
 
-CURRENT TECHNICAL STATE:
-COMPLETE THROUGH SET1-T1.9
+SET 0:
+✅ FORMALLY CLOSED
+
+SET 1:
+✅ FORMALLY CLOSED
+
+SET 1 TECHNICAL EVIDENCE:
+✅ COMPLETE
+
+SET 1 FORMAL ACCEPTANCE:
+✅ CLOSED
+
+SET 2:
+🔜 NEXT — READINESS GATE
 
 CURRENT NEXT TASK:
-SET1-CLOSE
+SET2-READINESS-GATE
 
 NEXT TASK OWNER:
 🧠 LUNA
 
-EXECUTION SUPPORT:
-🛠 EXECUTOR
-
-SET 1:
-🟢 ACTIVE
-
-SET 1 TECHNICAL EVIDENCE:
-COMPLETE
-
-SET 1 FORMAL CLOSURE:
-🔜 NEXT
-
-SET 2:
+SET2-T2.1:
 🔒 NOT STARTED
 
-ROADMAP.md:
-PERSISTED AFTER THIS TASK
+SET 3:
+🔒 NOT STARTED
 ```
 
 ---
@@ -868,7 +1347,7 @@ PERSISTED AFTER THIS TASK
 ```text
 CURRENT RESULT
       ↓
-UPDATE CONVERSATION ROADMAP
+ROADMAP UPDATE
       ↓
 NEXT ATOMIC TASK
       ↓
@@ -880,7 +1359,7 @@ GENERATE ROLE-SPECIFIC PROMPT
       ↓
 EXECUTE
       ↓
-PERSIST EVIDENCE WHEN REQUIRED
+PERSIST EVIDENCE
       ↓
 COMMIT
       ↓
@@ -890,7 +1369,7 @@ REMOTE CROSS-CHECK
       ↓
 LUNA VERIFICATION / INTERPRETATION
       ↓
-UPDATE CONVERSATION ROADMAP
+ROADMAP UPDATE
       ↓
 NEXT ATOMIC TASK
 ```
@@ -905,10 +1384,11 @@ NEXT ATOMIC TASK
 6. The official upstream model artifact remains the authoritative source for model facts.
 7. The GitHub repository is the shared persistent project Source of Truth.
 8. `UNKNOWN` must not be silently converted into an assumption.
-9. SET 1 remains ACTIVE until formal closure.
-10. SET 2 must not begin before `SET1-CLOSE` is accepted.
+9. SET 0 and SET 1 are formally closed.
+10. SET 2 must not execute before `SET2-READINESS-GATE` passes.
 11. Every Atomic Task has exactly one primary responsibility owner.
 12. ORCHESTRATOR may coordinate and enforce control flow but must not replace LUNA's technical research, interpretation, or acceptance authority.
+13. SET 2 must not make workload-placement, scheduling, optimization, runtime, or implementation decisions.
 
 ---
 
@@ -944,9 +1424,21 @@ VERIFIED PROJECT DOCUMENT
 DERIVED ACCOUNTING / ANALYSIS
 ```
 
-`ROADMAP.md` persistence is intentionally batched.
+For hardware facts:
 
-LUNA-owned tasks normally update the Conversation Roadmap only.
+```text
+ACTUAL TARGET ENVIRONMENT
+        +
+AUTHORITATIVE HARDWARE DOCUMENTATION
+        ↓
+PERSISTED HARDWARE EVIDENCE
+        ↓
+LUNA INTERPRETATION
+        ↓
+HARDWARE CAPABILITY / CONSTRAINT CONTRACT
+```
+
+`ROADMAP.md` persistence is intentionally batched.
 
 Before a dedicated Executor task begins after accumulated roadmap changes:
 
@@ -973,14 +1465,14 @@ Executor must use the exact roadmap state supplied by LUNA and must not redesign
 # 6. Status Legend
 
 ```text
-✅ PASS          completed and accepted
-❌ FAIL          failed acceptance criteria
-⚠ PARTIAL       partially completed / unresolved
-⏸ BLOCKED       cannot proceed because dependency is unresolved
-🔒 NOT STARTED   no execution has begun
-🔜 NEXT          next atomic task selected by control layer
-📌 PERSISTED     durable artifact committed to repository
-☁ PUSHED        commit pushed to remote
+✅ PASS            completed and accepted
+❌ FAIL            failed acceptance criteria
+⚠ PARTIAL         partially completed / unresolved
+⏸ BLOCKED         cannot proceed because dependency is unresolved
+🔒 NOT STARTED     no execution has begun
+🔜 NEXT            next atomic task selected by control layer
+📌 PERSISTED       durable artifact committed to repository
+☁ PUSHED          commit pushed to remote
 🔎 REMOTE VERIFIED remote state independently checked
 ```
 
@@ -989,22 +1481,30 @@ Executor must use the exact roadmap state supplied by LUNA and must not redesign
 # 7. Current Stop Condition
 
 ```text
-Current stop condition:
+SET 0:
+✅ FORMALLY CLOSED
 
-SET 0 technical integration is complete and formally closed.
+SET 1:
+✅ FORMALLY CLOSED
 
-SET 1 technical evidence is VERIFIED through:
-SET1-T1.8 ✅ PASS
+SET 2:
+🔜 NEXT — READINESS GATE
 
-The next selected task is:
-SET1-T1.9 — SET 1 Boundary / Completeness Audit
+Current next task:
+SET2-READINESS-GATE
 
-SET1-T1.9 has not started.
-SET1-CLOSE has not started.
-SET 2 has not started.
+SET2-T2.1:
+🔒 NOT STARTED
 
-Do not begin SET 2 until SET 1 formal closure is accepted.
+SET 3:
+🔒 NOT STARTED
 
-ROADMAP.md persistence:
-PERSISTED AFTER THIS TASK
+Do not begin SET2-T2.1 until SET2-READINESS-GATE explicitly passes.
+
+Do not begin SET 3.
+
+Do not perform hardware reconnaissance before the SET 2 readiness gate.
+
+ROADMAP.md:
+PERSIST BEFORE SET2 EXECUTION
 ```

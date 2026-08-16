@@ -5,13 +5,13 @@
 * Document: `ROADMAP.md`
 * Role: Project Control / Roadmap State
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
-* Last control update: `2026-08-16`
+* Last control update: `2026-08-17`
 * Current integrated branch: `main`
 * Current integrated commit: `a30455e`
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **ACTIVE**
-* Current control task: **SET2-T2.1**
+* Current control task: **SET2-T2.2-R1**
 
 ---
 
@@ -455,10 +455,13 @@ SET2-T2.1-R1:
 ✅ PASS
 
 SET2-T2.2:
-✅ PASS
+⚠ PARTIAL
+
+SET2-T2.2-R1:
+🔜 NEXT
 
 SET2-T2.3:
-🔜 NEXT
+⏸ BLOCKED
 
 SET2-T2.4:
 🔒 NOT STARTED
@@ -502,7 +505,7 @@ SET 2:
 🟢 ACTIVE
 
 CURRENT NEXT TASK:
-SET2-T2.2
+SET2-T2.2-R1
 
 NEXT TASK OWNER:
 🛠 EXECUTOR
@@ -681,7 +684,7 @@ docs/set-2/01-hardware-identity.md
 
 **Interpretation:** 🧠 LUNA
 
-**Status:** 🔒 NOT STARTED
+**Status:** ⚠ PARTIAL
 
 **Dependency:** `SET2-T2.1 PASS`
 
@@ -721,6 +724,33 @@ Output:
 
 ```text
 CPU CAPABILITY MATRIX
+```
+
+---
+
+### SET2-T2.2-R1 — CPU Capability Evidence Reconciliation
+
+**Responsibility:** 🛠 EXECUTOR
+
+**Status:** 🔜 NEXT
+
+**Dependency:** `SET2-T2.2 ⚠ PARTIAL`
+
+**Objective:**
+
+Reconcile T2.2 evidence to strictly distinguish SKU capability, host-observed
+capability, and WSL2 guest-exposed capability. Correct overstatements in host
+vs guest vs SKU evidence, remove host-equivalence claims, fix AVX-512/AMX
+classification, and reclassify cache per-core claims.
+
+Evidence:
+
+```text
+docs/set-2/02-cpu-capability-reconnaissance.md
+```
+
+```text
+⚠ PARTIAL
 ```
 
 ---
@@ -1395,7 +1425,7 @@ SET2-READINESS-GATE:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.2
+SET2-T2.2-R1
 
 NEXT TASK OWNER:
 🛠 EXECUTOR
@@ -1404,7 +1434,10 @@ SET2-T2.1:
 ✅ PASS
 
 SET2-T2.2:
-✅ PASS
+⚠ PARTIAL
+
+SET2-T2.3:
+⏸ BLOCKED
 
 SET 3:
 🔒 NOT STARTED
@@ -1561,13 +1594,19 @@ SET 2:
 🟢 READY FOR EXECUTION
 
 Current next task:
-SET2-T2.3
+SET2-T2.2-R1
 
 SET2-T2.1:
 ✅ PASS
 
 SET2-T2.2:
-✅ PASS
+⚠ PARTIAL
+
+SET2-T2.2-R1:
+🔜 NEXT
+
+SET2-T2.3:
+⏸ BLOCKED
 
 SET 3:
 🔒 NOT STARTED
@@ -1575,5 +1614,8 @@ SET 3:
 Do not begin SET 3.
 
 ROADMAP.md:
+PERSISTED
+
+docs/set-2/02-cpu-capability-reconnaissance.md:
 PERSISTED
 ```

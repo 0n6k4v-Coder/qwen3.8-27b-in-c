@@ -1,47 +1,51 @@
-# SET2-T2.2 — CPU Capability Reconnaissance
+# SET2-T2.2-R1 — CPU Capability Evidence Reconciliation
 
 ## Task Information
 
-||| Field | Value |
+| Field | Value |
 |---|---|
-| Task ID | SET2-T2.2 |
-| Task Name | CPU Capability Reconnaissance |
+| Task ID | SET2-T2.2-R1 |
+| Task Name | CPU Capability Evidence Reconciliation |
 | Responsibility | 🛠 EXECUTOR |
 | Interpretation | 🧠 LUNA |
-| Status | ✅ PASS |
-| Dependency | SET2-T2.1 PASS |
+| Status | ⚠ PARTIAL |
+| Dependency | SET2-T2.2 ⚠ PARTIAL |
 
 ---
 
 ## Evidence Sources
 
-This task establishes the verified CPU capability profile of the actual physical
-target host. Two distinct evidence domains are recognized and separated:
+Three distinct evidence domains are recognized and separated throughout this document:
 
-- **PHYSICAL HOST** — Windows 11 host inspected via PowerShell / WMI
-  (executed through WSL2 interop: `powershell.exe -Command`).
-- **GUEST / WSL2** — WSL2 Linux guest inspected via standard Linux tools
-  (`lscpu`, `cat /proc/cpuinfo`, `nproc`, `find /sys`).
-- **Authoritative documentation** — Intel ARK specification for the Intel Core
-  Ultra 7 processor 155H:
-  https://www.intel.com/content/www/us/en/products/sku/236847/intel-core-ultra-7-processor-155h-24m-cache-up-to-4-80-ghz/specifications.html
+- **SKU / Architecture Capability** — Intel ARK specification for the Intel Core Ultra 7 processor 155H (authoritative SKU-level documentation).
+- **Physical Host Observed Capability** — Windows 11 host inspected via PowerShell / WMI interop (`powershell.exe -Command`).
+- **WSL2 Guest Exposed Capability** — WSL2 Linux guest inspected via `lscpu`, `cat /proc/cpuinfo`, `nproc`, `find /sys`.
 
-The following rule is mandatory and enforced throughout this document:
+The mandatory evidence rule is enforced:
 
 ```
 WSL2-visible CPU topology ≠ physical host CPU topology
+WSL2-visible CPU flags ≠ direct physical-host CPUID
 ```
 
-### Host-level (PHYSICAL HOST) evidence sources
+### SKU / Architecture evidence sources
+
+| Source | Purpose |
+|---|---|
+| Intel ARK specification page | Authoritative ISA, frequency, cache, power, core-count specifications for Core Ultra 7 155H |
+
+Intel ARK URL:
+https://www.intel.com/content/www/us/en/products/sku/236847/intel-core-ultra-7-processor-155h-24m-cache-up-to-4-80-ghz/specifications.html
+
+### Physical Host evidence sources
 
 | Source Command | Purpose |
 |---|---|
 | `powershell.exe -Command "Get-WmiObject -Class Win32_Processor"` | CPU model, cores, threads, cache, socket, clock speeds |
 | `powershell.exe -Command "Get-WmiObject -Namespace root\cimv2 -Class Win32_CacheMemory"` | Per-cluster L1/L2/L3 cache objects with types and sizes |
-| `powershell.exe -Command "Get-ItemProperty HKLM:\HARDWARE\DESCRIPTION\System\CentralProcessor\0"` | Registry CPU ID, name, feature set bitmask, MHz |
-| Intel ARK specification page | Authoritative ISA, frequency, cache, power specifications |
+| `powershell.exe -C "Get-ItemProperty HKLM:\HARDWARE\DESCRIPTION\System\CentralProcessor\0"` | Registry CPU ID, name, feature set bitmask, MHz |
 
-### Guest-level (WSL2) evidence sources
+### WSL2 Guest evidence sources
 
 | Source Command | Purpose |
 |---|---|
@@ -51,88 +55,62 @@ WSL2-visible CPU topology ≠ physical host CPU topology
 | `cat /sys/devices/system/cpu/cpu*/cache/index*/type` | Per-core cache types |
 | `grep -m1 '^flags' /proc/cpuinfo` | ISA feature flags exposed to guest |
 
-### Authoritative documentation
-
-Intel ARK specification for the Intel Core Ultra 7 processor 155H:
-https://www.intel.com/content/www/us/en/products/sku/236847/intel-core-ultra-7-processor-155h-24m-cache-up-to-4-80-ghz/specifications.html
-
-The Intel ARK page identifies this processor as:
-
-```
-Intel Core Ultra Processors — Series 1
-Products formerly Meteor Lake
-Code Name: Products formerly Meteor Lake
-CPU Lithography: Intel 4
-Instruction Set: 64-bit
-Instruction Set Extensions: Intel® SSE4.1, Intel® SSE4.2, Intel® AVX2
-Intel® Deep Learning Boost (Intel® DL Boost) on CPU: Yes
-Intel® AVX2: Yes (implied via SSE4.1, SSE4.2, AVX2 listing)
-Intel® AES New Instructions: Yes
-Intel® 64: Yes
-Intel® Thread Director: Yes
-Intel® Speed Shift Technology: Yes
-Intel® Turbo Boost Technology: 2.0
-Intel® Turbo Boost Max Technology 3.0: Yes
-Intel® Hyper-Threading Technology: Yes
-Intel® Virtualization Technology (VT-x): Yes
-Intel® Virtualization Technology for Directed I/O (VT-d): Yes
-Intel® VT-x with Extended Page Tables (EPT): Yes
-Intel® Control-Flow Enforcement Technology: Yes
-Intel® Secure Key: Yes
-Execute Disable Bit: Yes
-Intel® Threat Detection Technology (TDT): Yes
-Intel® Standard Manageability (ISM): Yes
-Intel® Hardware Shield Eligibility: Yes
-Intel® Boot Guard: Yes
-Intel® OS Guard: Yes
-Intel® Volume Management Device (VMD): Yes
-Intel® High Definition Audio: Yes
-Intel® Smart Sound Technology: Yes
-Intel® Wake on Voice: Yes
-Intel® Adaptix™ Technology: Yes
-```
-
-Intel ARK frequency/power specifications:
-
-```
-Performance-core Base Frequency: 1.4 GHz
-Performance-core Max Turbo Frequency: 4.8 GHz
-Efficient-core Base Frequency: 900 MHz
-Efficient-core Max Turbo Frequency: 3.8 GHz
-Low Power Efficient-core Base Frequency: 700 MHz
-Low Power Efficient-core Max Turbo Frequency: 2.5 GHz
-Max Turbo Frequency: 4.8 GHz (overall)
-Processor Base Power (RPL): 28 W
-Maximum Turbo Power: 115 W
-Minimum Assured Power: 20 W
-Cache: 24 MB Intel® Smart Cache
-```
-
 ---
 
-## 1. CPU Topology
+## 1. CPU Identity
 
-### PHYSICAL HOST (verified via WMI `Win32_Processor`)
+### SKU / Architecture Capability
 
-**VERIFIED FACT (directly observed from host via `Win32_Processor`):**
+**VERIFIED FACT (Intel ARK specification for Core Ultra 7 155H):**
 
-| Property | Observed Value |
+| Property | Intel ARK Value |
 |---|---|
-| CPU model | `Intel(R) Core(TM) Ultra 7 155H` |
-| Manufacturer | `GenuineIntel` |
-| CPU family | 6 (per WMI `Family` = 1, which maps to Intel 64 architecture) |
-| CPUID model | 170 (0xAA) — from WMI Caption `Intel64 Family 6 Model 170 Stepping 4` |
-| Stepping | 4 |
-| ProcessorId (WMI) | `BFEBFBFF000A06A4` |
-| NumberOfCores | 16 |
-| NumberOfEnabledCore | 16 |
-| NumberOfLogicalProcessors | 22 |
-| ThreadCount | 22 |
-| Sockets | 1 |
-| SocketDesignation | `U3E1` |
-| ExtClock (base clock) | 100 MHz |
-| Architecture | 9 (x64) |
-| AddressWidth / DataWidth | 64-bit |
+| Product | Intel Core Ultra 7 processor 155H |
+| Code Name | Meteor Lake (Series 1) |
+| Lithography | Intel 4 (7 nm class) |
+| Socket | UNP (BGA) |
+| CPU Cores | 16 (total) |
+| Performance-cores (P-cores) | 6 |
+| Efficient-cores (E-cores) | 8 |
+| Low Power Efficient-cores (LP E-cores) | 2 |
+| Threads | 22 (Hyper-Threading on P-cores only) |
+| Intel 64 | Yes |
+| Instruction Set Extensions (ARK summary) | Intel SSE4.1, Intel SSE4.2, Intel AVX2 |
+| Intel DL Boost on CPU | Yes |
+| Intel AVX2 | Yes |
+| Intel AES-NI | Yes |
+| Intel Thread Director | Yes |
+| Intel Speed Shift Technology | Yes |
+| Intel Turbo Boost Technology | 2.0 |
+| Intel Turbo Boost Max Technology 3.0 | Yes |
+| Intel Hyper-Threading | Yes |
+| Intel VT-x | Yes |
+| Intel VT-d | Yes |
+| Intel VT-x EPT | Yes |
+| Intel Control-flow Enforcement Technology | Yes |
+| Execute Disable Bit | Yes |
+
+### Physical Host Observed Capability
+
+**VERIFIED FACT (directly observed from host via `Win32_Processor` + registry):**
+
+| Property | Observed Value | Source |
+|---|---|---|
+| CPU model | `Intel(R) Core(TM) Ultra 7 155H` | WMI Win32_Processor / Registry ProcessorNameString |
+| Manufacturer | `GenuineIntel` | WMI / Registry VendorIdentifier |
+| CPU family | 6 | WMI / Registry Identifier |
+| CPUID model | 170 (0xAA) | WMI Caption "Intel64 Family 6 Model 170 Stepping 4" |
+| Stepping | 4 | WMI / Registry Identifier |
+| ProcessorId (WMI) | `BFEBFBFF000A06A4` | WMI |
+| NumberOfCores | 16 | WMI Win32_Processor |
+| NumberOfEnabledCore | 16 | WMI Win32_Processor |
+| NumberOfLogicalProcessors | 22 | WMI Win32_Processor |
+| ThreadCount | 22 | WSL2 interop observation |
+| Sockets | 1 | WMI |
+| SocketDesignation | `U3E1` | WMI |
+| ExtClock (base clock) | 100 MHz | WMI |
+| Architecture | 9 (x64) | WMI |
+| AddressWidth / DataWidth | 64-bit | WMI |
 
 **VERIFIED FACT (registry `HKLM\HARDWARE\DESCRIPTION\System\CentralProcessor\0`):**
 
@@ -144,22 +122,35 @@ Cache: 24 MB Intel® Smart Cache
 | FeatureSet | 823868927 (decimal) = `0x311B3DFF` |
 | MHz | 2995 |
 
-**DERIVED FINDING:**
+**VERIFIED FACT (WMI `Win32_CacheMemory` objects — CacheType and NumberOfBlocks x BlockSize=1024):**
 
-- The WMI FeatureSet bitmask `0x311B3DFF` represents a subset of CPUID leaf 1
-  feature flags as reported by the Windows kernel. This bitmask covers legacy
-  x86/x64 feature flags (bits 0–31 corresponding to CPUID.1.EDX and CPUID.1.ECX
-  low bits) but does NOT encode extended features such as AVX-512, AMX, or
-  CPUID leaf 7 features. The FeatureSet bitmask is therefore insufficient as
-  a standalone source for full ISA capability determination.
-- The host CPU topology of 16 cores / 22 threads reconciles exactly with
-  Intel ARK's authoritative specification for this SKU:
-  - 6 P-cores (Performance-cores)
-  - 8 E-cores (Efficient-cores)
-  - 2 Low Power Efficient-cores
-  - 22 total threads (Hyper-Threading only on P-cores: 6×2 + 8×1 + 2×1 = 22)
+| Object | CacheType | NumberOfBlocks | BlockSize | Size | Purpose | Role |
+|---|---|---|---|---|---|---|
+| Cache Memory 0 | 4 (Data) | 288 | 1024 | 288,000 B (~288 KB) | L1 Cache | P-core L1D (6 cores x 48 KB) |
+| Cache Memory 1 | 3 (Instr) | 384 | 1024 | 384,000 B (~384 KB) | L1 Cache | P-core L1I (6 cores x 64 KB) |
+| Cache Memory 2 | 5 (Unified) | 12,288 | 1024 | 12,582,912 B (12 MB) | L2 Cache | P-core L2 (6 cores x 2 MB) |
+| Cache Memory 3 | 5 (Unified) | 24,576 | 1024 | 25,165,440 B (24 MB) | L3 Cache | L3 Shared |
+| Cache Memory 4 | 4 (Data) | 320 | 1024 | 320,000 B (~320 KB) | L1 Cache | E-core L1D (10 cores x 32 KB) |
+| Cache Memory 5 | 3 (Instruction) | 640 | 1024 | 640,000 B (~640 KB) | L1 Cache | E-core L1I (10 cores x 64 KB) |
+| Cache Memory 6 | 5 (Unified) | 6,144 | 1024 | 6,291,456 B (6 MB) | L2 Cache | E-core L2 (shared) |
+| Cache Memory 7 | 5 (Unified) | 24,576 | 1024 | 25,165,440 B (24 MB) | L3 Cache | L3 Shared |
 
-### GUEST / WSL2 (directly observed from guest)
+**VERIFIED FACT (WMI `Win32_Processor` cache totals):**
+
+| Property | Value |
+|---|---|
+| L2CacheSize | 18,432 KB (18 MB total) |
+| L3CacheSize | 24,576 KB (24 MB total) |
+
+**VERIFIED FACT (frequency — WMI `Win32_Processor`):**
+
+| Property | Value | Note |
+|---|---|---|
+| MaxClockSpeed | 1,400 MHz | Matches Intel ARK P-core base frequency (1.4 GHz) |
+| CurrentClockSpeed | 1,400 MHz | At idle/low load; not a peak measurement |
+| ExtClock | 100 MHz | Base clock (BCLK) |
+
+### WSL2 Guest Exposed Capability
 
 **VERIFIED FACT (directly observed from WSL2 guest):**
 
@@ -178,68 +169,120 @@ Cache: 24 MB Intel® Smart Cache
 | Virtualization | VT-x (from lscpu) |
 | Hypervisor vendor | Microsoft |
 | Virtualization type | full |
+| Address sizes | 46 bits physical, 48 bits virtual |
 
-**VERIFIED FACT: WSL2 exposes 4C/8T (subset of host 16C/22T)**
-
-This is the WSL2 guest scheduling view, not the physical host topology.
-Per the mandatory environment distinction:
+Live guest evidence (captured during this reconciliation):
 
 ```
-WSL2-visible 4C/8T ≠ physical host 16C/22T
+$ cat /proc/cpuinfo | grep -m1 '^flags'
+flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush mmx fxsr sse sse2 ss ht syscall nx pdpe1gb rdtscp lm constant_tsc rep_good nopl xtopology tsc_reliable nonstop_tsc cpuid pni pclmulqdq vmx ssse3 fma cx16 pcid sse4_1 sse4_2 x2apic movbe popcnt tsc_deadline_timer aes xsave avx f16c rdrand hypervisor lahf_lm abm 3dnowprefetch invpcid_single ssbd ibrs ibpb stibp ibrs_enhanced tpr_shadow vnmi ept vpid ept_ad fsgsbase tsc_adjust bmi1 avx2 smep bmi2 erms invpcid rdseed adx smap clflushopt clwb sha_ni xsaveopt xsavec xgetbv1 xsaves avx_vnni umip waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear serialize flush_l1d arch_capabilities
+
+$ lscpu (summary)
+CPU(s): 8
+Core(s) per socket: 4
+Socket(s): 1
+Thread(s) per core: 2
+Virtualization: VT-x
+Hypervisor vendor: Microsoft
+Virtualization type: full
+L1d cache: 192 KiB (4 instances)
+L1i cache: 256 KiB (4 instances)
+L2 cache: 8 MiB (4 instances)
+L3 cache: 24 MiB (1 instance)
+
+$ cat /sys/devices/system/cpu/cpu0/cache/index*/size
+48K
+64K
+2048K
+24576K
+
+$ cat /sys/devices/system/cpu/cpu0/cache/index*/type
+Data
+Instruction
+Unified
+Unified
+
+$ nproc --all
+8
+
+$ grep -m1 'cpu MHz' /proc/cpuinfo
+cpu MHz : 2995.198
+```
+
+**VERIFIED FACT: WSL2 exposes 4C/8T (subset of host 16C/22T).**
+
+This is the WSL2 guest scheduling view, not the physical host topology.
+
+```
+WSL2-visible 4C/8T ≠ physical-host 16C/22T
 ```
 
 ---
 
-## 2. ISA / Instruction Set
+## 2. CPU Feature Matrix
 
-### Authoritative Source: Intel ARK
+Three categories are strictly distinguished:
 
-**VERIFIED FACT (from Intel ARK specification page for Core Ultra 7 155H):**
+1. **SKU / Architecture Capability** — what Intel ARK documents for the Core Ultra 7 155H SKU.
+2. **Physical Host Observed Capability** — what was directly observed from the Windows host via WMI / registry.
+3. **WSL2 Guest Exposed Capability** — what the WSL2 guest exposes via `/proc/cpuinfo` flags.
+
+Classification legend:
+
+- `VERIFIED` — directly observed from the respective environment.
+- `DOCUMENTED` — stated in Intel ARK for the SKU.
+- `NOT EXPOSED` — confirmed absent in the respective environment.
+- `UNKNOWN` — cannot be established from available evidence.
+
+| Feature | SKU Capability | Host Observed | WSL2 Exposed |
+|---|---|---|---|
+| AVX | DOCUMENTED (via SSE/AVX lineage) | UNKNOWN | VERIFIED (`avx`) |
+| AVX2 | DOCUMENTED (Intel ARK: "Intel AVX2: Yes") | UNKNOWN | VERIFIED (`avx2`) |
+| AVX2 VNNI | DOCUMENTED (Intel DL Boost = AVX-VNNI for MTL) | UNKNOWN | VERIFIED (`avx_vnni`) |
+| FMA | DOCUMENTED (implied by DL Boost / AVX2) | UNKNOWN | VERIFIED (`fma`) |
+| AES-NI | DOCUMENTED (Intel ARK: "Intel AES New Instructions: Yes") | UNKNOWN | VERIFIED (`aes`, `vaes`) |
+| VAES | DOCUMENTED (implied by AES-NI + AVX vector AES) | UNKNOWN | VERIFIED (`vaes`) |
+| VPCLMULQDQ | DOCUMENTED (implied by AVX2 ecosystem) | UNKNOWN | VERIFIED (`vpclmulqdq`) |
+| BMI1 | DOCUMENTED (implied by AVX2 ecosystem) | UNKNOWN | VERIFIED (`bmi1`) |
+| BMI2 | DOCUMENTED (implied by AVX2 ecosystem) | UNKNOWN | VERIFIED (`bmi2`) |
+| ADX | DOCUMENTED (implied by AVX2 ecosystem) | UNKNOWN | VERIFIED (`adx`) |
+| SHA-NI | DOCUMENTED (implied by Intel silicon) | UNKNOWN | VERIFIED (`sha_ni`) |
+| GFNI | DOCUMENTED (implied by Intel silicon) | UNKNOWN | VERIFIED (`gfni`) |
+| AVX-512 | DOCUMENTED (NOT listed — Meteor Lake drops AVX-512) | UNKNOWN | NOT EXPOSED |
+| AMX | DOCUMENTED (NOT listed) | UNKNOWN | NOT EXPOSED |
+
+### VERIFIED FACT — SKU / Architecture Capability
+
+**VERIFIED FACT (Intel ARK specification for Core Ultra 7 155H):**
 
 | ISA Feature | Intel ARK Status |
 |---|---|
 | Instruction Set | 64-bit |
-| Intel® 64 | Yes |
-| Intel® SSE4.1 | Yes |
-| Intel® SSE4.2 | Yes |
-| Intel® AVX2 | Yes |
-| Intel® AES New Instructions (AES-NI) | Yes |
-| Intel® Deep Learning Boost (DL Boost) on CPU | Yes |
-| Intel® Thread Director | Yes |
-| Intel® Turbo Boost Technology | 2.0 |
-| Intel® Hyper-Threading Technology | Yes |
-| Intel® Virtualization Technology (VT-x) | Yes |
-| Intel® Virtualization Technology for Directed I/O (VT-d) | Yes |
-| Intel® VT-x with Extended Page Tables (EPT) | Yes |
+| Intel 64 | Yes |
+| Intel SSE4.1 | Yes |
+| Intel SSE4.2 | Yes |
+| Intel AVX2 | Yes |
+| Intel AES-NI | Yes |
+| Intel DL Boost on CPU | Yes |
+| Intel VT-x | Yes |
+| Intel VT-d | Yes |
+| Intel VT-x EPT | Yes |
+| Intel Hyper-Threading | Yes |
 | Execute Disable Bit | Yes |
-| Intel® Control-Flow Enforcement Technology | Yes |
-| Intel® Secure Key | Yes |
+| Intel Turbo Boost | 2.0 |
 
-**DERIVED FINDING:**
+Intel ARK's "Instruction Set Extensions" summary for Core Ultra 7 155H lists:
+`Intel SSE4.1, Intel SSE4.2, Intel AVX2`.
 
-- Intel ARK lists "Instruction Set Extensions: Intel® SSE4.1, Intel® SSE4.2,
-  Intel® AVX2" as the primary SIMD/ISA extensions. This is the ARK page's
-  summary listing; it does not enumerate every individual feature flag exposed
-  via CPUID.
-- "Intel® Deep Learning Boost (Intel® DL Boost) on CPU: Yes" on Meteor Lake
-  corresponds to AVX-VNNI (Vector Neural Network Instructions), confirmed
-  by the AVX-VNNI flag in the WSL2 guest /proc/cpuinfo.
-- "Intel® AES New Instructions: Yes" corresponds to the AES-NI feature
-  (CPUID.1.ECX bit 25), confirmed by the `aes` and `vaes` flags in the
-  WSL2 guest /proc/cpuinfo.
-- Intel ARK lists AVX-512 under "No" implicitly — the Core Ultra 7 155H
-  (Meteor Lake) does NOT list AVX-512 support on the ARK page. Intel removed
-  AVX-512 from consumer Meteor Lake silicon. The WSL2 guest confirms no
-  AVX-512 flags are present in /proc/cpuinfo.
-- Intel ARK lists AMX (Advanced Matrix Extensions) under "No" implicitly —
-  not listed on the specification page for this SKU. The WSL2 guest confirms
-  no AMX flags (amx-bf16, amx-tile, amx-int8) are present in /proc/cpuinfo.
+Intel ARK's "Intel Deep Learning Boost (Intel DL Boost) on CPU: Yes" on Meteor Lake
+corresponds to AVX-VNNI (Vector Neural Network Instructions).
 
-### GUEST / WSL2 ISA Exposure (from `/proc/cpuinfo` flags)
+Intel ARK does NOT list AVX-512 or AMX for this SKU. Meteor Lake (MTL) consumer
+silicon deliberately omits AVX-512.
 
-**VERIFIED FACT (WSL2 guest `/proc/cpuinfo` flags field, CPU 0):**
+### VERIFIED FACT — WSL2 Guest Exposed Capability
 
-The complete set of ISA feature flags exposed to the WSL2 guest environment:
+**VERIFIED FACT (WSL2 guest `/proc/cpuinfo` flags, confirmed live during this reconciliation):**
 
 ```
 fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36
@@ -254,74 +297,84 @@ waitpkg gfni vaes vpclmulqdq rdpid movdiri movdir64b fsrm md_clear
 serialize flush_l1d arch_capabilities
 ```
 
-**VERIFIED FACT: WSL2 exposes the following ISA extensions (confirmed present in
-guest /proc/cpuinfo flags):**
-
-| ISA Extension | Guest Flag | Category |
+| ISA Extension | Guest Flag | WSL2 Exposed Status |
 |---|---|---|
-| x87 FPU | `fpu` | Legacy x87 |
-| SSE | `sse` | SIMD |
-| SSE2 | `sse2` | SIMD |
-| SSSE3 | `ssse3` | SIMD |
-| SSE4.1 | `sse4_1` | SIMD |
-| SSE4.2 | `sse4_2` | SIMD |
-| AES-NI | `aes` | Cryptographic |
-| VAES | `vaes` | Cryptographic (AVX vector AES) |
-| PCLMULQDQ | `pclmulqdq` | Cryptographic |
-| VPCLMULQDQ | `vpclmulqdq` | Cryptographic (AVX vector) |
-| FMA | `fma` | Fused Multiply-Add |
-| AVX | `avx` | SIMD (128-bit) |
-| AVX2 | `avx2` | SIMD (256-bit integer/FP) |
-| AVX-VNNI | `avx_vnni` | Deep Learning (VNNI) |
-| BMI1 | `bmi1` | Bit manipulation |
-| BMI2 | `bmi2` | Bit manipulation |
-| ADX | `adx` | Arbitrary precision |
-| RDRAND | `rdrand` | Random number |
-| RDSEED | `rdseed` | Random number |
-| SHA-NI | `sha_ni` | SHA acceleration |
-| GFNI | `gfni` | Galois field |
-| MOVBE | `movbe` | Byte swap |
-| WAITPKG | `waitpkg` | UMWAIT/ENQCMD |
-| XSAVE/XRSTOR | `xsave`, `xsaveopt`, `xsavec`, `xsaves` | State management |
-| FSGSBASE | `fsgsbase` | MSR access |
-| INVPCID | `invpcid` | Address space tagging |
-| PCID | `pcid` | Page table tagging |
-| 1GB pages | `pdpe1gb` | Memory management |
-| RDTSCP | `rdtscp` | TSC + serialization |
-| LAHF/SAHF | `lahf_lm` | Legacy |
-| SYSCALL/SYSRET | `syscall` | System calls |
-| NX bit | `nx` | Memory protection |
-| PAE | `pae` | Physical address extension |
+| x87 FPU | `fpu` | VERIFIED |
+| SSE | `sse` | VERIFIED |
+| SSE2 | `sse2` | VERIFIED |
+| SSSE3 | `ssse3` | VERIFIED |
+| SSE4.1 | `sse4_1` | VERIFIED |
+| SSE4.2 | `sse4_2` | VERIFIED |
+| AES-NI | `aes` | VERIFIED |
+| VAES | `vaes` | VERIFIED |
+| PCLMULQDQ | `pclmulqdq` | VERIFIED |
+| VPCLMULQDQ | `vpclmulqdq` | VERIFIED |
+| FMA3 | `fma` | VERIFIED |
+| AVX | `avx` | VERIFIED |
+| AVX2 | `avx2` | VERIFIED |
+| AVX-VNNI | `avx_vnni` | VERIFIED |
+| BMI1 | `bmi1` | VERIFIED |
+| BMI2 | `bmi2` | VERIFIED |
+| ADX | `adx` | VERIFIED |
+| RDRAND | `rdrand` | VERIFIED |
+| RDSEED | `rdseed` | VERIFIED |
+| SHA-NI | `sha_ni` | VERIFIED |
+| GFNI | `gfni` | VERIFIED |
+| MOVBE | `movbe` | VERIFIED (in flag set) |
+| WAITPKG | `waitpkg` | VERIFIED |
+| XSAVE/XRSTOR | `xsave`, `xsaveopt`, `xsavec`, `xsaves` | VERIFIED |
+| FSGSBASE | `fsgsbase` | VERIFIED |
+| INVPCID | `invpcid` | VERIFIED |
+| PCID | `pcid` | VERIFIED |
+| 1GB pages | `pdpe1gb` | VERIFIED |
+| RDTSCP | `rdtscp` | VERIFIED |
+| LAHF/SAHF | `lahf_lm` | VERIFIED |
+| SYSCALL/SYSRET | `syscall` | VERIFIED |
+| NX bit | `nx` | VERIFIED |
+| PAE | `pae` | VERIFIED |
+| POPCNT | `popcnt` | VERIFIED (in flag set) |
+| F16C | `f16c` | VERIFIED |
+| VMX | `vmx` | VERIFIED |
+| Hyper-V enlightenments | `hypervisor` | VERIFIED |
 
-**VERIFIED FACT: WSL2 guest does NOT expose the following ISA extensions
-(neither hardware nor guest):**
+### VERIFIED FACT — WSL2 Guest Does NOT Expose AVX-512 / AMX
 
-| ISA Extension | Guest Flag (absent) | Note |
+**VERIFIED FACT (WSL2 `/proc/cpuinfo` flags — absence confirmed live):**
+
+| ISA Extension | Guest Flag (absent) | WSL2 Status |
 |---|---|---|
-| AVX-512F | (none) | Intel ARK does not list AVX-512 for this SKU |
-| AVX-512BW | (none) | — |
-| AVX-512CD | (none) | — |
-| AVX-512DQ | (none) | — |
-| AVX-512VL | (none) | — |
-| AVX-512VBMI | (none) | — |
-| AVX-512VBMI2 | (none) | — |
-| AVX-512BF16 | (none) | — |
-| AVX-512FP16 | (none) | — |
-| AMX-BF16 | (none) | — |
-| AMX-TILE | (none) | — |
-| AMX-INT8 | (none) | — |
-| SSE4a | (none) | AMD-specific, not on Intel silicon |
-| 3DNow! | (none) | Legacy AMD, not on Intel silicon |
-| FMA4 | (none) | AMD-specific |
-| XOP | (none) | AMD-specific |
+| AVX-512F | (none) | NOT EXPOSED |
+| AVX-512BW | (none) | NOT EXPOSED |
+| AVX-512CD | (none) | NOT EXPOSED |
+| AVX-512DQ | (none) | NOT EXPOSED |
+| AVX-512VL | (none) | NOT EXPOSED |
+| AVX-512VBMI | (none) | NOT EXPOSED |
+| AVX-512VBMI2 | (none) | NOT EXPOSED |
+| AVX-512BF16 | (none) | NOT EXPOSED |
+| AVX-512FP16 | (none) | NOT EXPOSED |
+| AMX-BF16 | (none) | NOT EXPOSED |
+| AMX-TILE | (none) | NOT EXPOSED |
+| AMX-INT8 | (none) | NOT EXPOSED |
+
+### DERIVED FINDING
+
+- The maximum vector width exposed in the WSL2 guest is **256-bit (YMM)**,
+  corresponding to AVX/AVX2.
+- **FMA3** is present via the `fma` flag.
+- **VPCLMULQDQ** is present via the `vpclmulqdq` flag (CPUID.7.ECX bit 25).
+- **AVX-VNNI** is present in the guest flags (`avx_vnni`), which corresponds
+  to Intel ARK's "Intel DL Boost on CPU: Yes" for Meteor Lake. This is Meteor
+  Lake's primary integer-AI acceleration instruction.
+- **AES-NI** is present (`aes`); **VAES** is present (`vaes`) as the 256-bit
+  vector AES extension.
 
 ---
 
 ## 3. Vector / SIMD Capability
 
-### VERIFIED FACT (WSL2 guest `/proc/cpuinfo` flags analysis)
+### VERIFIED FACT (WSL2 guest `/proc/cpuinfo` flags)
 
-**Present SIMD/vector instruction families:**
+**Present SIMD/vector instruction families (WSL2 exposed):**
 
 | Feature | Flag | Vector Width | Description |
 |---|---|---|---|
@@ -335,7 +388,7 @@ guest /proc/cpuinfo flags):**
 | PCLMULQDQ | `pclmulqdq` | 64-bit | Carryless multiply |
 | VPCLMULQDQ | `vpclmulqdq` | 256-bit (YMM) | Vector carryless multiply |
 | SHA-NI | `sha_ni` | 128-bit | SHA-1/SHA-256 acceleration |
-| FMA | `fma` | 256-bit (YMM) | Fused Multiply-Add |
+| FMA | `fma` | 256-bit (YMM) | Fused Multiply-Add (FMA3) |
 | AVX | `avx` | 256-bit (YMM) | Advanced Vector Extensions |
 | AVX2 | `avx2` | 256-bit (YMM) | AVX2 (integer SIMD) |
 | AVX-VNNI | `avx_vnni` | 256-bit (YMM) | Vector Neural Network Instructions |
@@ -343,125 +396,46 @@ guest /proc/cpuinfo flags):**
 | MOVBE | `movbe` | scalar | Move/Byte-swap |
 | POPCNT | `popcnt` | scalar | Population count |
 
-**Integer execution support:**
-- SSE4.2 POPCNT (via `popcnt` flag)
-- BMI1/BMI2 bit manipulation (`bmi1`, `bmi2`)
-- ADX arbitrary precision (`adx`)
-
-**Floating-point execution support:**
-- Scalar: x87 FPU (`fpu`), F16C (`f16c`)
-- Vector: SSE (`sse`-`sse2`), AVX (`avx`), AVX2 (`avx2`)
-- Fused: FMA3 (`fma`)
-
-**Vector widths:**
-- 128-bit (XMM): SSE, SSE2, SSSE3, SSE4.1, SSE4.2, AES-NI, VAES, SHA-NI, GFNI
-- 256-bit (YMM): AVX, AVX2, FMA, VPCLMULQDQ, AVX-VNNI
-
 ### DERIVED FINDING
 
-- The maximum vector width exposed in the WSL2 guest is **256-bit (YMM)**,
-  corresponding to AVX/AVX2.
-- **AVX-512 (512-bit ZMM)** is NOT present — neither in Intel ARK's
-  specification listing for this SKU nor in the WSL2 guest /proc/cpuinfo flags.
-  Meteor Lake (MTL) deliberately dropped AVX-512 support on consumer SKUs.
-- **AMX (Advanced Matrix Extensions, 2D tile operations)** is NOT present —
-  not listed in Intel ARK's specification for this SKU, and not present in
-  the WSL2 guest /proc/cpuinfo flags. Host-level AMX support is also
-  **UNKNOWN** (cannot be directly verified from within WSL2 guest without
-  host CPUID access).
-- **AVX-VNNI** is present in the guest flags (`avx_vnni`), which corresponds
-  to Intel ARK's "Intel® Deep Learning Boost on CPU: Yes". This is Meteor
-  Lake's primary integer-AI acceleration instruction.
-- **FMA3** is present via the `fma` flag (CPUID.1.ECX bit 12 = RCFGECX_FMA).
-- **VPCLMULQDQ** is present via the `vpclmulqdq` flag (CPUID.7.ECX bit 25),
-  a carryless multiplication vector instruction.
-
-### UNKNOWN
-
-- **AVX-512** support on the physical host: Cannot be definitively confirmed
-  or denied from the WSL2 guest alone. Intel ARK does not list AVX-512 for
-  this SKU (Core Ultra 7 155H / Meteor Lake), and the WSL2 guest does not
-  expose any AVX-512 flags. However, per the evidence hierarchy, only
-  host-level CPUID can provide definitive confirmation. Since Intel's
-  authoritative specification for Meteor Lake consumer SKUs omits AVX-512,
-  and the guest does not expose it, AVX-512 is recorded as **NOT SUPPORTED**
-  per available evidence.
-
-- **AMX** support on the physical host: Cannot be definitively confirmed or
-  denied from the WSL2 guest alone (no `amx-*` flags present). Intel ARK
-  does not list AMX for this SKU. Per available evidence, AMX is recorded
-  as **NOT SUPPORTED** per available evidence.
+- Maximum vector width exposed to the WSL2 guest: **256-bit (YMM)**.
+- **AVX-512 (512-bit ZMM)**: NOT exposed in the WSL2 guest, and Intel ARK
+  does not list AVX-512 for this SKU (Meteor Lake consumer silicon omits AVX-512).
+- **AMX**: NOT exposed in the WSL2 guest, and Intel ARK does not list AMX
+  for this SKU.
+- **AVX-VNNI** present (`avx_vnni`) — matches Intel ARK "Intel DL Boost on CPU: Yes".
+- **FMA3** present (`fma`).
+- **VPCLMULQDQ** present (`vpclmulqdq`).
 
 ---
 
-## 4. Cache Hierarchy
+## 4. Cache Evidence
 
-### PHYSICAL HOST (verified via WMI `Win32_CacheMemory`)
+### VERIFIED FACT — Cache Totals (Host WMI + Intel ARK)
 
-**VERIFIED FACT (Win32_CacheMemory objects, CacheType and NumberOfBlocks × BlockSize=1024):**
+| Cache Level | Value | Source | Status |
+|---|---|---|---|
+| Total L2 | 18 MB | WMI `Win32_Processor`.L2CacheSize = 18,432 KB | VERIFIED |
+| L3 | 24 MB Intel Smart Cache | Intel ARK "Cache: 24 MB Intel Smart Cache"; WMI L3CacheSize = 24,576 KB | VERIFIED |
 
-| Object | CacheType | NumberOfBlocks | BlockSize | Size | Purpose | Role |
-|---|---|---|---|---|---|---|
-| Cache Memory 0 | 4 (Data) | 288 | 1024 | 288,000 B (~288 KB) | L1 Cache | P-core L1D (6 cores × 48 KB) |
-| Cache Memory 1 | 3 (Instr) | 384 | 1024 | 384,000 B (~384 KB) | L1 Cache | P-core L1I (6 cores × 64 KB) |
-| Cache Memory 2 | 5 (Unified) | 12,288 | 1024 | 12,582,912 B (12 MB) | L2 Cache | P-core L2 (6 cores × 2 MB) |
-| Cache Memory 3 | 5 (Unified) | 24,576 | 1024 | 25,165,440 B (24 MB) | L3 Cache | L3 Shared |
-| Cache Memory 4 | 4 (Data) | 320 | 1024 | 320,000 B (~320 KB) | L1 Cache | E-core L1D (10 cores × 32 KB) |
-| Cache Memory 5 | 3 (Instruction) | 640 | 1024 | 640,000 B (~640 KB) | L1 Cache | E-core L1I (10 cores × 64 KB) |
-| Cache Memory 6 | 5 (Unified) | 6,144 | 1024 | 6,291,456 B (6 MB) | L2 Cache | E-core L2 (10 cores shared) |
-| Cache Memory 7 | 5 (Unified) | 24,576 | 1024 | 25,165,440 B (24 MB) | L3 Cache | L3 Shared |
+### VERIFIED FACT — Host WMI Cache Objects
 
-**VERIFIED FACT (WMI `Win32_Processor`):**
+| Object | CacheType | NumberOfBlocks | BlockSize | Size | Purpose |
+|---|---|---|---|---|---|
+| Cache Memory 0 | 4 (Data) | 288 | 1024 | 288 KB | P-core L1D (6 x 48) |
+| Cache Memory 1 | 3 (Instr) | 384 | 1024 | 384 KB | P-core L1I (6 x 64) |
+| Cache Memory 2 | 5 (Unified) | 12,288 | 1024 | 12 MB | P-core L2 (6 x 2 MB) |
+| Cache Memory 3 | 5 (Unified) | 24,576 | 1024 | 24 MB | L3 Shared |
+| Cache Memory 4 | 4 (Data) | 320 | 1024 | 320 KB | E-core L1D (10 x 32) |
+| Cache Memory 5 | 3 (Instruction) | 640 | 1024 | 640 KB | E-core L1I (10 x 64) |
+| Cache Memory 6 | 5 (Unified) | 6,144 | 1024 | 6 MB | E-core L2 (shared) |
+| Cache Memory 7 | 5 (Unified) | 24,576 | 1024 | 24 MB | L3 Shared |
 
-| Property | Value |
-|---|---|
-| L2CacheSize | 18,432 KB (18 MB total) |
-| L3CacheSize | 24,576 KB (24 MB total) |
+### VERIFIED FACT — WSL2 Guest Cache (per visible core)
 
-**VERIFIED FACT (Windows registry `HKLM\HARDWARE\DESCRIPTION\System\CentralProcessor\0`):**
+**VERIFIED FACT (WSL2 guest `/sys/devices/system/cpu/cpu0/cache/index*/size` + `/type`):**
 
-| Property | Value |
-|---|---|
-| FeatureSet | 823868927 (decimal) = 0x311B3DFF |
-
-### Authoritative Source: Intel ARK
-
-**VERIFIED FACT (Intel ARK specification):**
-
-| Cache Level | Intel ARK Specification |
-|---|---|
-| L1 Instruction (per P-core) | 64 KB (derived from 384 KB / 6 P-cores) |
-| L1 Data (per P-core) | 48 KB (derived from 288 KB / 6 P-cores) |
-| L2 (per P-core) | 2 MB (derived from 12,288 KB / 6 P-cores) |
-| L1 Instruction (per E-core) | 64 KB (derived from 640 KB / 10 E-cores) |
-| L1 Data (per E-core) | 32 KB (derived from 320 KB / 10 E-cores) |
-| L2 (per E-core, shared cluster) | ~614 KB average (6,144 KB / 10 E-cores) |
-| L3 (Intel Smart Cache, shared) | 24 MB (per Intel ARK: "Cache: 24 MB Intel® Smart Cache") |
-
-**DERIVED FINDING:**
-
-- **L1 Instruction Cache:** P-cores have 64 KB per core (384 KB / 6 = 64
-  KB). E-cores have 64 KB per core (640 KB / 10 = 64 KB). Both core types
-  have 64 KB L1I per core.
-- **L1 Data Cache:** P-cores have 48 KB per core (288 KB / 6 = 48 KB).
-  E-cores have 32 KB per core (320 KB / 10 = 32 KB). The P-core L1D is
-  50% larger than E-core L1D.
-- **L2 Cache (P-cores):** 2 MB per core (12,288 KB / 6 = 2,048 KB). This is
-  confirmed by the WSL2 guest which shows 2 MB L2 per visible core.
-- **L2 Cache (E-cores):** 6,144 KB total / 10 cores = ~614 KB average per
-  E-core. The E-core L2 is likely shared within E-core clusters (4 cores
-  per cluster), resulting in approximately 576 KB or 640 KB per cluster.
-- **L3 Cache (shared):** 24 MB total, matching Intel ARK's "24 MB Intel®
-  Smart Cache" specification. Both P-core and E-core groups share this
-  unified L3.
-- Total L2 across all cores: 18 MB (12 MB P-core + 6 MB E-core), matching
-  WMI's L2CacheSize of 18,432 KB.
-
-### GUEST / WSL2 (directly observed from guest)
-
-**VERIFIED FACT (WSL2 guest `/sys/devices/system/cpu/cpu0/cache/index*/size`):**
-
-| Cache Level | Type | Size per core |
+| Cache Level | Type | Size per visible core |
 |---|---|---|
 | L1 (index0) | Data | 48 KB |
 | L1 (index1) | Instruction | 64 KB |
@@ -477,23 +451,76 @@ guest /proc/cpuinfo flags):**
 | L2 cache | 8 MiB (4 instances) = 2 MB per core |
 | L3 cache | 24 MiB (1 instance) = 24 MB shared |
 
-**VERIFIED FACT: WSL2 guest confirms P-core cache hierarchy for its 4 visible cores:**
+### VERIFIED FACT — P-core Cache (Host + Guest)
 
-The guest sees 4 cores (a subset of the host's 6 P-cores), each with:
+| Cache | Value | Source | Status |
+|---|---|---|---|
+| P-core L1D | 48 KB per core | WMI Cache Memory 0: 288 KB / 6 P-cores; WSL2 guest cpu0 index0 = 48 KB | VERIFIED |
+| P-core L1I | 64 KB per core | WMI Cache Memory 1: 384 KB / 6 P-cores; WSL2 guest cpu0 index1 = 64 KB | VERIFIED |
+| P-core L2 | 2 MB per core | WMI Cache Memory 2: 12 MB / 6 P-cores; WSL2 guest cpu0 index2 = 2,048 KB; lscpu = 2 MB per core | VERIFIED |
+
+### WSL2 Guest Confirms P-core Cache Hierarchy
+
+The WSL2 guest sees 4 cores (a subset of the host's 6 P-cores), each with:
+
 - L1 Data: 48 KB
 - L1 Instruction: 64 KB
 - L2: 2 MB
-- L3: 24 MB (shared)
+- L3: 24 MB (shared, 1 instance)
 
-This confirms the P-core cache hierarchy observed at the host level.
+This confirms the P-core cache hierarchy for the visible cores.
+
+### DERIVED FINDING — Cache
+
+- Total L2 = 18 MB (WMI L2CacheSize = 18,432 KB), matching the sum of
+  P-core L2 (12 MB) + E-core L2 (6 MB). This total is VERIFIED.
+- L3 = 24 MB Intel Smart Cache (WMI + Intel ARK), VERIFIED.
+- P-core L1/L2 sizes are VERIFIED (WMI objects + guest `/sys` observation).
+
+### PER-CORE L2 BREAKDOWN — Classification
+
+The exact per-core L2 cache distribution across P-cores, E-cores, and LP E-cores
+is classified as follows. The task instructions require that per-core cache sizes
+derived from WMI `NumberOfBlocks` calculations alone must NOT be presented as
+exact architectural facts without validation of their semantics.
+
+| Cache Level | Per-core / per-cluster size | Classification | Basis |
+|---|---|---|---|
+| P-core L1D | 48 KB per core | PARTIALLY VERIFIED | WMI: 288 KB / 6 P-cores = 48 KB; guest cpu0 index0 = 48 KB |
+| P-core L1I | 64 KB per core | PARTIALLY VERIFIED | WMI: 384 KB / 6 P-cores = 64 KB; guest cpu0 index1 = 64 KB |
+| P-core L2 | 2 MB per core | VERIFIED | WMI: 12,288 KB / 6 = 2,048 KB; guest cpu0 index2 = 2,048 KB; lscpu = 2 MB/core |
+| L3 | 24 MB shared | VERIFIED | WMI + Intel ARK "24 MB Intel Smart Cache" |
+| E-core L1D | 32 KB per core | PARTIALLY VERIFIED | WMI: 320 KB / 10 E-cores = 32 KB |
+| E-core L1I | 64 KB per core | PARTIALLY VERIFIED | WMI: 640 KB / 10 E-cores = 64 KB |
+| E-core L2 | ~614 KB average (6 MB / 10) | PARTIALLY VERIFIED | WMI: 6,144 KB / 10 = 614 KB; distribution within clusters unverified |
+| LP E-core L2 | UNKNOWN | UNKNOWN | WMI does not separate LP E-core cache from E-core cache |
+
+**Important:** WMI `NumberOfBlocks x BlockSize` values are used to derive
+per-core averages, but the semantics of whether E-core L2 is per-core or
+shared-per-cluster (4 E-cores per cluster on Meteor Lake) are NOT validated
+by WMI object structure alone. Therefore, exact E-core and LP E-core L2
+distribution is classified as PARTIALLY VERIFIED / UNKNOWN.
+
+### UNKNOWN — Cache
+
+- **Exact E-core L2 cache per-core size:** WMI shows 6,144 KB total for
+  E-core L2 (10 E-cores). Per-core average is ~614 KB, but the actual
+  distribution (shared per cluster vs. per core) cannot be precisely
+  determined from available evidence.
+- **LP E-core cache attribution:** WMI cache objects do not separately
+  identify cache belonging to the 2 LP E-cores vs. the 8 standard E-cores.
+  The 6 MB E-core L2 total encompasses all 10 E-class cores.
+- **Detailed XSAVE state-component bitmap (XCR0):** The guest `/proc/cpuinfo`
+  does not expose the full XSAVE feature state.
+- **CPUID leaves beyond 28:** The guest reports `cpuid level 28` (max leaf).
+  Any host CPUID features in higher leaves that might not be forwarded by the
+  WSL2 hypervisor cannot be enumerated.
 
 ---
 
 ## 5. CPU Frequency / Power Characteristics
 
-### Authoritative Source: Intel ARAK
-
-**VERIFIED FACT (Intel ARK specification for Core Ultra 7 155H):**
+### VERIFIED FACT — SKU / Architecture Capability (Intel ARK)
 
 | Frequency Parameter | Intel ARK Value |
 |---|---|
@@ -508,131 +535,125 @@ This confirms the P-core cache hierarchy observed at the host level.
 | Maximum Turbo Power | 115 W |
 | Minimum Assured Power | 20 W |
 
-### Host-level WMI Evidence
+### VERIFIED FACT — Physical Host Observed (WMI + Registry)
 
-**VERIFIED FACT (WMI `Win32_Processor`):**
+| Property | Value | Source | Note |
+|---|---|---|---|
+| MaxClockSpeed | 1,400 MHz | WMI Win32_Processor | Matches Intel ARK P-core base frequency (1.4 GHz) |
+| CurrentClockSpeed | 1,400 MHz | WMI Win32_Processor | At idle/low load; not a peak measurement |
+| ExtClock | 100 MHz | WMI Win32_Processor | Base clock (BCLK) |
+| MHz | 2995 | Registry HKLM\...\CentralProcessor\0 | Current observed frequency at registry snapshot time |
 
-| Property | Value | Note |
+### VERIFIED FACT — WSL2 Guest Exposed
+
+| Property | Value | Source |
 |---|---|---|
-| MaxClockSpeed | 1,400 MHz | Matches Intel ARK P-core base frequency (1.4 GHz) |
-| CurrentClockSpeed | 1,400 MHz | At idle/low load; not a peak measurement |
-| ExtClock | 100 MHz | Base clock (BCLK) |
+| cpu MHz (per core) | 2,995.198 MHz | `/proc/cpuinfo` |
 
-**VERIFIED FACT (Windows registry `HKLM\HARDWARE\DESCRIPTION\System\CentralProcessor\0`):**
-
-| Property | Value |
-|---|---|
-| MHz | 2995 |
-
-**DERIVED FINDING:**
+### DERIVED FINDING — Frequency
 
 - WMI `MaxClockSpeed` = 1,400 MHz corresponds to Intel ARK's
   "Performance-core Base Frequency: 1.4 GHz". WMI reports the base
   frequency of the primary processor.
-- The registry `MHz` = 2,995 represents the current operating frequency
-  at the time of observation (between base and turbo, indicating the CPU
-  was boosting at the time the registry snapshot was taken).
-- These WMI values are specification/fact values, not performance
-  measurements. No benchmarking was performed.
+- The registry `MHz` = 2,995 and the WSL2 guest `cpu MHz` = 2,995.198
+  represent the current operating frequency at the time of observation
+  (between base and turbo, indicating the CPU was boosting at the time
+  the snapshot was taken). This is NOT a benchmark measurement.
+- The guest cannot observe the P-core vs E-core frequency distinction
+  because it only sees 4 P-cores (all at the same observed frequency).
 - The Intel ARK-specified turbo frequencies (4.8 GHz P-core, 3.8 GHz
   E-core, 2.5 GHz LP E-core) are the manufacturer's maximum rated values,
-  not observed measurements.
+  not observed measurements. No benchmarking was performed.
 
-### GUEST / WSL2 Evidence
+### UNKNOWN — Frequency
 
-**VERIFIED FACT (WSL2 guest `/proc/cpuinfo`):**
-
-| Property | Value |
-|---|---|
-| cpu MHz (per core) | 2,995.198 MHz |
-
-**DERIVED FINDING:**
-
-- The WSL2 guest reports `cpu MHz: 2995.198`, which is the current frequency
-  at the time of observation. This is consistent with the host registry
-  `MHz: 2995` value, confirming the guest and host are observing the same
-  physical CPU core frequency. This is NOT a benchmark measurement.
-- The guest cannot observe the P-core vs E-core frequency distinction because
-  it only sees 4 P-cores (all at the same observed frequency).
+- Peak turbo frequency actually achieved under load (not benchmarked).
+- E-core and LP E-core live frequency (guest only sees P-cores).
 
 ---
 
-## 6. CPU Feature Accessibility
+## 6. Host-vs-Guest Boundary
 
-### Host vs WSL2 Exposure Analysis
+### VERIFIED FACT — Topology Distinction
 
-**VERIFIED FACT:** The physical host CPU is an Intel Core Ultra 7 155H
-(Meteor Lake) with full ISA support as documented by Intel ARK. The CPUID
-instruction on the host would reveal all supported ISA extensions including
-those not exposed by Intel ARK's summary listing.
+| Aspect | SKU (ARK) | Physical Host (WMI) | WSL2 Guest |
+|---|---|---|---|
+| Total cores | 16 (6P+8E+2LP) | 16 | 4 (P-core subset) |
+| Total threads | 22 | 22 | 8 |
+| CPUID family/model | Family 6, Model 170 | Family 6, Model 170 | Family 6, Model 170 |
+| Stepping | 4 | 4 | 4 |
 
-**VERIFIED FACT:** The WSL2 guest environment exposes ISA flags via
-`/proc/cpuinfo` that are a subset of the host's full CPUID capabilities.
-The guest exposes `hypervisor` in its flags, confirming it is running under
-a hypervisor (Microsoft Hyper-V/WSL2).
+The WSL2 guest sees only a subset of the host's physical cores. The guest's
+4C/8T topology is a scheduling allocation within the VM, not the full physical
+host topology.
 
-**VERIFIED FACT (WSL2 guest exposes):**
+### VERIFIED FACT — CPUID Match (Family/Model)
 
-| ISA Feature | Guest Flag | Host Support (ARK) |
+The CPUID family (6), model (170 / 0xAA), and stepping (4) observed in the
+WSL2 guest `/proc/cpuinfo` match the Windows host `Win32_Processor` Caption
+("Intel64 Family 6 Model 170 Stepping 4") and Intel ARK specification.
+This confirms the guest is running on the same physical CPU model.
+
+### VERIFIED FACT — Frequency Consistency
+
+The WSL2 guest `cpu MHz` (2,995.198) is consistent with the host registry
+`MHz` (2995). Both observe the same physical CPU core frequency at the
+same point in time. This confirms the guest and host are observing the
+same physical CPU, but this is a frequency reading, not a full CPUID
+equivalence statement.
+
+### VERIFIED FACT — WSL2 Guest Exposes Listed Features
+
+The WSL2 guest exposes the following CPU features via `/proc/cpuinfo`:
+
+| ISA Feature | Guest Flag | SKU (ARK) |
 |---|---|---|
-| SSE3 | `sse` / `ssse3` | Yes (SSE3/SSSE3) |
-| SSE4.1/SSE4.2 | `sse4_1`, `sse4_2` | Yes |
-| AES-NI | `aes` | Yes |
-| VAES | `vaes` | Yes (via AVX) |
-| AVX | `avx` | Yes |
-| AVX2 | `avx2` | Yes |
-| AVX-VNNI | `avx_vnni` | Yes (DL Boost on CPU) |
-| FPCLMULQDQ / VPCLMULQDQ | `pclmulqdq`, `vpclmulqdq` | Yes |
-| FMA3 | `fma` | Yes |
-| BMI1/BMI2 | `bmi1`, `bmi2` | Yes |
-| SHA-NI | `sha_ni` | Yes |
-| GFNI | `gfni` | Yes |
-| XSAVE family | `xsave`, `xsaveopt`, `xsavec`, `xsaves` | Yes |
+| SSE3/SSSE3 | `ssse3` | Documented |
+| SSE4.1/SSE4.2 | `sse4_1`, `sse4_2` | Documented |
+| AES-NI | `aes` | Documented |
+| VAES | `vaes` | Documented (implied) |
+| AVX | `avx` | Documented (implied) |
+| AVX2 | `avx2` | Documented |
+| AVX-VNNI | `avx_vnni` | Documented (DL Boost) |
+| PCLMULQDQ / VPCLMULQDQ | `pclmulqdq`, `vpclmulqdq` | Documented (implied) |
+| FMA3 | `fma` | Documented (implied) |
+| BMI1/BMI2 | `bmi1`, `bmi2` | Documented (implied) |
+| ADX | `adx` | Documented (implied) |
+| SHA-NI | `sha_ni` | Documented (implied) |
+| GFNI | `gfni` | Documented (implied) |
+| XSAVE family | `xsave`, `xsaveopt`, `xsavec`, `xsaves` | Documented |
 
-**VERIFIED FACT (features absent from WSL2 guest — may or may not be present on host):**
+### VERIFIED FACT — Features Absent from WSL2 Guest
 
-| ISA Feature | Guest Flag | Status |
+| ISA Feature | Guest Flag (absent) | WSL2 Status |
 |---|---|---|
-| AVX-512 (all variants) | none | Absent from guest; Intel ARK does not list AVX-512 for this SKU |
-| AMX (AMX-BF16, AMX-INT8, AMX-TILE) | none | Absent from guest; Intel ARK does not list AMX for this SKU |
-| SGX | none | Not listed in Intel ARK for this SKU |
-| Intel ADX (Multi-Precision) | `adx` | Present in guest |
+| AVX-512 (all variants) | none | NOT EXPOSED |
+| AMX (AMX-BF16, AMX-INT8, AMX-TILE) | none | NOT EXPOSED |
+| SGX | none | NOT EXPOSED |
+| SSE4a | none | NOT EXPOSED (AMD-specific) |
+| FMA4 | none | NOT EXPOSED (AMD-specific) |
+| XOP | none | NOT EXPOSED (AMD-specific) |
 
-**DERIVED FINDING:**
+### Host-vs-Guest Equivalence — Classification
 
-- The WSL2 hypervisor does not mask or filter individual CPUID feature flags
-  beyond its standard virtualization. The guest's `/proc/cpuinfo` flags
-  faithfully reflect the host CPUID flag set, with the addition of
-  `hypervisor` to indicate virtualization.
-- Features absent from the guest flags are also absent from Intel ARK's
-  specification listing for this SKU, suggesting the host CPU itself does
-  not support them.
-- The `vmx` flag is present in the guest, but this only indicates the CPU
-  supports VMX (virtualization) instructions. WSL2 itself is a guest under
-  Hyper-V, so nested virtualization in the guest is not directly usable.
+```text
+VERIFIED:
+The WSL2 guest exposes the listed CPU features in Section 2
+(SKU / Architecture Capability, Physical Host Observed Capability,
+WSL2 Guest Exposed Capability).
 
-**UNKNOWN:**
+UNKNOWN:
+Whether the guest exposes the complete physical-host CPU feature set.
+WSL2 does not provide a direct CPUID interface to the guest; the
+guest's `/proc/cpuinfo` flags reflect what the Hyper-V/WSL2 hypervisor
+chooses to expose, which may be a filtered or partial view of host CPUID.
+```
 
-- Whether the physical host supports AVX-512 extensions: The WSL2 guest
-  does not expose AVX-512 flags, and Intel ARK does not list AVX-512 for
-  the Core Ultra 7 155H. However, definitive confirmation requires direct
-  host CPUID access, which is not available from within the WSL2 environment.
-  Per available evidence (Intel ARK + guest flags), AVX-512 is assessed
-  as **not supported** for this SKU.
-
-- Whether the physical host supports AMX (Advanced Matrix Extensions):
-  The WSL2 guest does not expose AMX flags, and Intel ARK does not list
-  AMX for this SKU. Per available evidence, AMX is assessed as **not
-  supported** for this SKU. Note: Intel ARK's "Instruction Set Extensions"
-  summary lists only "Intel® SSE4.1, Intel® SSE4.2, Intel® AVX2", which
-  may be a simplified listing. The actual CPUID leaf 7 features (including
-  AVX-VNNI, VPCLMULQDQ, etc.) are confirmed via the guest flags.
-
-- Detailed Intel DL Boost VNNI capabilities beyond AVX-VNNI: Intel ARK lists
-  "Intel® Deep Learning Boost (Intel® DL Boost) on CPU: Yes" but does not
-  specify which specific VNNI variant. The guest flags confirm `avx_vnni`
-  (AVX-VNNI), but other DL Boost features (e.g., VNNI on AVX-512) are
-  contingent on AVX-512 support, which is not present.
+**NOT CLAIMED:** "WSL2 faithfully exposes host CPUID flags."
+There is insufficient direct evidence for exact host/guest CPUID equivalence.
+The guest `hypervisor` flag confirms virtualization. The guest sees 4C/8T
+not 16C/22T, demonstrating that the WSL2 hypervisor presents a filtered
+view of host topology. Feature flags may similarly be filtered.
 
 ---
 
@@ -640,144 +661,162 @@ a hypervisor (Microsoft Hyper-V/WSL2).
 
 ### VERIFIED FACT
 
-Directly observed or authoritative capability:
+**SKU / Architecture Capability (Intel ARK):**
 
-**HOST (via WMI `Win32_Processor` + registry + Intel ARK):**
+- CPU model: Intel Core Ultra 7 155H
+- CPU generation: Meteor Lake (Series 1), Intel 4 lithography
+- 6 P-cores + 8 E-cores + 2 LP E-cores = 16 cores, 22 threads
+- Intel 64: Yes
+- AVX2: Yes (documented by Intel ARK)
+- AES-NI: Yes (documented by Intel ARK)
+- DL Boost (AVX-VNNI): Yes (documented by Intel ARK)
+- SSE4.1 / SSE4.2: Yes (documented by Intel ARK)
+- AVX-512: NOT documented by Intel ARK for this SKU
+- AMX: NOT documented by Intel ARK for this SKU
+- VT-x: Yes (documented by Intel ARK)
+- VT-d: Yes (documented by Intel ARK)
+- Cache: 24 MB Intel Smart Cache (L3)
+- Frequency: P-core base 1.4 GHz / turbo 4.8 GHz; E-core base 900 MHz / turbo 3.8 GHz; LP E-core base 700 MHz / turbo 2.5 GHz
+- Power: 28W base, 115W max turbo, 20W min assured
+
+**Physical Host (via WMI `Win32_Processor` + registry):**
 
 - CPU model: `Intel(R) Core(TM) Ultra 7 155H`
-- CPU generation: Meteor Lake (Series 1), Intel 4 lithography — per Intel ARK
 - CPUID: Family 6, Model 170 (0xAA), Stepping 4
-- Host topology: 16 physical cores (6P + 8E + 2LP), 22 logical processors
+- Host topology: 16 cores, 22 logical processors
 - Host L2 cache total: 18,432 KB (18 MB)
-- Host L3 cache total: 24,576 KB (24 MB) — "24 MB Intel Smart Cache" per ARK
+- Host L3 cache total: 24,576 KB (24 MB)
 - Host socket: U3E1, single socket
 - Host architecture: x86_64 (64-bit)
 - Host base clock (ExtClock): 100 MHz
 - WMI MaxClockSpeed: 1,400 MHz = P-core base frequency (ARK: 1.4 GHz)
-- Cache hierarchy: P-core L1D=48KB, L1I=64KB, L2=2MB; E-core L1D=32KB, L1I=64KB, L2≈576KB; L3=24MB shared
-- Intel ARK ISA: 64-bit, SSE4.1, SSE4.2, AVX2, AES-NI, DL Boost (VNNI), AVX, FMA, Hyper-Threading, VT-x, VT-d, EPT, SpeedShift, Turbo Boost 2.0
-- Intel ARK frequencies: P-core base 1.4 GHz / turbo 4.8 GHz, E-core base 900 MHz / turbo 3.8 GHz, LP E-core base 700 MHz / turbo 2.5 GHz
-- Intel ARK power: Base 28W, Turbo max 115W, Min assured 20W
+- Registry MHz: 2,995 (current observed frequency)
+- Registry FeatureSet bitmask: `0x311B3DFF` (CPUID leaf 1 subset)
 
-**GUEST (WSL2 via `/proc/cpuinfo`, `lscpu`, `/sys/devices/system/cpu`):**
+**WSL2 Guest (via `/proc/cpuinfo`, `lscpu`, `/sys/devices/system/cpu`):**
 
-- CPU model string: `Intel(R) Core(TM) Ultra 7 155H` (same as host)
+- CPU model string: `Intel(R) Core(TM) Ultra 7 155H` (same model as host)
 - CPUID: family 6, model 170, stepping 4 (same as host)
-- WSL2 exposes: 4 cores, 8 logical processors (subset of host 16C/22T)
+- Guest exposes: 4 cores, 8 logical processors (subset of host 16C/22T)
 - cpuid level: 28 (highest leaf)
-- L1d cache: 48 KB per visible core
-- L1i cache: 64 KB per visible core
-- L2 cache: 2 MB per visible core
-- L3 cache: 24 MB shared (1 instance)
-- ISA flags present: fpu, vme, de, pse, tsc, msr, pae, mce, cx8, apic, sep, mtrr, pge, mca, cmov, pat, pse36, clflush, mmx, fxsr, sse, sse2, ss, ht, syscall, nx, pdpe1gb, rdtscp, lm, constant_tsc, rep_good, nopl, xtopology, tsc_reliable, nonstop_tsc, cpuid, pni, pclmulqdq, vmx, ssse3, fma, cx16, pcid, sse4_1, sse4_2, x2apic, movbe, popcnt, tsc_deadline_timer, aes, xsave, avx, f16c, rdrand, hypervisor, lahf_lm, abm, 3dnowprefetch, invpcid_single, ssbd, ibrs, ibpb, stibp, ibrs_enhanced, tpr_shadow, vnmi, ept, vpid, ept_ad, fsgsbase, tsc_adjust, bmi1, avx2, smep, bmi2, erms, invpcid, rdseed, adx, smap, clflushopt, clwb, sha_ni, xsaveopt, xsavec, xgetbv1, xsaves, avx_vnni, umip, waitpkg, gfni, vaes, vpclmulqdq, rdpid, movdiri, movdir64b, fsrm, md_clear, serialize, flush_l1d, arch_capabilities
 - Virtualization: VT-x, Hypervisor vendor: Microsoft, Virtualization type: full
-- Address sizes: 46 bits physical, 48 bits virtual
+- L1d cache per visible core: 48 KB
+- L1i cache per visible core: 64 KB
+- L2 cache per visible core: 2 MB
+- L3 cache: 24 MB (1 shared instance)
+- ISA flags present: fpu, vme, de, pse, tsc, msr, pae, mce, cx8, apic, sep, mtrr, pge, mca, cmov, pat, pse36, clflush, mmx, fxsr, sse, sse2, ss, ht, syscall, nx, pdpe1gb, rdtscp, lm, constant_tsc, rep_good, nopl, xtopology, tsc_reliable, nonstop_tsc, cpuid, pni, pclmulqdq, vmx, ssse3, fma, cx16, pcid, sse4_1, sse4_2, x2apic, movbe, popcnt, tsc_deadline_timer, aes, xsave, avx, f16c, rdrand, hypervisor, lahf_lm, abm, 3dnowprefetch, invpcid_single, ssbd, ibrs, ibpb, stibp, ibrs_enhanced, tpr_shadow, vnmi, ept, vpid, ept_ad, fsgsbase, tsc_adjust, bmi1, avx2, smep, bmi2, erms, invpcid, rdseed, adx, smap, clflushopt, clwb, sha_ni, xsaveopt, xsavec, xgetbv1, xsaves, avx_vnni, umip, waitpkg, gfni, vaes, vpclmulqdq, rdpid, movdiri, movdir64b, fsrm, md_clear, serialize, flush_l1d, arch_capabilities
+- ISA flags absent: AVX-512 (all variants), AMX (all variants), SGX, SSE4a, FMA4, XOP
 
 ### DERIVED FINDING
 
-Safe interpretations grounded in verified facts and authoritative documentation:
-
-- **CPU generation:** The Intel Core Ultra 7 155H is a Meteor Lake
-  (Series 1) processor per Intel ARK, not Lunar Lake. (Confirmed in T2.1.)
-- **Core topology:** 6 P-cores + 8 E-cores + 2 LP E-cores = 16 cores,
-  22 threads. Hyper-Threading is enabled only on P-cores (6×2=12 +
-  8+2=10 non-HT = 22 total threads).
-- **ISA extensions present:** The CPU supports SSE through SSE4.2, AVX,
-  AVX2, FMA3, AES-NI, VAES, VPCLMULQDQ, AVX-VNNI (DL Boost), BMI1/2, ADX,
-  SHA-NI, GFNI, and all associated state-management instructions
-  (XSAVE/XRSTOR). Maximum vector width is 256-bit (YMM).
-- **ISA extensions absent:** AVX-512 (all variants), AMX
-  (AMX-BF16, AMX-INT8, AMX-TILE), SGX, SSE4a, FMA4, XOP are NOT supported
-  by this SKU — confirmed by both Intel ARK specification and absence from
-  guest /proc/cpuinfo flags.
-- **Cache hierarchy:** P-cores have private 48 KB L1D + 64 KB L1I + 2 MB L2.
-  E-cores have private 32 KB L1D + 64 KB L1I + shared (~576 KB–614 KB) L2.
-  A shared 24 MB Intel Smart Cache (L3) serves all cores. Total L2 = 18 MB.
-- **Frequency characteristics:** P-core base 1.4 GHz, P-core turbo up to
-  4.8 GHz. E-core base 900 MHz, E-core turbo up to 3.8 GHz. LP E-core base
-  700 MHz, LP E-core turbo up to 2.5 GHz. Power: 28W base, 115W max turbo.
-- **Host vs guest:** The WSL2 guest faithfully exposes the host CPUID flags
-  with no filtering of feature bits (apart from adding `hypervisor`). The
-  guest's 4C/8T topology is a scheduling subset of the host's 16C/22T.
-  Cache sizes per visible core match P-core specifications (48 KB L1D,
-  64 KB L1I, 2 MB L2, 24 MB L3).
+- CPU generation: Intel Core Ultra 7 155H is a Meteor Lake (Series 1)
+  processor per Intel ARK, not Lunar Lake.
+- Core topology: 6 P-cores + 8 E-cores + 2 LP E-cores = 16 cores,
+  22 threads (per Intel ARK). Hyper-Threading is enabled only on P-cores
+  (6x2=12 + 8+2=10 non-HT = 22 total threads).
+- ISA extensions present (WSL2 guest): SSE through SSE4.2, AVX, AVX2, FMA3,
+  AES-NI, VAES, VPCLMULQDQ, AVX-VNNI (DL Boost), BMI1/2, ADX, SHA-NI, GFNI,
+  and all associated state-management instructions (XSAVE/XRSTOR).
+  Maximum vector width is 256-bit (YMM).
+- ISA extensions NOT exposed in WSL2 guest and NOT documented by Intel ARK
+  for this SKU: AVX-512 (all variants), AMX (all variants).
+- Cache hierarchy (VERIFIED for totals): Total L2 = 18 MB (WMI), L3 = 24 MB
+  Intel Smart Cache (WMI + Intel ARK). P-core L1/L2 sizes are VERIFIED
+  (WMI objects + guest `/sys` observation). E-core and LP E-core per-core
+  cache attribution is PARTIALLY VERIFIED / UNKNOWN.
+- Frequency: P-core base 1.4 GHz (WMI MaxClockSpeed matches), P-core turbo
+  up to 4.8 GHz, E-core base 900 MHz, E-core turbo up to 3.8 GHz, LP E-core
+  base 700 MHz, LP E-core turbo up to 2.5 GHz (Intel ARK). Current observed
+  frequency at ~2,995 MHz (host registry + guest `/proc/cpuinfo`).
+- Host vs guest: The WSL2 guest exposes a subset of the host's physical
+  cores (4C/8T vs 16C/22T). The CPUID family/model/stepping match between
+  guest, host, and Intel ARK.
 
 ### UNKNOWN
 
-Values that cannot be established from available evidence:
+- **AVX-512 support on the physical host:** Cannot be definitively confirmed
+  without direct host-level CPUID access. Intel ARK does not document AVX-512
+  for this SKU (Core Ultra 7 155H / Meteor Lake), and the WSL2 guest does not
+  expose AVX-512 flags. The guest's absence of AVX-512 is NOT sufficient to
+  conclude the host lacks AVX-512 — it is recorded as UNKNOWN / NOT DIRECTLY
+  OBSERVED.
 
-- **AVX-512 host support:** Cannot be definitively confirmed without
-  direct host-level CPUID access. Intel ARK does not list AVX-512 for this
-  SKU, and the guest does not expose AVX-512 flags. Assessed as not
-  supported per available evidence, but definitive confirmation requires
-  host CPUID.
-- **AMX host support:** Same limitation as AVX-512. Intel ARK does not
-  list AMX for this SKU, and guest flags do not include AMX. Assessed as
-  not supported per available evidence.
-- **Exact E-core L2 cache per-core size:** The WMI cache objects show
-  6,144 KB total for E-core L2 (10 E-cores). Per-core average is ~614 KB,
-  but the actual distribution (shared per cluster vs. per core) cannot be
-  precisely determined from available evidence.
-- **Detailed XSAVE state-component bitmap (XCR0):** The guest /proc/cpuinfo
-  does not expose the full XSAVE feature state. Specific state components
-  (e.g., AVX state, AVX-512 state, AMX state) beyond what the flags show
+- **AMX support on the physical host:** Cannot be definitively confirmed
+  without direct host-level CPUID access. Intel ARK does not document AMX
+  for this SKU, and the WSL2 guest does not expose AMX flags. The guest's
+  absence of AMX is NOT sufficient to conclude the host lacks AMX — it is
+  recorded as UNKNOWN / NOT DIRECTLY OBSERVED.
+
+- **Exact E-core L2 cache per-core size:** WMI shows 6,144 KB total for
+  E-core L2 (10 E-cores). Per-core average is ~614 KB, but the actual
+  distribution (shared per cluster vs. per core) cannot be precisely
+  determined from available evidence.
+
+- **LP E-core cache attribution:** WMI cache objects do not separately
+  identify cache belonging to the 2 LP E-cores vs. the 8 standard E-cores.
+
+- **Detailed XSAVE state-component bitmap (XCR0):** Not exposed in guest
+  `/proc/cpuinfo`.
+
+- **CPUID leaves beyond 28:** Guest reports cpuid level 28 (max leaf).
+  Higher-leaf host CPUID features that might not be forwarded by WSL2
   cannot be enumerated.
-- **CPUID leaves beyond 28:** The guest reports cpuid level 28 (max leaf).
-  Any host CPUID features in higher leaves that might not be forwarded by
-  the WSL2 hypervisor cannot be enumerated.
+
+- **Host feature bitmask beyond CPUID leaf 1:** The Windows registry
+  `FeatureSet` (`0x311B3DFF`) encodes only CPUID leaf 1 feature flags
+  (CPUID.1.EDX and low CPUID.1.ECX bits). It does NOT encode extended
+  features from CPUID leaf 7 or higher. Extended host ISA features
+  (AVX-VNNI, VPCLMULQDQ, etc.) cannot be confirmed from the host
+  FeatureSet bitmask alone.
 
 ---
 
 ## Scope Boundary
 
-This task is strictly limited to **CPU capability inventory**. The following
-activities were deliberately NOT performed:
+This task is strictly limited to **CPU capability evidence reconciliation**.
+The following activities were deliberately NOT performed:
 
-- NO GPU capability analysis — belongs to SET2-T2.4
-- NO NPU capability analysis — belongs to SET2-T2.5
-- NO system memory reconnaissance — belongs to SET2-T2.3
-- NO runtime API reconnaissance — belongs to SET2-T2.6
-- NO benchmarking
-- NO inference testing
-- NO workload placement research
-- NO scheduling research
-- NO optimization
-- NO kernel design
-- NO operator mapping
+- No GPU capability analysis — belongs to SET2-T2.4
+- No NPU capability analysis — belongs to SET2-T2.5
+- No system memory reconnaissance — belongs to SET2-T2.3
+- No runtime API reconnaissance — belongs to SET2-T2.6
+- No benchmarking
+- No inference testing
+- No workload placement research
+- No scheduling research
+- No optimization
+- No kernel design
+- No operator mapping
 
 ---
 
 ## Acceptance Result
 
 ```text
-SET2-T2.2: ✅ PASS
+SET2-T2.2:  ⚠ PARTIAL
 
-Scope boundary respected:
-- No GPU reconnaissance performed
-- No NPU reconnaissance performed
-- No memory reconnaissance performed
-- No runtime API reconnaissance performed
-- No benchmarking performed
-- No inference performed
-- No workload placement
-- No scheduling
-- No optimization
+SET2-T2.2-R1:  ⚠ PARTIAL
+
+SET2-T2.3:  ⏸ BLOCKED
 ```
 
 ### Acceptance Criteria Checklist
 
 - [x] Roadmap persisted before CPU inspection
-- [x] Physical host CPU used as primary source
-- [x] WSL2 guest topology not treated as host topology
-- [x] CPU topology verified (16 cores, 22 threads)
-- [x] P/E/LP-E topology verified (6P + 8E + 2LP = 16 cores, 22 threads)
+- [x] SKU / Architecture capability distinguished from host observed capability
+- [x] Physical host evidence distinguished from WSL2 guest evidence
+- [x] CPU topology verified (16 cores, 22 threads — host WMI; 4C/8T — guest)
+- [x] P/E/LP-E topology verified (6P + 8E + 2LP = 16 cores, 22 threads — Intel ARK)
 - [x] ISA capability evidence collected (Intel ARK + guest /proc/cpuinfo flags)
-- [x] SIMD/vector capability evidence collected (256-bit YMM, no AVX-512, no AMX)
-- [x] Cache hierarchy established (L1D/L1I/L2/L3, P-core vs E-core)
-- [x] Frequency characteristics established (base + turbo per core type per Intel ARK)
-- [x] Host vs guest exposure distinguished
+- [x] SIMD/vector capability evidence collected (256-bit YMM verified; AVX-512/AMX classified UNKNOWN / NOT EXPOSED)
+- [x] Cache hierarchy established (L1D/L1I/L2/L3 totals VERIFIED; P-core per-core VERIFIED; E-core/LP-E per-core PARTIALLY VERIFIED / UNKNOWN)
+- [x] Frequency characteristics established (base + turbo per core type per Intel ARK; observed frequency per host registry + guest)
+- [x] Host vs guest exposure distinguished (topology, feature flags, frequency)
+- [x] Host-equivalence claim removed / downgraded ("WSL2 faithfully exposes host CPUID flags" NOT claimed)
+- [x] AVX-512 / AMX host classification corrected (UNKNOWN / NOT DIRECTLY OBSERVED — not "NOT SUPPORTED")
+- [x] Per-core cache breakdown classified (P-core VERIFIED; E-core/LP-E PARTIALLY VERIFIED / UNKNOWN)
+- [x] Required evidence fields present: CPU identity, SKU capability, host evidence, guest evidence, feature matrix, cache evidence, frequency evidence, host-vs-guest boundary, VERIFIED FACT, DERIVED FINDING, UNKNOWN
 - [x] No GPU/NPU/memory reconnaissance performed
 - [x] No benchmarking
 - [x] No optimization
-- [x] Canonical T2.2 document created
 - [x] No T2.3/T2.4/T2.5 documents created

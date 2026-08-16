@@ -141,7 +141,7 @@ These two identities are related but must not be conflated.
 
 ---
 
-## 5. Identity Reconciliation
+## 5. Identity Reconciliation (SET0-T03-R1)
 
 An apparent discrepancy was identified:
 
@@ -160,10 +160,47 @@ model_type:
 qwen3_5
 ```
 
-This discrepancy was independently investigated in:
+This finding was independently investigated in SET0-T03-R1:
 
 ```text
 model/official/IDENTITY-RECONCILIATION.md
+```
+
+### Official Evidence
+
+1. HuggingFace API tags for the pinned revision include "qwen3_5" as a repository tag, published by author "Qwen".
+2. Official README.md (model card) at the pinned revision states: "Built on the architectural foundation of Qwen3.5, Qwen3.8 delivers substantial gains across coding, professional work, research, and long-horizon agentic tasks."
+3. The README is titled "# Qwen3.8-27B" and describes the model as "the most capable generation in the Qwen open-model family to date," following "the widespread community adoption of the Qwen3.5 and Qwen3.6 series."
+4. The config.json architectures field "Qwen3_5ForConditionalGeneration" and model_type "qwen3_5" derive from the Qwen3.5 architecture base, not a mismatch.
+
+### Reason
+
+The official README explicitly states Qwen3.8 is "built on the architectural
+foundation of Qwen3.5." The config.json identifiers (Qwen3_5ForConditionalGeneration,
+qwen3_5, qwen3_5_text) reflect this shared architecture implementation
+lineage: Qwen3.8 reuses the Qwen3.5 model class and config schema because
+it is architected on the same foundation. The repository identity
+(Qwen/Qwen3.8-27B) represents the model release generation, while the
+architecture identifiers represent the implementation lineage. This is
+repository-naming versus internal-implementation-naming, confirmed by the
+model card's own description.
+
+### Reconciliation Result
+
+```text
+CONSISTENT WITH ARCHITECTURAL LINEAGE
+```
+
+Confidence:
+
+```text
+HIGH
+```
+
+Scope:
+
+```text
+SET0-T03-R1 ONLY
 ```
 
 The official Qwen3.8 artifact documentation states that Qwen3.8 is built
@@ -172,18 +209,6 @@ on the architectural foundation of Qwen3.5.
 Therefore the presence of the Qwen3.5-derived implementation identifiers
 is consistent with the official artifact and is not evidence that the
 wrong model repository was obtained.
-
-### Reconciliation Result
-
-```text
-CONSISTENT WITH ARCHITECTURAL / IMPLEMENTATION LINEAGE
-```
-
-Confidence:
-
-```text
-HIGH
-```
 
 ---
 

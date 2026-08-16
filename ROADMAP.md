@@ -8,7 +8,7 @@
 - Last control update: 2026-08-16
 - Current integrated branch: `main`
 - Current integrated commit: `c0c6244abcea30255ead52fdfdea65c559f8eed1`
-- Current project phase: **SET 0 closure integrated; transition control pending**
+- Current project phase: **SET 0 closure integrated and formally closed; SET 1 readiness gate pending**
 - SET 1 execution: **NOT STARTED**
 
 ---
@@ -21,7 +21,8 @@ PROJECT
 ├── SET 0 — Model Reconnaissance
 │   ✅ TECHNICAL COMPLETE
 │   ✅ MERGED TO MAIN
-│   🔜 ROADMAP PERSISTENCE / CONTROL SYNC
+│   ✅ ROADMAP PERSISTED
+│   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 1 — Tensor / Byte-Level Audit
 │   🔒 NOT STARTED
@@ -233,7 +234,8 @@ Hardware-specific placement
 Technical work:                    ✅ COMPLETE
 Branch integration:                ✅ MERGED TO MAIN
 Technical closure evidence:        ✅ VERIFIED
-Formal roadmap persistence:        🔜 NEXT
+Roadmap persistence:               ✅ VERIFIED
+Formal SET 0 closure:              ✅ COMPLETE
 ```
 
 ---
@@ -260,9 +262,9 @@ Execution dependency: 🧠→🛠 LUNA → EXECUTOR
 SET 1 must not begin until:
 
 ```text
-[ ] ROADMAP.md is persisted to the shared repository
-[ ] ROADMAP.md is remotely verified
-[ ] SET 0 remains consistent with main
+[x] ROADMAP.md is persisted to the shared repository
+[x] ROADMAP.md is remotely verified
+[x] SET 0 remains consistent with main
 [ ] SET 1 readiness gate passes
 ```
 
@@ -482,13 +484,13 @@ MAIN HEAD:
 c0c6244abcea30255ead52fdfdea65c559f8eed1
 
 CURRENT NEXT TASK:
-ROADMAP-PERSIST-MAIN
+SET1-READINESS-GATE
 
 NEXT TASK OWNER:
-🛠 EXECUTOR
+🧠 LUNA
 
 NEXT CONTROL TASK AFTER ROADMAP PERSISTENCE:
-SET1-READINESS-GATE
+(no pending transition — SET 0 formally closed; gate is SET1-READINESS-GATE)
 
 SET 1 EXECUTION:
 NOT STARTED

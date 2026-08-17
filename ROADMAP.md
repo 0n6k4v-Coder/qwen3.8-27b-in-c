@@ -11,7 +11,7 @@
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **ACTIVE**
-* Current control task: **SET2-T2.5**
+* Current control task: **SET2-T2.4-R1**
 
 ---
 
@@ -467,10 +467,13 @@ SET2-T2.3-R1:
 ✅ PASS
 
 SET2-T2.4:
-✅ PASS
+⚠ PARTIAL — REQUIRES CORRECTION
+
+SET2-T2.4-R1:
+🔜 NEXT
 
 SET2-T2.5:
-🔜 NEXT
+⏸ BLOCKED
 
 SET2-T2.6:
 🔒 NOT STARTED
@@ -523,7 +526,7 @@ SET2-T2.2-R1:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.5
+SET2-T2.4-R1
 
 NEXT TASK OWNER:
 🛠 EXECUTOR
@@ -1443,7 +1446,7 @@ SET2-READINESS-GATE:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.5
+SET2-T2.4-R1
 
 NEXT TASK OWNER:
 🛠 EXECUTOR

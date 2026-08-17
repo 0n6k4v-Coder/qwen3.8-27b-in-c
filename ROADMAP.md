@@ -1636,7 +1636,7 @@ SET 2:
 🟢 READY FOR EXECUTION
 
 Current next task:
-SET2-T2.5
+SET2-T2.4-R2
 
 SET2-T2.1:
 ✅ PASS

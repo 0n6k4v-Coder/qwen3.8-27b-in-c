@@ -1013,9 +1013,9 @@ constraint, not a mismatch in the project target definition.
 | 21 | canonical T2.4 evidence updated | PASS | This document (SET2-T2.4-R1) |
 | 22 | local diff verified | PASS | `git diff --check` clean |
 | 23 | only intended files committed | PASS | Only ROADMAP.md and 04-intel-gpu-reconnaissance.md staged |
-| 24 | commit created | PENDING | (to be completed at final commit) |
-| 25 | push succeeded | PENDING | (to be completed at final push) |
-| 26 | remote evidence verified | PENDING | (to be completed at remote verification) |
+| 24 | commit created | PASS | Commit `e6a03d2` `docs(set2): reconcile intel gpu evidence` |
+| 25 | push succeeded | PASS | `git push origin HEAD` succeeded; origin/main at `e6a03d2` |
+| 26 | remote evidence verified | PASS | origin/main contains both commit `e3e5259` (ROADMAP) and `e6a03d2` (evidence); required terms verified on remote |
 
 ### Acceptance Result
 

@@ -879,7 +879,7 @@ INTEL GPU CAPABILITY MATRIX
 
 **Responsibility:** 🛠 EXECUTOR
 
-**Status:** 🔜 NEXT
+**Status:** ⏸ BLOCKED
 
 **Dependency:** `SET2-T2.1 PASS`
 

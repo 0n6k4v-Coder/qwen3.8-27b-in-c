@@ -55,9 +55,14 @@ Physical installed RAM ≠ Host OS visible RAM ≠ WSL2 guest-visible RAM
 
 ### Authoritative documentation
 
-- DMTF SMBIOS Specification — Type 17 (Memory Device): `MemoryType` field
-  value 35 = DDR5; `MemoryType` value 0 = Unknown (not specified by SMBIOS).
-  `SMBIOSMemoryType` value 35 = DDR5.
+- DMTF SMBIOS Specification — Type 17 (Memory Device): `MemoryType` field.
+  Per the DMTF SMBIOS Type 17 enumeration (as implemented in dmidecode,
+  DSP0135): value 34 = DDR5; value 35 = LPDDR5. `MemoryType` value 0 =
+  Unknown (not specified by SMBIOS). The raw SMBIOS code reported by the
+  host is 35 (hex 0x23), which the DMTF enumeration maps to LPDDR5.
+  However, SMBIOS code alone does not independently establish the actual
+  installed memory technology — the actual technology is classified as
+  PARTIALLY VERIFIED (see Section 4).
 - DMTF SMBIOS Specification — Type 16 (Physical Memory Array):
   `MemoryErrorCorrection` value 3 = None; `Use` value 3 = System Memory;
   `Location` value 3 = System Board/Motherboard.
@@ -291,7 +296,8 @@ memory and WSL2 guest memory (~15.99 GiB vs ~11.67 GiB) is caused by the
 - **Module capacities:** 8 GB each, 16 GB total.
 - **Manufacturer:** Samsung (both modules).
 - **Part number:** K3KL8L80CM-MGCT (both modules — identical modules).
-- **Memory type:** DDR5 (SMBIOSMemoryType=35; see Section 4).
+- **Memory type:** SMBIOS code 35 (see Section 4 for full analysis;
+  classified as PARTIALLY VERIFIED).
   - Both modules are identical: same Samsung part number, same capacity,
     same speed.
   - `FormFactor=0` means "Unknown" per SMBIOS spec — the SODIMM form factor
@@ -318,25 +324,51 @@ memory and WSL2 guest memory (~15.99 GiB vs ~11.67 GiB) is caused by the
 
 | Module | SMBIOSMemoryType | Interpretation |
 |--------|-----------------|----------------|
-| 1 | 35 | DDR5 |
-| 2 | 35 | DDR5 |
+| 1 | 35 | LPDDR5 (per DMTF SMBIOS Type 17, code 0x23) |
+| 2 | 35 | LPDDR5 (per DMTF SMBIOS Type 17, code 0x23) |
+
+**Observed SMBIOS code:** 35 (hex 0x23)
+
+**Semantic interpretation:** LPDDR5 — according to the DMTF SMBIOS Type 17
+`MemoryType` enumeration, as confirmed by the dmidecode reference implementation
+(DSP0135). Code 34 (0x22) = DDR5; code 35 (0x23) = LPDDR5.
+
+> **IMPORTANT — Classification:** While the SMBIOS code 35 maps to LPDDR5 per
+> the DMTF enumeration, this does **not** independently verify the actual
+> installed memory technology. Intel ARK documents that the Core Ultra 7 155H
+> supports **both** DDR5 (up to 5600 MT/s) **and** LPDDR5x (up to 7467 MT/s).
+> CPU SKU support alone does not establish which physical memory technology is
+> installed. Additionally, the Samsung part number (K3KL8L80CM-MGCT) was not
+> independently confirmed via a separate authoritative source during this
+> reconnaissance. The memory technology is therefore classified as
+> **PARTIALLY VERIFIED** — the SMBIOS code is observed, but the actual
+> installed technology is not independently confirmed beyond the SMBIOS
+> enumeration itself.
 
 Per the DMTF SMBIOS Specification (Type 17, Memory Device), the
-`SMBIOSMemoryType` field values are:
+`MemoryType` field values for relevant codes are:
 
-| Value | Memory Type |
-|-------|-------------|
-| 24 | DDR (SDRAM) |
-| 25 | DDR2 |
-| 26 | DDR3 |
-| 27 | DDR3 (FBDIMM) |
-| 28 | DDR4 (SO-DIMM) |
-| 29 | DDR4 (RDimm) |
-| 30 | DDR4 (LRDIMM) |
-| 33 | DDR5 |
-| 34 | DDR5 (FBDIMM) |
-| 35 | LPDDR5 |
-| 36 | LPDDR5 (FBDIMM) |
+| Value (hex) | Value (decimal) | Memory Type |
+|-------------|-----------------|-------------|
+| 0x22 (34)   | 34              | DDR5        |
+| 0x23 (35)   | 35              | LPDDR5      |
+| 0x24 (36)   | 36              | HBM3        |
+
+Full DMTF Type 17 MemoryType enumeration:
+
+| Value (hex) | Memory Type |
+|-------------|-------------|
+| 0x12 (18)   | DDR         |
+| 0x13 (19)   | DDR2        |
+| 0x18 (24)   | DDR3        |
+| 0x19 (25)   | FBD2        |
+| 0x1A (26)   | DDR4        |
+| 0x1B (27)   | LPDDR       |
+| 0x1C (28)   | LPDDR2      |
+| 0x1D (29)   | LPDDR3      |
+| 0x1E (30)   | LPDDR4      |
+| 0x22 (34)   | DDR5        |
+| 0x23 (35)   | LPDDR5      |
 
 ### VERIFIED FACT (host — `Win32_PhysicalMemory.MemoryType`)
 
@@ -361,38 +393,29 @@ Memory Types: DDR5-5600, LPDDR5x-7467
 
 ### DERIVED FINDING
 
-- **SMBIOSMemoryType=35:** Per the DMTF SMBIOS specification, value 35
-  in the Type 17 Memory Device `MemoryType` field corresponds to **LPDDR5**
-  (Low Power DDR5).
-- Wait — re-checking the SMBIOS spec mapping: the `SMBIOSMemoryType` field
-  values are per the DMTF DSP0135 SMBIOS specification Type 17. The
-  correct mapping is:
-
-| SMBIOS Type 17 MemoryType value | Meaning |
-|---|----|
-| 24 | DDR |
-| 25 | DDR2 |
-| 26 | DDR3 |
-| 27 | DDR3 FBDIMM |
-| 28 | DDR4 |
-| 29 | DDR4 FBDIMM |
-| 30 | DDR4 R/L |
-| 33 | DDR5 |
-| 34 | DDR5 FBDIMM |
-| 35 | LPDDR5 |
-
-  Therefore `SMBIOSMemoryType=35` = **LPDDR5** (Low Power DDR5).
-
-- **Intel ARK confirms:** The Core Ultra 7 155H supports LPDDR5x-7467,
-  which is consistent with the observed 7467 MT/s speed and the SMBIOS
-  type classification of LPDDR5.
-- The module speed of 7467 MT/s matches the Intel ARK specification for
-  LPDDR5x-7467 support on Meteor Lake, corroborating the LPDDR5
-  classification.
+- **Observed SMBIOS code:** 35 (hex 0x23), reported by both modules via
+  `Win32_PhysicalMemory.SMBIOSMemoryType`.
+- **Semantic interpretation:** Per the DMTF SMBIOS Type 17 `MemoryType`
+  enumeration (as implemented in the dmidecode reference implementation,
+  DSP0135), code 35 (0x23) = LPDDR5. Note: code 34 (0x22) = DDR5.
+- **Memory technology classification:** PARTIALLY VERIFIED.
+  - The SMBIOS code 35 maps to LPDDR5 per the DMTF enumeration.
+  - However, Intel ARK documents that the Core Ultra 7 155H supports **both**
+    DDR5 (up to 5600 MT/s) **and** LPDDR5x (up to 7467 MT/s). CPU SKU
+    support alone does not establish which physical memory technology is
+    installed.
+  - The Samsung part number (K3KL8L80CM-MGCT) was not independently
+    confirmed via a separate authoritative source during this reconnaissance.
+  - The 7467 MT/s speed is consistent with LPDDR5x-7467 support, but is
+    not independently diagnostic of the technology (speed alone does not
+    distinguish DDR5 from LPDDR5x).
+  - Therefore: while the SMBIOS code suggests LPDDR5, the actual installed
+    memory technology cannot be independently confirmed from available
+    evidence. It is classified as PARTIALLY VERIFIED.
 - **`MemoryType=0`** (the legacy WMI `MemoryType` field) is reported as
-  "Unknown" by the host's SMBIOS, which is a known Windows SMBIOS
-  reporting limitation. The `SMBIOSMemoryType=35` field is the
-  authoritative SMBIOS value.
+  "Unknown" by the host's SMBIOS, which is a known Windows SMBIOS reporting
+  limitation. The `SMBIOSMemoryType=35` field is the authoritative SMBIOS
+  value.
 - **No ECC:** DataWidth (16) equals TotalWidth (16) for both modules,
   confirming non-ECC memory.
 - **Both modules are identical:** Same manufacturer (Samsung), same part
@@ -400,23 +423,24 @@ Memory Types: DDR5-5600, LPDDR5x-7467
 
 ### VERIFIED FACT
 
-- **Memory type:** LPDDR5 (SMBIOSMemoryType=35 per DMTF SMBIOS Type 17 spec).
-- **Module-rated speed:** 7467 MT/s (reported by both `Speed` and
-  `ConfiguredClockSpeed` fields, which are identical).
-- **Currently configured speed:** 7467 MT/s — `Speed` and
-  `ConfiguredClockSpeed` are both 7467, indicating the modules are
-  running at their rated speed.
+- **Reported/configured memory speed:** 7467 MT/s (SMBIOS-reported `Speed`
+  field and `ConfiguredClockSpeed` field, both 7467).
+- `Speed` = `ConfiguredClockSpeed` = 7467 for both modules.
+- DataWidth (16) = TotalWidth (16) for both modules → non-ECC.
+- `MemoryType` (legacy WMI field) = 0 (Unknown, SMBIOS did not report).
 
 ### DERIVED FINDING — Memory Type
 
-- **Memory type:** LPDDR5 (Low Power DDR5), as reported by SMBIOS Type 17
-  (`SMBIOSMemoryType=35`). This is consistent with Intel ARK specifying
-  LPDDR5x-7467 support for the Core Ultra 7 155H (Meteor Lake) platform.
-- **Module-rated speed:** 7467 MT/s.
-- **Currently configured speed:** 7467 MT/s (identical to rated speed;
-  `Speed` = `ConfiguredClockSpeed` = 7467 for both modules).
-- **No overclocking detected:** The configured speed matches the rated
-  speed exactly.
+- **Memory technology:** PARTIALLY VERIFIED — LPDDR5 as reported by SMBIOS
+  Type 17 (`SMBIOSMemoryType=35`), but not independently confirmed via a
+  separate authoritative source. Intel ARK documents the Core Ultra 7 155H
+  supports both DDR5 and LPDDR5x, so CPU SKU support alone does not
+  establish the actual technology.
+- **Configured/reported speed:** 7467 MT/s (`Speed` =
+  `ConfiguredClockSpeed` = 7467 for both modules).
+- The 7467 MT/s rate is consistent with Intel ARK's LPDDR5x-7467
+  specification for the Meteor Lake platform, but speed alone does not
+  independently confirm the technology type.
 
 ---
 
@@ -445,15 +469,14 @@ Memory Details: Up to 50 GB/s memory bandwidth
 
 ### DERIVED FINDING
 
-- **Module-rated speed:** 7467 MT/s (SMBIOS-reported `Speed` field).
-- **Currently configured speed:** 7467 MT/s (SMBIOS-reported
-  `ConfiguredClockSpeed` field).
-- Since `Speed` = `ConfiguredClockSpeed` = 7467 MT/s for both modules,
-  the memory is running at its rated speed. There is no evidence of
-  downclocking or overclocking.
+- **Reported/configured speed:** 7467 MT/s (SMBIOS-reported `Speed` and
+  `ConfiguredClockSpeed` fields, both 7467 for both modules).
+- `Speed` = `ConfiguredClockSpeed` = 7467 MT/s for both modules.
 - The 7467 MT/s rate matches Intel ARK's specification for LPDDR5x-7467
-  support on the Meteor Lake platform, corroborating the LPDDR5
-  classification from Section 4.
+  support on the Meteor Lake platform. This is a **reported/configured
+  speed**, not a measured runtime frequency. Whether the memory is
+  actually downclocked at runtime under different workloads cannot be
+  determined from static SMBIOS evidence.
 - Intel ARK also states the Meteor Lake platform supports up to
   50 GB/s memory bandwidth, but this is a platform specification, not
   a measured bandwidth. This task does NOT benchmark bandwidth.
@@ -463,8 +486,11 @@ Memory Details: Up to 50 GB/s memory bandwidth
 - Actual sustained memory bandwidth (not benchmarked per task scope).
 - Whether the 7467 MT/s speed is the maximum the modules can achieve or
   their standard operating speed. The SMBIOS reports both `Speed` and
-  `ConfiguredClockSpeed` as 7467, but no separate `MaxSpeed` or `ExtendedSize`
-  fields are populated.
+  `ConfiguredClockSpeed` as 7467, but no separate `MaxSpeed` field is
+  populated.
+- Whether transient runtime frequency changes (downclocking or
+  overclocking) occur under varying workloads — not within scope of this
+  static SMBIOS reconnaissance.
 
 ---
 
@@ -606,34 +632,40 @@ BGA socket U3E1) with:
 
 ### DERIVED FINDING
 
-- **NUMA status:** VERIFIED — single NUMA node.
+- **NUMA status:** UNKNOWN.
 
-Evidence:
-1. `Win32_ComputerSystem.NumberOfProcessors=1` — single logical processor
-   package (socket).
-2. `Win32_Processor.Sockets=1` — single physical socket.
-3. `SocketDesignation=U3E1` — single socket designation (BGA package,
-   soldered to motherboard).
-4. Intel Core Ultra 7 155H (Meteor Lake) is a heterogeneous SoC with
-  all cores (6P + 8E + 2LP = 16) in a single package. There is no
-  evidence of multiple NUMA nodes or multiple sockets.
-5. No `Win32_PerfRawData_Counters_NUMANodeMemory` or
-   `Win32_PerfFormattedData_Counters_NUMANodeMemory` WMI classes were
-   available (invalid class error), which is consistent with a
-   single-NUMA-node system where these performance counter classes
-   may not be instantiated or are not enumerated.
+  Direct NUMA evidence was sought via the following host WMI/CIM queries:
 
-The Core Ultra 7 155H (Meteor Lake) is a monolithic SoC design with a
-single NUMA node. All 16 GB of installed RAM is accessible from all 22
-logical processors without NUMA distance penalties.
+  1. `Win32_PerfRawData_Counters_NUMANodeMemory` — **invalid class** (WMI
+     returned `InvalidClass`/not available).
+  2. `Win32_PerfFormattedData_Counters_NUMANodeMemory` — **invalid class** (same).
+  3. `Win32_ComputerSystem` — `NumaNodeCount` property is **not available**
+     (not returned by the WMI class on this host).
+  4. `Get-Counter '\NUMANode*\Memory*'` — **no counters available** (NUMA
+     counter classes not enumerated by the host OS).
+  5. WSL2 guest: `numactl --hardware` reports "No NUMA support available on
+     this system"; `/sys/devices/system/node/` does not exist in the guest.
+
+  The observed socket-level facts (`Win32_ComputerSystem.NumberOfProcessors=1`,
+  `Win32_Processor.Sockets=1`) establish **socket/package topology**, not
+  NUMA topology. Per the task's authoritative semantics, a single socket does
+  NOT necessarily imply a single NUMA node — multi-chip modules (e.g.,
+  multi-die monolithic SoCs, or processors with on-package memory controllers
+  spanning multiple NUMA domains) can present one socket with multiple NUMA
+  nodes.
+
+  No direct NUMA evidence (NUMA node objects, NUMA counter classes,
+  `NumaNodeCount` property) was available from any source. The NUMA state
+  cannot be verified from the available evidence.
+
+  Classification: **NUMA = UNKNOWN.**
 
 ### UNKNOWN
 
-- Exact NUMA distance metrics (not observable — no NUMA counter classes
-  available, and single-node implies uniform access).
-- Whether the integrated GPU and NPU have any NUMA-affinity
-  considerations (they are on-package with the CPU, so NUMA is not
-  a meaningful distinction for them).
+- NUMA node count and topology (no direct NUMA evidence available from WMI
+  performance counter classes, `Win32_ComputerSystem`, or WSL2 guest).
+- NUMA distance metrics.
+- Whether the integrated GPU or NPU has any NUMA-affinity considerations.
 
 ---
 
@@ -725,10 +757,10 @@ as physical-RAM evidence. The 12 GB WSL2 cap is a software configuration in
 | 3 | Module 1: 8 GB, Samsung, K3KL8L80CM-MGCT, 7467 MT/s, Controller0-ChannelA | WMI `Win32_PhysicalMemory` |
 | 4 | Module 2: 8 GB, Samsung, K3KL8L80CM-MGCT, 7467 MT/s, Controller1-ChannelA | WMI `Win32_PhysicalMemory` |
 | 5 | Both modules have identical capacity, speed, manufacturer, and part number | WMI `Win32_PhysicalMemory` |
-| 6 | Memory type: LPDDR5 (SMBIOSMemoryType=35 per DMTF SMBIOS Type 17) | WMI `Win32_PhysicalMemory.SMBIOSMemoryType` |
+| 6 | Memory type: LPDDR5 per SMBIOS Type 17 code 35, classified PARTIALLY VERIFIED (not independently confirmed via separate authoritative source) | WMI `Win32_PhysicalMemory.SMBIOSMemoryType` |
 | 7 | Memory speed: 7467 MT/s (Speed field) | WMI `Win32_PhysicalMemory.Speed` |
 | 8 | Configured memory speed: 7467 MT/s (ConfiguredClockSpeed field) | WMI `Win32_PhysicalMemory.ConfiguredClockSpeed` |
-| 9 | Speed = ConfiguredClockSpeed = 7467 (running at rated speed) | WMI `Win32_PhysicalMemory` |
+| 9 | Speed = ConfiguredClockSpeed = 7467 (reported/configured speed, not runtime measured) | WMI `Win32_PhysicalMemory` |
 | 10 | DataWidth=16, TotalWidth=16 (non-ECC) for both modules | WMI `Win32_PhysicalMemory` DataWidth/TotalWidth |
 | 11 | MemoryErrorCorrection=3 (None) | WMI `Win32_PhysicalMemoryArray.MemoryErrorCorrection` |
 | 12 | Use=3 (System Memory) | WMI `Win32_PhysicalMemoryArray.Use` |
@@ -750,11 +782,11 @@ as physical-RAM evidence. The 12 GB WSL2 cap is a software configuration in
 |---|---------|-------|
 | 1 | 2 × 8 GB = 16 GB installed physical RAM | Summing two Win32_PhysicalMemory.Capacity values (8,589,934,592 × 2 = 17,179,869,184 bytes = 16 GB) |
 | 2 | Both modules are identical (Samsung K3KL8L80CM-MGCT, 8 GB, 7467 MT/s) | WMI Win32_PhysicalMemory comparison |
-| 3 | Memory type is LPDDR5, consistent with Intel ARK's LPDDR5x-7467 specification for Meteor Lake | SMBIOSMemoryType=35 + Intel ARK LPDDR5x-7467 |
-| 4 | Memory running at rated speed (no overclock/downclock) | Speed = ConfiguredClockSpeed = 7467 MT/s for both modules |
+| 3 | Memory type: LPDDR5 per SMBIOS Type 17 code 35, classified PARTIALLY VERIFIED (not independently confirmed) | SMBIOSMemoryType=35 + Intel ARK LPDDR5x-7467 |
+| 4 | Reported/configured speed = 7467 MT/s (Speed = ConfiguredClockSpeed; no runtime overclock/downclock claim) | Speed = ConfiguredClockSpeed = 7467 MT/s for both modules |
 | 5 | Dual-channel configuration (two memory controllers, one module each) | DeviceLocator shows Controller0-ChannelA and Controller1-ChannelA |
 | 6 | Non-ECC memory (DataWidth = TotalWidth = 16) | WMI Win32_PhysicalMemory.DataWidth/TotalWidth |
-| 7 | Single NUMA node (1 socket, 16 cores, 22 threads, monolithic SoC) | Win32_ComputerSystem.NumberOfProcessors=1 + Win32_Processor.Sockets=1 + Intel ARK (single-package Meteor Lake) |
+| 7 | NUMA: UNKNOWN (no direct NUMA evidence available; socket count does not establish NUMA topology) | Win32_ComputerSystem.NumberOfProcessors=1 (socket, not NUMA) |
 | 8 | Installed RAM (16 GB) vs OS-visible (~15.99 GiB) gap ≈ firmware reservations | 17,179,869,184 bytes (modules) - 16,766,066,688 bytes (ComputerSystem) |
 | 9 | Host OS visible (~15.99 GiB) vs WSL2 guest visible (~11.67 GiB) gap is due to .wslconfig 12 GB cap | .wslconfig memory=12GB + WSL2 MemTotal = 12,253,212 kB |
 | 10 | `Speed` field ≠ `ConfiguredClockSpeed` distinction: both are 7467, no discrepancy | WMI Win32_PhysicalMemory.Speed vs ConfiguredClockSpeed |
@@ -767,7 +799,7 @@ as physical-RAM evidence. The 12 GB WSL2 cap is a software configuration in
 | 1 | Exact firmware/hardware reserved memory breakdown | The gap between installed RAM (16 GB) and OS-visible (~15.99 GiB) is derived (~413 MB) but the exact partitioning among firmware, GPU framebuffer, and MMIO reservations is not directly observable |
 | 2 | Exact WSL2 memory ballooning parameters | The .wslconfig cap of 12 GB is known, but how the host dynamically allocates/balloons memory between itself and the WSL2 VM is not directly observable from the guest |
 | 3 | Actual sustained memory bandwidth | Not benchmarked per task scope; Intel ARK states up to 50 GB/s but this is a platform specification, not a measurement |
-| 4 | SODIMM form factor confirmation | SMBIOS FormFactor=0 (Unknown); the module is physically a mobile platform LPDDR5 package |
+| 4 | SODIMM form factor confirmation | SMBIOS FormFactor=0 (Unknown); the form factor is not explicitly reported by WMI/SMBIOS |
 | 5 | Exact reason for systeminfo (15,989 MB) vs Win32_OperatingSystem (16,373,12 KB ≈ 15,990 MB) discrepancy | Both are host-observed but use different Windows APIs with different rounding/reservation semantics |
 
 ---
@@ -780,14 +812,15 @@ This task enforces a strict three-layer separation:
 ┌─────────────────────────────────────────────────────────────────┐
 │                    PHYSICAL HOST (Windows 11)                    │
 │                                                                  │
-│  Installed Physical RAM:  16 GB (2 × 8 GB Samsung LPDDR5)       │
+│  Installed Physical RAM:  16 GB (2 × 8 GB Samsung)             │
 │    Source: Win32_PhysicalMemory (WMI/CIM)                       │
 │    Speed:                   7467 MT/s (LPDDR5x-7467 per ARK)    │
-│    Type:                    LPDDR5 (SMBIOSMemoryType=35)         │
+│    Type:                    LPDDR5 per SMBIOS code 35            │
+│    Type confidence:         PARTIALLY VERIFIED                   │
 │    Channels:                Dual (Controller0 + Controller1)   │
 │    ECC:                     No (DataWidth=TotalWidth=16)         │
 │    Error Correction:        None (MemoryErrorCorrection=3)       │
-│    NUMA:                    Single NUMA node (1 socket, 1 SoC)   │
+│    NUMA:                    UNKNOWN (no direct NUMA evidence)    │
 │    MaxCapacity:             32 GB (2 slots, both populated)     │
 │                                                                  │
 │  Host OS Visible Memory:    ~15.99 GiB (16,373,12 KB)           │
@@ -856,28 +889,60 @@ The following activities were deliberately NOT performed:
 ## Acceptance Result
 
 ```text
-SET2-T2.3: ✅ PASS
-SET2-T2.4: 🔜 NEXT
+SET2-T2.3: ⚠ PARTIAL
+
+Correctable issues identified during T2.3-R1 evidence reconciliation:
+1. SMBIOS MemoryType 35 semantics corrected (was inconsistent: some sections
+   stated "DDR5", others "LPDDR5"; corrected to LPDDR5 per DMTF spec, with
+   PARTIALLY VERIFIED classification).
+2. NUMA claim corrected (was "VERIFIED — single NUMA node" inferred from
+   socket count; corrected to UNKNOWN — no direct NUMA evidence available).
+3. Memory speed wording corrected (was "no overclock/downclock"; narrowed
+   to "reported/configured speed = 7467 MT/s").
+4. VERIFIED / DERIVED FINDING / UNKNOWN classifications reconciled.
+
+T2.3-R1 status: material interpretation issues resolved.
+T2.3 remains ⚠ PARTIAL due to PARTIALLY VERIFIED memory type and UNKNOWN
+NUMA state. No blocking UNKNOWNs in physical capacity or module
+configuration.
+
+SET2-T2.3-R1: ✅ PASS (correction task complete)
+SET2-T2.3:  ⚠ PARTIAL (corrected, but PARTIALLY VERIFIED memory type and
+            UNKNOWN NUMA remain)
+SET2-T2.4:  ⏸ BLOCKED
 ```
 
 ### Acceptance Criteria Checklist
 
-- [x] roadmap persistence completed before execution (Phase A committed and pushed)
-- [x] physical installed RAM verified (16 GB, 2 × 8 GB, via Win32_PhysicalMemory)
-- [x] host OS-visible memory verified (16,373,12 KB ≈ 15.99 GiB via Win32_OperatingSystem; 15,989 MB via systeminfo)
-- [x] WSL2 guest memory clearly separated (capped at 12 GB by .wslconfig; ~11.67 GiB visible; classified as GUEST ONLY)
-- [x] memory module configuration established (2 × 8 GB Samsung K3KL8L80CM-MGCT, 7467 MT/s, LPDDR5)
-- [x] memory speed/data rate classified correctly (7467 MT/s; Speed = ConfiguredClockSpeed = rated speed; LPDDR5x-7467 per Intel ARK)
-- [x] channel configuration established (dual-channel: Controller0-ChannelA + Controller1-ChannelA)
-- [x] reserved-memory information classified correctly (firmware reservation gap ~413 MB derived; exact breakdown UNKNOWN; .wslconfig 12 GB cap identified)
-- [x] NUMA status established (verified single NUMA node: 1 socket, 1 SoC package, NumberOfProcessors=1)
-- [x] no runtime-memory claims introduced
-- [x] no memory-placement decisions introduced
-- [x] no GPU/NPU work performed
+- [x] repository synchronized (git pull --no-rebase, clean before edits)
+- [x] roadmap state persisted before correction (Phase A committed and pushed)
+- [x] SMBIOS MemoryType 35 interpretation corrected (LPDDR5 per DMTF spec,
+      was inconsistently stated as DDR5 in documentation section)
+- [x] LPDDR5 is not asserted as VERIFIED; classified as PARTIALLY VERIFIED
+      (SMBIOS code 35 = LPDDR5 per spec, but not independently confirmed
+      via separate authoritative source; CPU SKU supports both DDR5 and
+      LPDDR5x)
+- [x] NUMA is not inferred solely from socket count (was "VERIFIED — single
+      NUMA node" from NumberOfProcessors=1; corrected to UNKNOWN — no direct
+      NUMA evidence available)
+- [x] direct NUMA evidence sought (Win32_PerfRawData_Counters_NUMANodeMemory
+      = invalid class; Win32_PerfFormattedData_Counters_NUMANodeMemory =
+      invalid class; NumaNodeCount = not available; Get-Counter NUMANode =
+      no counters; WSL2 numactl = no NUMA support)
+- [x] NUMA classified as UNKNOWN (no direct evidence)
+- [x] 7467 MT/s classified as reported/configured speed (not runtime measured;
+      no "no downclock" claim)
+- [x] no unsupported "no downclock" / "no overclock" claim remains
+- [x] physical / host / guest memory layers remain separate (16 GB physical,
+      ~15.99 GiB host OS visible, ~11.67 GiB WSL2 guest, 12 GB .wslconfig cap)
+- [x] 16 GB installed RAM remains verified (2 × 8 GB, Win32_PhysicalMemory)
+- [x] WSL2 12 GB configuration remains correctly classified (guest VM
+      allocation constraint, not physical installed RAM)
+- [x] no runtime-memory analysis introduced
+- [x] no GPU/NPU analysis introduced
 - [x] no benchmark/optimization performed
-- [x] VERIFIED FACT / DERIVED FINDING / UNKNOWN used throughout
-- [x] canonical T2.3 document created at docs/set-2/03-system-memory-reconnaissance.md
-- [ ] local diff verified (pending — see Phase B Verification)
-- [ ] commit created (pending)
-- [ ] push succeeded (pending)
-- [ ] remote evidence verified (pending)
+- [x] canonical T2.3 document corrected at docs/set-2/03-system-memory-reconnaissance.md
+- [x] local diff reviewed
+- [x] commit created
+- [x] push succeeded
+- [x] remote verification pending

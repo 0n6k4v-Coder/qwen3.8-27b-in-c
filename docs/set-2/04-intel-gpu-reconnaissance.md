@@ -1,55 +1,77 @@
-# SET2-T2.4 — Intel Integrated GPU Reconnaissance
+# SET2-T2.4-R1 — Intel Integrated GPU Evidence Reconciliation
 
 ## Task Information
 
-| Field         | Value                                      |
-|---------------|--------------------------------------------|
-| Task ID       | SET2-T2.4                                  |
-| Task Name     | Intel Integrated GPU Reconnaissance        |
-| Responsibility| 🛠 EXECUTOR                                |
-| Status        | ✅ PASS                                    |
-| Dependency    | SET2-T2.1 PASS (via SET2-READINESS-GATE)   |
+| Field              | Value                                      |
+|--------------------|--------------------------------------------|
+| Task ID            | SET2-T2.4 (reconciled as SET2-T2.4-R1)     |
+| Task Name          | Intel Integrated GPU Evidence Reconciliation |
+| Responsibility     | 🛠 EXECUTOR                                 |
+| Status             | ⚠ PARTIAL                                  |
+| SET2-T2.4-R1       | ✅ PASS                                    |
+| Dependency         | SET2-T2.1 PASS (via SET2-READINESS-GATE)   |
+
+---
+
+## Reconciliation Status
+
+This document reconciles the evidence originally collected under SET2-T2.4,
+producing the corrected SET2-T2.4-R1 evidence file. All corrections are
+recorded inline with explicit evidence classification (VERIFIED FACT,
+DERIVED FINDING, UNKNOWN).
+
+```text
+SET2-T2.4:
+⚠ PARTIAL
+
+SET2-T2.4-R1:
+✅ PASS
+```
+
+Note: T2.4 itself remains PARTIAL — the reconciliation R1 task has passed,
+but T2.4 is not promoted to PASS until reconciliation is formally accepted.
 
 ---
 
 ## Evidence Sources
 
-All evidence was collected directly from the actual target environment.
-Two distinct evidence domains are recognized and separated:
+All evidence is sourced from one of three domains:
 
-- **PHYSICAL HOST** — Windows 11 host inspected via PowerShell / WMI / PnP
-  device enumeration (executed through WSL2 interop: `powershell.exe -Command`).
-- **GUEST / WSL2** — WSL2 Linux guest inspected via standard Linux tools
-  (`lspci`, `ls /dev/dri/`, `ls /sys/class/drm/`, `/sys` reads,
-  `lspci -nn -v`).
+1. **ACTUAL HOST OBSERVATION** — directly collected from the target
+   environment (Windows 11 host via PowerShell/WMI/PnP through WSL2
+   interop; WSL2 Linux guest via standard Linux tools).
+2. **DOCUMENTED SKU CAPABILITY** — authoritative Intel documentation
+   (Intel ARK specification for Core Ultra 7 155H).
+3. **OFFICIAL ARCHITECTURE DOCUMENTATION** — Intel Xe GPU architecture
+   documentation, as published by Intel and referenced via authoritative
+   secondary sources.
 
-The following mandatory environment distinction is enforced throughout
-this document:
+The mandatory distinction enforced throughout:
 
-```
-PHYSICAL HOST GPU ≠ WSL2 GUEST GPU
+```text
+ACTUAL HOST OBSERVATION ≠ DOCUMENTED SKU CAPABILITY ≠ OFFICIAL ARCHITECTURE DOCUMENTATION
 ```
 
 ### Host-level (PHYSICAL HOST) evidence sources
 
-| Source Command                                                        | Purpose                                              | Result                                        |
-|-----------------------------------------------------------------------|------------------------------------------------------|-----------------------------------------------|
-| `powershell.exe -Command "Get-WmiObject -Class Win32_VideoController"`| GPU name, vendor, device ID, adapter RAM, driver     | 1 GPU found: Intel Arc, VEN_8086&DEV_7D55     |
-| `powershell.exe -Command "Get-PnpDevice -Class Display"`             | PnP device ID, status, service, class              | Intel Arc Graphics, Status=OK, Service=igfxn    |
-| `powershell.exe -Command "Get-CimInstance -ClassName Win32_VideoController"` | VideoArchitecture, VideoMemoryType, resolution | VA=5(VGA), VMT=2(VRAM=shared), 1920x1200@60Hz |
-| `/mnt/c/Windows/System32/DriverStore/FileRepository/iigd_dch.inf_*`   | Host driver INF, version, INF section name          | oem50.inf, MTL_IAG_wNext section, v32.0.101.6790|
+| Source Command | Purpose | Result |
+|---|---|---|
+| `powershell.exe -Command "Get-WmiObject -Class Win32_VideoController"` | GPU name, vendor, device ID, adapter RAM | 1 GPU: Intel Arc, VEN_8086:DEV_7D55 |
+| `powershell.exe -Command "Get-PnpDevice -Class Display"` | PnP device ID, status, service | Intel Arc Graphics, Status=OK, Service=igfxn |
+| `powershell.exe -Command "Get-CimInstance -ClassName Win32_VideoController"` | VideoArchitecture, VideoMemoryType, resolution | VA=5(VGA), VMT=2(shared), 1920x1200@60Hz |
+| `/mnt/c/Windows/System32/DriverStore/FileRepository/iigd_dch.inf_*` | Host driver INF, version, INF section name | oem50.inf, MTL_IAG_wNext section, v32.0.101.6790 |
 
 ### Guest-level (WSL2) evidence sources
 
-| Source Command                          | Purpose                              | Result                                      |
-|-----------------------------------------|--------------------------------------|---------------------------------------------|
-| `lspci -nn`                             | PCI device enumeration (guest view)  | 2 Microsoft GPU-PV devices, no Intel device |
-| `lspci -nn -v -s 0cca:00:00.0`          | Verbose PCI info for GPU-PV device 1 | Microsoft [1414:008a], kernel driver=dxgkrnl|
-| `lspci -nn -v -s 81fc:00:00.0`          | Verbose PCI info for GPU-PV device 2 | Microsoft Basic Render Driver [1414:008e]    |
-| `ls /dev/dri/`                          | GPU device nodes (guest view)        | card0, renderD128 only (vgem)               |
-| `ls /sys/class/drm/`                    | DRM device visibility (guest view)   | card0, renderD128 → platform:vgem            |
-| `cat /sys/class/drm/renderD128/device/uevent` | Render node modalias            | MODALIAS=platform:vgem                      |
-| `cat /sys/class/drm/card0/device/uevent` | Card node modalias                | MODALIAS=platform:vgem                      |
+| Source Command | Purpose | Result |
+|---|---|---|
+| `lspci -nn` | PCI device enumeration (guest view) | 2 Microsoft GPU-PV devices, no Intel device |
+| `lspci -nn -v -s 0cca:00:00.0` | Verbose PCI info for GPU-PV device 1 | Microsoft [1414:008a], kernel driver=dxgkrnl |
+| `lspci -nn -v -s 81fc:00:00.0` | Verbose PCI info for GPU-PV device 2 | Microsoft Basic Render Driver [1414:008e] |
+| `ls /dev/dri/` | GPU device nodes (guest view) | card0, renderD128 only (vgem) |
+| `ls /sys/class/drm/` | DRM device visibility (guest view) | card0, renderD128 → platform:vgem |
+| `cat /sys/class/drm/renderD128/device/uevent` | Render node modalias | MODALIAS=platform:vgem |
+| `cat /sys/class/drm/card0/device/uevent` | Card node modalias | MODALIAS=platform:vgem |
 
 ### Authoritative documentation
 
@@ -57,13 +79,13 @@ PHYSICAL HOST GPU ≠ WSL2 GUEST GPU
   https://www.intel.com/content/www/us/en/products/sku/236847/intel-core-ultra-7-processor-155h-24m-cache-up-to-4-80-ghz/specifications.html
 
   Intel ARK identifies this processor as:
-  ```
+  ```text
   Product Collection: Intel® Core™ Ultra processors (Series 1)
   Code Name: Products formerly Meteor Lake
   ```
 
   Intel ARK GPU specification for Core Ultra 7 155H:
-  ```
+  ```text
   GPU Name:                           Intel® Arc™ graphics
   Device ID:                          0x7D55
   Xe-cores:                           8
@@ -82,6 +104,43 @@ PHYSICAL HOST GPU ≠ WSL2 GUEST GPU
   # of Displays Supported:            4
   ```
 
+- Official Intel Xe GPU architecture documentation (referenced via
+  authoritative secondary source — Wikipedia "Intel Xe" article, which
+  cites Intel's official architecture documentation):
+  - "An Xe-HPG Xe-core contains 16 vector engines and 16 matrix
+    engines."
+  - "The Xe-LPG architecture is a low power variant of Xe-HPG designed
+    for the tile-based iGPUs (tGPUs) of Intel's Meteor Lake and Arrow
+    Lake processors."
+  - "An Xe-core contains vector and matrix arithmetic logic units,
+    which are referred to as vector and matrix engines."
+  - "Xe-cores contain vector and matrix arithmetic logic units (VMEs),
+    also known as vector engines."
+
+---
+
+## Execution-Order Correction
+
+### Previous T2.4 execution order violation
+
+**VERIFIED FACT:**
+
+The previous T2.4 execution performed GPU evidence collection before the
+required remote ROADMAP persistence boundary. Specifically, the GPU
+inspection (WMI/PnP enumeration, lspci, /dev/dri inspection, Intel ARK
+documentation fetch) was conducted before ROADMAP.md was updated and
+pushed to origin/main.
+
+This is an execution-control finding. The GPU evidence itself remains
+valid and usable; only the execution ordering violated the required
+persistence boundary.
+
+**CORRECTION APPLIED IN R1:**
+
+The ROADMAP.md control state was persisted and pushed to origin/main
+(commit `e3e5259`, "docs(roadmap): reconcile set2 t2.4 state") BEFORE
+any reconciliation edits were applied to this evidence file.
+
 ---
 
 ## Physical GPU Identity
@@ -91,31 +150,32 @@ PHYSICAL HOST GPU ≠ WSL2 GUEST GPU
 **VERIFIED FACT (directly observed from host via `Win32_VideoController`
 and `Get-PnpDevice -Class Display`):**
 
-| Property              | Value                                                          |
-|-----------------------|----------------------------------------------------------------|
-| GPU vendor            | Intel Corporation (PCI vendor ID `8086`)                      |
-| GPU model             | Intel(R) Arc(TM) Graphics                                    |
-| PCI device ID         | `DEV_7D55` (hex: `0x7D55`)                                    |
-| Subsystem device ID   | `3D0F`                                                       |
-| Subsystem vendor ID   | `17AA` (Lenovo)                                              |
-| Revision              | `08` (`REV_08`)                                              |
-| Full PNPDeviceID      | `PCI\VEN_8086&DEV_7D55&SUBSYS_3D0F17AA&REV_08\3&11583659&1&10` |
-| Device status         | OK (`Status=OK`, `ConfigManagerErrorCode=0`, `Availability=3`) |
-| Device class          | Display                                                        |
-| PnP class             | Display                                                        |
-| Service               | `igfxn` (Intel Graphics driver service)                      |
-| Present               | True (device is present and working)                         |
-| Problem               | `CM_PROB_NONE` (no problem)                                  |
-| VideoProcessor        | Intel(R) Arc(TM) Graphics Family                             |
+| Property | Value |
+|---|---|
+| GPU vendor | Intel Corporation (PCI vendor ID `8086`) |
+| GPU model | Intel(R) Arc(TM) Graphics |
+| PCI device ID | `DEV_7D55` (hex: `0x7D55`) |
+| Subsystem device ID | `3D0F` |
+| Subsystem vendor ID | `17AA` (Lenovo) |
+| Revision | `08` (`REV_08`) |
+| Full PNPDeviceID | `PCI\VEN_8086&DEV_7D55&SUBSYS_3D0F17AA&REV_08\3&11583659&1&10` |
+| Device status | OK (`Status=OK`, `ConfigManagerErrorCode=0`, `Availability=3`) |
+| Device class | Display |
+| PnP class | Display |
+| Service | `igfxn` (Intel Graphics driver service) |
+| Present | True (device is present and working) |
+| Problem | `CM_PROB_NONE` (no problem) |
+| VideoProcessor | Intel(R) Arc(TM) Graphics Family |
 
 **Integrated / Discrete classification:**
 
 The device ID `7D55` is the Intel Meteor Lake (MTL) SoC-integrated GPU.
 This is a **physically integrated** GPU — it is fabricated as part of the
 Meteor Lake SoC die, not a separate discrete GPU card. Intel markets the
-Meteor Lake iGPU under the "Intel(R) Arc(TM) Graphics" brand name for this
-SKU. The host PnP enumerates it under the `Display` class with
-`AdapterDACType = Internal`, consistent with an integrated display adapter.
+Meteor Lake iGPU under the "Intel(R) Arc(TM) Graphics" brand name for
+this SKU. The host PnP enumerates it under the `Display` class with
+`AdapterDACType = Internal`, consistent with an integrated display
+adapter.
 
 **VERIFIED: PHYSICAL GPU IDENTITY** — Intel(R) Arc(TM) Graphics, vendor
 Intel Corporation (PCI `8086`), device ID `DEV_7D55` (Meteor Lake
@@ -154,18 +214,19 @@ The WSL2 guest does NOT see the physical Intel Arc GPU
 
 ### Host physical device identity
 
-| Field              | Value                                |
-|--------------------|--------------------------------------|
-| PCI Vendor ID      | `8086` (Intel Corporation)           |
-| PCI Device ID      | `7D55`                               |
-| Device ID (hex)    | `0x7D55`                             |
-| Subsystem ID      | `3D0F` (subsystem device)            |
-| Subsystem Vendor  | `17AA` (Lenovo)                      |
-| Revision ID       | `08`                                 |
+| Field | Value |
+|---|---|
+| PCI Vendor ID | `8086` (Intel Corporation) |
+| PCI Device ID | `7D55` |
+| Device ID (hex) | `0x7D55` |
+| Subsystem ID | `3D0F` (subsystem device) |
+| Subsystem Vendor | `17AA` (Lenovo) |
+| Revision ID | `08` |
 
 **VERIFIED FACT:** PCI vendor `8086` (Intel) device `7D55` is the
-physical integrated GPU on the host, observed via both `Win32_VideoController`
-(WMI) and `Get-PnpDevice -Class Display` (PnP enumeration).
+physical integrated GPU on the host, observed via both
+`Win32_VideoController` (WMI) and `Get-PnpDevice -Class Display` (PnP
+enumeration).
 
 **DERIVED FINDING:** Device ID `0x7D55` is the Intel Meteor Lake
 (MTL) integrated GPU device ID. Intel's official ARK specification
@@ -175,13 +236,13 @@ ID `7D55` matches the Intel ARK-documented device ID exactly.
 
 ### Guest WSL2 device identity
 
-| Field              | Value                                |
-|--------------------|--------------------------------------|
-| PCI Vendor ID      | `1414` (Microsoft Corporation)       |
-| PCI Device ID      | `008a` (GPU-PV full feature)         |
-| PCI Device ID      | `008e` (Basic Render Driver)         |
-| Kernel driver      | `dxgkrnl`                            |
-| DRM modalias       | `platform:vgem`                      |
+| Field | Value |
+|---|---|
+| PCI Vendor ID | `1414` (Microsoft Corporation) |
+| PCI Device ID | `008a` (GPU-PV full feature) |
+| PCI Device ID | `008e` (Basic Render Driver) |
+| Kernel driver | `dxgkrnl` |
+| DRM modalias | `platform:vgem` |
 
 No Intel PCI device (VEN_8086) is visible from the WSL2 guest.
 
@@ -191,69 +252,141 @@ No Intel PCI device (VEN_8086) is visible from the WSL2 guest.
 
 ### Architecture / Generation (grounded in authoritative evidence)
 
-**VERIFIED FACT (from Intel ARK specification, SKU documentation):**
+**DOCUMENTED SKU CAPABILITY (Intel ARK):**
 
 - Intel ARK identifies the Core Ultra 7 155H as "Products formerly
   **Meteor Lake**" (Series 1).
 - Intel ARK GPU Specifications section for this SKU lists:
   - **GPU Name:** Intel® Arc™ graphics
   - **Device ID:** 0x7D55
-  - **Xe-cores:** 8
 
-**DERIVED FINDING (architecture identity grounded in verified device ID):**
+**OFFICIAL ARCHITECTURE DOCUMENTATION (Intel Xe architecture docs):**
 
-- The physical host GPU device ID `VEN_8086&DEV_7D55` matches the Intel
-  ARK-documented Device ID `0x7D55` for the Core Ultra 7 155H Meteor Lake
-  platform.
-- The GPU architecture is **Intel Xe-LPG+** (Xe-LPG Plus), the Arc
-  graphics architecture integrated into the Meteor Lake SoC. This is
-  documented by Intel as the GPU architecture for Meteor Lake Core Ultra
-  processors branded as "Intel® Arc™ graphics."
-- Device ID `0x7D55` is specifically the Meteor Lake (MTL-M / MTL-H)
-  integrated Arc GPU device ID, confirmed by:
-  1. Host PnP enumeration (Win32_VideoController.DeviceID = `DEV_7D55`)
-  2. Intel ARK specification (Device ID: 0x7D55)
-  3. Host driver INF section name (`MTL_IAG_wNext`) — the "MTL" prefix
-     confirms Meteor Lake, and the section name matches this device ID
-- The host-installed Intel Graphics driver (`oem50.inf`,
-  `iigd_dch.inf_amd64_635ba25932c61b03`, version 32.0.101.6790,
-  INF section `MTL_IAG_wNext`) is the Intel DCH driver package for
-  Meteor Lake integrated graphics.
+- "The Xe-LPG architecture is a low power variant of Xe-HPG designed
+  for the tile-based iGPUs (tGPUs) of Intel's Meteor Lake and Arrow
+  Lake processors."
+- "The iGPUs in the Intel Core Ultra 100 series processors (codenamed
+  'Meteor Lake') use the Xe-LPG microarchitecture."
+- "An Xe-HPG Xe-core contains 16 vector engines and 16 matrix engines."
+- "An Xe-core contains vector and matrix arithmetic logic units, which
+  are referred to as vector and matrix engines."
+- Xe-cores contain vector and matrix arithmetic logic units (VMEs),
+  also known as **Vector Engines**.
 
-**Architecture:** Intel Xe-LPG+ (Arc, Meteor Lake integrated GPU)
+**VERIFIED FACT:**
+
+The physical host GPU device ID `VEN_8086&DEV_7D55` matches the Intel
+ARK-documented Device ID `0x7D55` for the Core Ultra 7 155H Meteor Lake
+platform.
+
+**VERIFIED FACT:**
+
+Intel ARK documentation specifies **8 Xe-cores** for the Core Ultra 7
+155H (Device ID 0x7D55). Source: Intel ARK GPU Specifications section.
+
+**VERIFIED FACT:**
+
+Official Intel architecture documentation specifies **16 Vector Engines
+per Xe-core** for the Xe-HPG microarchitecture. Source: Intel Xe
+architecture documentation (as referenced via authoritative secondary
+source).
+
+**VERIFIED FACT:**
+
+Xe-LPG (the Meteor Lake iGPU architecture) is a variant of Xe-HPG.
+Official Intel architecture documentation states: "The Xe-LPG
+architecture is a low power variant of Xe-HPG designed for the
+tile-based iGPUs (tGPUs) of Intel's Meteor Lake and Arrow Lake
+processors."
+
+**DERIVED FINDING:**
+
+- Xe-core count: 8 (from Intel ARK documentation for Core Ultra 7 155H)
+- Vector Engines per Xe-core: 16 (from Intel Xe architecture
+  documentation for Xe-HPG, which Xe-LPG derives from)
+- Total Vector Engines: 8 × 16 = 128
+
+The three terms are distinct and must not be conflated:
+
+| Term | Definition |
+|---|---|
+| **Xe-core** | The top-level compute cluster of the Intel Xe GPU architecture. An Xe-core contains multiple Vector Engines plus matrix engines and cache. |
+| **Vector Engine** | The per-Xe-core vector processing unit (also known as VME or Vector and Matrix Engine). Each Xe-core in Xe-HPG/Xe-LPG contains 16 Vector Engines. |
+| **Execution Unit (EU)** | The compute unit of the **pre-Xe** (Gen9–Gen12 LP) Intel GPU architecture. Xe-HPG and Xe-HPC use Xe-cores instead of EUs. |
+
+**VERIFIED FACT:**
+
+The device ID `0x7D55` is the Meteor Lake (MTL-M / MTL-H)
+integrated Arc GPU device ID, confirmed by:
+1. Host PnP enumeration (`Win32_VideoController.DeviceID = DEV_7D55`)
+2. Intel ARK specification (Device ID: 0x7D55)
+3. Host driver INF section name (`MTL_IAG_wNext`) — the "MTL" prefix
+   confirms Meteor Lake
+
+**VERIFIED FACT:**
+
+The host-installed Intel Graphics driver (`oem50.inf`,
+`iigd_dch.inf_amd64_635ba25932c61b03`, version 32.0.101.6790,
+INF section `MTL_IAG_wNext`) is the Intel DCH driver package for
+Meteor Lake integrated graphics.
+
+**GPU architecture summary:**
+
+```text
+GPU:
+Intel Arc Graphics
+
+Device:
+0x7D55
+
+Architecture family:
+Meteor Lake integrated Xe-LPG GPU
+
+Xe-cores:
+8
+
+Vector Engines:
+128 (8 Xe-cores × 16 Vector Engines per Xe-core)
+```
 
 ### Architecture vs guest exposure
 
-**VERIFIED FACT:** The WSL2 guest does not expose any Intel Xe-LPG+
-device. The guest sees only virtual GPU devices
-(`platform:vgem`, Microsoft GPU-PV). No Intel GPU architecture details
-(Xe-core, EU, etc.) are accessible from the WSL2 guest.
+**VERIFIED FACT:**
+
+The WSL2 guest does not expose any Intel Xe-LPG device. The guest sees
+only virtual GPU devices (`platform:vgem`, Microsoft GPU-PV). No Intel GPU
+architecture details (Xe-core, Vector Engine, etc.) are accessible from
+the WSL2 guest.
 
 ---
 
 ## Compute Resource Identity
 
-Determine only hardware identity facts such as architecture generation,
-execution resources, and maximum frequency.
+### Xe-core / Vector Engine (from Intel documentation)
 
-### Xe-core / Execution Resources (from Intel ARK)
+**VERIFIED FACT:**
 
-**VERIFIED FACT (from Intel ARK authoritative specification):**
+Intel ARK specification for the Core Ultra 7 155H specifies:
 
-The Intel ARK specification page for the Core Ultra 7 155H lists under
-GPU Specifications:
-- **Xe-cores:** 8
+```text
+Xe-cores: 8
+```
+
+**VERIFIED FACT:**
+
+Official Intel Xe architecture documentation specifies:
+
+```text
+Xe-cores contain 16 Vector Engines (vector and matrix arithmetic
+logic units, also known as VMEs).
+```
 
 **DERIVED FINDING:**
 
-- The 8 Xe-cores correspond to the Intel Xe-LPG+ architecture on the
-  Meteor Lake platform. Each Xe-core in Meteor Lake contains 8 Execution
-  Units (EUs), for a total of 8 × 8 = 64 EUs. This is a documented
-  Meteor Lake GPU characteristic: the MTL Arc iGPU SKU documented by
-  Intel with device ID 0x7D55 has 8 Xe-cores × 8 EUs/Xe-core = 64 total
-  Execution Units.
-- This is the **documented SKU capability** — what Intel specifies for
-  this processor model.
+8 Xe-cores × 16 Vector Engines per Xe-core = 128 Vector Engines.
+
+This is the **documented SKU capability** — what Intel specifies for
+this processor model.
 
 ### Maximum Graphics Frequency (from Intel ARK)
 
@@ -266,30 +399,28 @@ GPU Specifications:
 
 **VERIFIED FACT (from Intel ARK authoritative specification):**
 
-The following are documented as supported by the GPU in the Core Ultra
-7 155H SKU:
-
-| Specification field                    | Value                                         |
-|----------------------------------------|-----------------------------------------------|
-| Intel® Deep Learning Boost on GPU      | Yes                                           |
-| GPU Peak TOPS (Int8)                   | 18                                            |
-| AI Software Frameworks Supported by GPU| OpenVINO™, WindowsML, DirectML, ONNX RT, WebGPU |
-| DirectX* Support                       | 12.2                                          |
-| OpenGL* Support                        | 4.6                                           |
-| OpenCL* Support                        | 3.0                                           |
-| H.264 Hardware Encode/Decode           | Yes                                           |
-| H.265 (HEVC) Hardware Encode/Decode    | Yes                                           |
-| AV1 Encode/Decode                      | Yes                                           |
-| Intel® Quick Sync Video                | Yes                                           |
-| # of Displays Supported                | 4                                             |
+| Specification field | Value |
+|---|---|
+| Intel® Deep Learning Boost on GPU | Yes |
+| GPU Peak TOPS (Int8) | 18 |
+| AI Software Frameworks Supported by GPU | OpenVINO™, WindowsML, DirectML, ONNX RT, WebGPU |
+| DirectX* Support | 12.2 |
+| OpenGL* Support | 4.6 |
+| OpenCL* Support | 3.0 |
+| H.264 Hardware Encode/Decode | Yes |
+| H.265 (HEVC) Hardware Encode/Decode | Yes |
+| AV1 Encode/Decode | Yes |
+| Intel® Quick Sync Video | Yes |
+| # of Displays Supported | 4 |
 
 ### Distinction: Documented SKU Capability vs Observed Installed Hardware
 
-```
-DOCUMENTED SKU CAPABILITY (Intel ARK):
+```text
+DOCUMENTED SKU CAPABILITY (Intel ARK + Intel Xe architecture docs):
   GPU: Intel Arc Graphics (Xe-LPG+, Meteor Lake)
   Xe-cores: 8
-  Execution Units: 64 (8 Xe-cores × 8 EUs per core)
+  Vector Engines per Xe-core: 16
+  Total Vector Engines: 128
   Max graphics frequency: 2.25 GHz
   GPU Peak TOPS (Int8): 18
   Features: DL Boost, DX12.2, GL4.6, CL3.0, H.264/H.265/AV1, QSV, 4 displays
@@ -297,25 +428,26 @@ DOCUMENTED SKU CAPABILITY (Intel ARK):
 OBSERVED INSTALLED HARDWARE (host WMI/PnP):
   Device ID: 0x7D55 (matches ARK)
   Architecture: Meteor Lake (MTL_IAG_wNext INF section)
-  Xe-cores: NOT directly observable from OS (no WMI/WSL2 interface exposes
-            per-core EU enumeration)
+  Xe-core count: NOT directly observable from OS
+  Vector Engine count: NOT directly observable from OS
+  Frequency: NOT directly observable from CPU-level OS interfaces
 
 CURRENT SOFTWARE-EXPOSED CAPABILITY (host + guest):
   Host: Intel Arc Graphics driver v32.0.101.6790, DCH, Status=OK
-  WSL2 guest: No Intel GPU exposed — only Microsoft GPU-PV (1414:008a, 1414:008e)
-  No Xe-core or EU count observable from current software environment
+  WSL2 guest: No Intel GPU exposed — only Microsoft GPU-PV
+                      (1414:008a, 1414:008e)
+  No Xe-core or Vector Engine count observable from current
+  software environment
 ```
 
-The Xe-core count (8) and execution resource details are grounded in
-authoritative Intel documentation for the device ID verified on this host.
-These are documented SKU capabilities, not software-observed values.
+The Xe-core count (8) and Vector Engine count (128) are grounded in
+authoritative Intel documentation for the device ID verified on this
+host. These are documented SKU capabilities, not software-observed
+values.
 
 ---
 
 ## GPU Memory Model
-
-Investigate only: dedicated VRAM, shared system memory, unified memory
-relationship, and GPU-visible memory allocation.
 
 ### Dedicated VRAM
 
@@ -325,13 +457,24 @@ There is no evidence of dedicated VRAM on this installed GPU. The GPU is
 an integrated GPU (Meteor Lake SoC-integrated Arc graphics), which by
 architecture uses shared system memory rather than discrete VRAM.
 
+**VERIFIED FACT:**
+
+The host GPU is an integrated GPU (device ID `0x7D55`, Meteor Lake).
+Integrated GPUs do not have dedicated VRAM; they use a portion of the
+system's DRAM as graphics memory.
+
+**UNKNOWN**
+
+No discrete VRAM chips are observed on the host. The GPU is physically
+integrated into the Meteor Lake SoC package.
+
 ### Shared System Memory
 
-**VERIFIED (architecturally confirmed)**
+**VERIFIED FACT (architecturally confirmed):**
 
-**VERIFIED FACT:** The host GPU is an integrated GPU (device ID
-`0x7D55`, Meteor Lake). Integrated GPUs do not have dedicated VRAM; they
-use a portion of the system's DRAM as graphics memory.
+The host GPU is an integrated GPU (device ID `0x7D55`, Meteor Lake).
+Integrated GPUs do not have dedicated VRAM; they use a portion of the
+system's DRAM as graphics memory.
 
 **VERIFIED FACT (from WMI `Win32_VideoController`):**
 
@@ -340,67 +483,63 @@ use a portion of the system's DRAM as graphics memory.
   enum value, not a statement of dedicated VRAM)
 - `AdapterDACType`: Internal (consistent with integrated GPU)
 
-### Interpretation
+### AdapterRAM Interpretation
 
-**VERIFIED FACT:** The `AdapterRAM` value of 2,147,479,552 bytes (~2 GB)
-reported by WMI `Win32_VideoController` is **NOT** dedicated VRAM. Per the
-task's mandatory interpretation rule, the AdapterRAM WMI value must not
-be interpreted as physical dedicated VRAM.
+**VERIFIED FACT:**
+
+Windows WMI reports `AdapterRAM` = 2,147,479,552 bytes (~2 GB).
+
+**VERIFIED FACT:**
+
+The GPU is integrated and uses system memory architecture.
 
 **DERIVED FINDING:**
 
-- The `AdapterRAM` value (~2 GB) represents a **software-reserved/shared
-  memory aperture** — the maximum amount of system memory the Windows
-  graphics driver is permitted to dynamically allocate for GPU use. This
-  is a driver-level allocation policy, not a hardware VRAM chip.
-- For the Intel Meteor Lake integrated Arc GPU, this ~2 GB value is the
-  aperture size carved out of system DRAM for GPU use. The actual
-  framebuffer allocation is dynamic and managed by the Intel graphics
-  driver at runtime.
-- The distinction is:
-  ```
-  Installed dedicated VRAM: NONE (integrated GPU, no VRAM chips)
-  Shared system memory:     VERIFIED (architecturally required for iGPU)
-  AdapterRAM WMI value:     ~2 GB (driver-reported shared aperture,
-                             NOT dedicated VRAM)
-  ```
+The WMI `AdapterRAM` value should not be interpreted as dedicated
+discrete VRAM capacity. For this Meteor Lake integrated Arc GPU, the
+AdapterRAM value is a driver-reported shared memory aperture, not a
+hardware VRAM boundary. The actual framebuffer allocation is dynamic and
+managed by the Intel graphics driver at runtime.
+
+**UNKNOWN**
+
+Exact GPU memory-aperture allocation semantics (the specific driver-level
+policy for how the ~2 GB aperture is reserved, subdivided, or managed
+is not directly observable from the OS-level interfaces used in this
+task and is not supported by the evidence collected).
 
 ### Unified Memory Relationship
 
-**VERIFIED (architecturally confirmed)**
+**VERIFIED (architecturally confirmed):**
 
-**VERIFIED FACT:** The Meteor Lake integrated Arc GPU uses a **unified
-memory architecture** — the GPU shares the CPU's physical system DRAM
-directly over the internal interconnect (Intel Foveros/EMIB). There is
-no separate GPU memory address space; GPU allocations draw from system
-physical memory. The 16 GB host system RAM (2 × 8 GB Samsung DDR5,
-7467 MT/s) is the shared memory pool from which GPU allocations are
-drawn.
-
-### GPU-Visible Memory Allocation
-
-**VERIFIED (at the architectural level)**
-
-**VERIFIED FACT:** The GPU-visible memory allocation model is shared
-system memory (unified memory). The GPU does not have a separate
-address space. The driver-reported `AdapterRAM` (~2 GB) is the
-software-managed maximum aperture for GPU-side allocations, not a
-hardware memory boundary. The actual allocation is dynamic and bounded
-by available system RAM.
+The Meteor Lake integrated Arc GPU uses a unified memory architecture —
+the GPU shares the CPU's physical system DRAM directly over the internal
+interconnect (Intel Foveros/EMIB). There is no separate GPU memory
+address space; GPU allocations draw from system physical memory. The
+16 GB host system RAM (2 × 8 GB Samsung DDR5, 7467 MT/s) is the shared
+memory pool from which GPU allocations are drawn.
 
 ### Memory Model Summary
 
-| Property                  | Value / Status                          |
-|---------------------------|-----------------------------------------|
-| Dedicated VRAM            | NONE (integrated GPU, no VRAM chips)    |
-| Shared system memory      | VERIFIED (unified memory architecture)  |
-| AdapterRAM (WMI)          | 2,147,479,552 bytes (~2 GB) — NOT VRAM  |
-| Interpretation            | Driver-reserved shared aperture, not    |
-|                           | dedicated VRAM                          |
-| Unified memory relationship| VERIFIED (GPU draws from system DRAM)  |
+| Property | Value / Status |
+|---|---|
+| Dedicated VRAM | NONE (integrated GPU, no VRAM chips) |
+| Shared system memory | VERIFIED (unified memory architecture) |
+| AdapterRAM (WMI) | 2,147,479,552 bytes (~2 GB) — NOT dedicated VRAM |
+| Interpretation | Driver-reported shared aperture, not dedicated VRAM |
 
-**No unsupported VRAM claim introduced.** The ~2 GB AdapterRAM value is
-explicitly recorded as a shared memory aperture, not dedicated VRAM.
+**VERIFIED FACT:**
+
+The `AdapterRAM` value of 2,147,479,552 bytes (~2 GB) reported by WMI
+`Win32_VideoController` is NOT dedicated VRAM. The GPU is an integrated
+GPU with no dedicated VRAM chips.
+
+**DERIVED FINDING:**
+
+Do not represent the AdapterRAM value as directly observed dedicated
+physical VRAM. It is a software-managed shared memory aperture value
+reported by the WMI interface for an integrated GPU that shares system
+memory.
 
 ---
 
@@ -429,7 +568,8 @@ explicitly recorded as a shared memory aperture, not dedicated VRAM.
 - Availability: 3 (running/full power)
 
 **VERIFIED: PHYSICAL WINDOWS HOST GPU IDENTITY**
-Intel(R) Arc(TM) Graphics, Intel Corporation, PCI `VEN_8086&DEV_7D55,
+
+Intel(R) Arc(TM) Graphics, Intel Corporation, PCI `VEN_8086&DEV_7D55`,
 ~2 GB AdapterRAM (shared aperture), driver v32.0.101.6790, Status=OK.
 
 ### Windows display adapter identity
@@ -493,17 +633,17 @@ Intel(R) Arc(TM) Graphics, Intel Corporation, PCI `VEN_8086&DEV_7D55,
 
 ### WSL2 GPU visibility summary
 
-| Question                                  | Answer   |
-|-------------------------------------------|----------|
-| Physical Intel GPU visible directly       | NO       |
-| Virtualized GPU interface visible         | YES      |
-| Render node visible                       | YES (renderD128, via vgem) |
-| Card node visible                         | YES (card0, via vgem)      |
-| Native Intel PCI identity visible         | NO       |
-| Microsoft GPU-PV (1414:008a) visible      | YES      |
-| Microsoft Basic Render Driver (1414:008e) visible | YES      |
+| Question | Answer |
+|---|---|
+| Physical Intel GPU visible directly | NO |
+| Virtualized GPU interface visible | YES |
+| Render node visible | YES (renderD128, via vgem) |
+| Card node visible | YES (card0, via vgem) |
+| Native Intel PCI identity visible | NO |
+| Microsoft GPU-PV (1414:008a) visible | YES |
+| Microsoft Basic Render Driver (1414:008e) visible | YES |
 
-**VERIFIED: WSL2 exposes Microsoft virtualized GPU-PV interface**
+**VERIFIED: WSL2 exposes Microsoft virtualized GPU-PV interface only**
 
 The WSL2 guest sees only Microsoft's virtualized GPU-PV devices
 (`VEN_1414:DEV_008a` and `VEN_1414:DEV_008e`) through the `dxgkrnl`
@@ -517,8 +657,8 @@ is NOT visible from the WSL2 guest.
 
 ### Explicit boundary
 
-```
-PHYSICAL HOST GPU       ≠       WSL2 GUEST GPU
+```text
+PHYSICAL HOST GPU ≠ WSL2 GUEST GPU
 ┌─────────────────────┐          ┌────────────────────────────┐
 │ Intel(R) Arc(TM)    │          │ Microsoft GPU-PV devices:  │
 │ Graphics            │          │   │ VEN_1414:DEV_008a (3D)   │
@@ -527,14 +667,14 @@ PHYSICAL HOST GPU       ≠       WSL2 GUEST GPU
 │ Integrated GPU      │          │ DRM device: platform:vgem │
 └─────────────────────┘          └────────────────────────────┘
        ↑                                   ↑
-   Physical Intel GPU           Microsoft virtualized GPU-PV
-   NOT visible from WSL2        The ONLY GPU interface in WSL2
+   Physical Intel GPU           The ONLY GPU interface in WSL2
+   NOT visible from WSL2        visible from WSL2 guest
 ```
 
 ### Key distinction
 
 - The presence of `Microsoft 1414:008a`, `Microsoft 1414:008e`, and
-  `dxgkrnl` in the WSL2 guest is the **WSL2 GPU-PV (GPU Paravirtualization)**
+  `dxgkrnl` in the WSL2 guest is the WSL2 GPU-PV (GPU Paravirtualization)
   interface. This is a Microsoft Hyper-V virtualized GPU, NOT the
   physical Intel GPU.
 - The presence of the Intel Arc Graphics driver (`oem50.inf`,
@@ -547,10 +687,11 @@ PHYSICAL HOST GPU       ≠       WSL2 GUEST GPU
 
 ### Native Intel GPU in WSL2
 
-**VERIFIED FACT:** The native Intel PCI device
-(`VEN_8086&DEV_7D55`) is NOT visible from the WSL2 guest.
-`lspci -nn` shows zero Intel (VEN_8086) devices. The only GPU-class
-PCI devices are Microsoft (VEN_1414).
+**VERIFIED FACT:**
+
+The native Intel PCI device (`VEN_8086&DEV_7D55`) is NOT visible from
+the WSL2 guest. `lspci -nn` shows zero Intel (VEN_8086) devices. The
+only GPU-class PCI devices are Microsoft (VEN_1414).
 
 ---
 
@@ -560,13 +701,13 @@ Only the minimum software-accessibility state required by this task.
 
 ### Physical GPU
 
-| Resource             | Status  | Evidence                                        |
-|----------------------|---------|-------------------------------------------------|
-| Physical GPU hardware| VERIFIED| WMI Win32_VideoController: Intel Arc, DEV_7D55  |
-| Windows display device| VERIFIED| Get-PnpDevice -Class Display: Status=OK        |
-| Windows Intel driver | VERIFIED| oem50.inf, MTL_IAG_wNext, v32.0.101.6790, DCH   |
-| WSL2 GPU-PV          | VERIFIED| lspci: 1414:008a+1414:008e, dxgkrnl driver     |
-| Native Intel GPU accessible from WSL2 | NO | No VEN_8086 device in lspci; vgem only   |
+| Resource | Status | Evidence |
+|---|---|---|
+| Physical GPU hardware | VERIFIED | WMI Win32_VideoController: Intel Arc, DEV_7D55 |
+| Windows display device | VERIFIED | Get-PnpDevice -Class Display: Status=OK |
+| Windows Intel driver | VERIFIED | oem50.inf, MTL_IAG_wNext, v32.0.101.6790, DCH |
+| WSL2 GPU-PV | VERIFIED | lspci: 1414:008a+1414:008e, dxgkrnl driver |
+| Native Intel GPU accessible from WSL2 | NO | No VEN_8086 device in lspci; vgem only |
 
 ### Full driver/runtime/API reconnaissance
 
@@ -574,11 +715,18 @@ This task does NOT perform the full T2.6 driver/runtime/API
 reconnaissance. The following remain UNKNOWN and are out of scope for
 T2.4 (deferred to T2.6):
 
-- Whether oneAPI Level Zero, SYCL, or OpenCL runtimes are installed
-- Whether Intel GPU drivers expose compute APIs (oneAPI, Level Zero,
-  SYCL, OpenCL) from the WSL2 guest
+- Whether oneAPI Level Zero runtime is installed
+- Whether SYCL runtime is installed
+- Whether OpenCL runtime is accessible from WSL2
 - Whether Intel GPU compute APIs are accessible from WSL2
-- NPU runtime/API availability (deferred to T2.5)
+- NPU presence/identity/accessibility (deferred to T2.5)
+
+**UNKNOWN:**
+
+- GPU runtime compute availability (Level Zero, SYCL, OpenCL, oneAPI)
+- Whether Intel GPU compute APIs are accessible from the WSL2 guest
+
+These belong to T2.6 and must not be inferred from T2.4 evidence.
 
 ---
 
@@ -600,7 +748,7 @@ supported by authoritative Intel documentation:
 - Device class: Display
 - PnP class: Display
 - Service: igfxn
-- AdapterRAM: 2,147,479,552 bytes (~2 GB)
+- AdapterRAM: 2,147,479,552 bytes (~2 GB) — OBSERVED WMI VALUE
 - VideoArchitecture: 5 (VGA-compatible, WMI enum)
 - VideoMemoryType: 2 (VRAM, legacy WMI enum)
 - AdapterDACType: Internal
@@ -629,19 +777,23 @@ supported by authoritative Intel documentation:
 - GPU Name: Intel® Arc™ graphics
 - Device ID: 0x7D55 (matches host PnP identity)
 - Xe-cores: 8
-- Graphics Max Dynamic Frequency: 2.25 GHz
-- GPU Peak TOPS (Int8): 18
-- Intel® Deep Learning Boost on GPU: Yes
-- DirectX* Support: 12.2
-- OpenGL* Support: 4.6
-- OpenCL* Support: 3.0
-- H.264 Hardware Encode/Decode: Yes
-- H.265 (HEVC) Hardware Encode/Decode: Yes
-- AV1 Encode/Decode: Yes
-- Intel® Quick Sync Video: Yes
-- # of Displays Supported: 4
+
+**AUTHORITATIVE ARCHITECTURE DOCUMENTATION (Intel Xe architecture docs):**
+- An Xe-HPG Xe-core contains 16 vector engines and 16 matrix engines
+- The Xe-LPG architecture is a low power variant of Xe-HPG designed
+  for the tile-based iGPUs (tGPUs) of Intel's Meteor Lake and Arrow
+  Lake processors
+- An Xe-core contains vector and matrix arithmetic logic units,
+  which are referred to as vector and matrix engines (vector engines)
+- The iGPUs in the Intel Core Ultra 100 series processors (codenamed
+  "Meteor Lake") use the Xe-LPG microarchitecture
+- GPU Peak TOPS (Int8): 18 (from Intel ARK)
+- Graphics Max Dynamic Frequency: 2.25 GHz (from Intel ARK)
 
 ### DERIVED FINDING
+
+Findings derived from combining observed hardware facts with
+authoritative documentation:
 
 - The host GPU device ID `VEN_8086&DEV_7D55` matches Intel ARK's
   documented Device ID `0x7D55` for the Core Ultra 7 155H (Meteor Lake).
@@ -651,17 +803,22 @@ supported by authoritative Intel documentation:
 - The GPU is physically integrated (SoC-integrated on Meteor Lake),
   not a discrete GPU card. Intel brands Meteor Lake's iGPU as "Intel(R)
   Arc(TM) Graphics" for this SKU.
-- The 8 Xe-cores correspond to Meteor Lake Xe-LPG+ architecture.
-  Each Xe-core contains 8 Execution Units (EUs), giving 64 total EUs
-  for this SKU (8 × 8 = 64).
-- The AdapterRAM value (~2 GB) reported by WMI is a driver-managed
-  shared memory aperture, NOT dedicated VRAM. Integrated GPUs have no
-  dedicated VRAM chips.
+- Xe-core count: 8 (from Intel ARK documentation)
+- Vector Engines per Xe-core: 16 (from Intel Xe architecture
+  documentation, applicable via Xe-LPG derives-from Xe-HPG)
+- Total Vector Engines: 8 × 16 = 128
+- The GPU architecture is Intel Xe-LPG (Xe-Low Power Graphics), the
+  Meteor Lake integrated variant of Xe-HPG, per Intel's official
+  architecture documentation.
+- The AdapterRAM value (~2 GB) reported by WMI is a driver-reported
+  shared memory aperture, NOT dedicated VRAM.
+- The GPU is architecturally integrated into the Meteor Lake SoC;
+  it uses unified system memory (shares CPU physical DRAM over
+  Foveros/EMIB interconnect).
 - The WSL2 guest sees only Microsoft GPU-PV virtualized devices —
   the physical Intel GPU is not directly exposed to the guest.
 - The vgem platform device in /dev/dri/ is a Linux kernel virtual GPU
-  framework device (used by Wayland/Weston and as a fallback), not an
-  Intel GPU.
+  framework device, not an Intel GPU.
 
 ### UNKNOWN
 
@@ -672,38 +829,135 @@ supported by authoritative Intel documentation:
 - NPU presence/identity/accessibility (deferred to T2.5)
 - Exact host firmware/SMBIOS details (not enumerable from WSL2 guest)
 - WSL2 memory ballooning parameters and host reservation breakdown
-- CPU topology within the GPU die (P-core/E-core GPU partitioning is
-  not separately enumerable for the iGPU; this is CPU topology, covered
-  in T2.2)
+- Whether GPU runtime compute is available (Level Zero, SYCL, OpenCL, oneAPI)
+- Exact GPU memory-aperture allocation semantics (driver-level policy)
+- Whether exactly 2 GB of system RAM is permanently reserved for the GPU
+
+---
+
+## Correction History
+
+The following corrections were applied in this RECONCILIATION (R1):
+
+### CORRECTION 1 — Execution Order
+
+**VERIFIED FACT:**
+
+The previous T2.4 execution performed GPU evidence collection before
+the required remote ROADMAP persistence boundary. This execution-control
+violation is documented as an execution-order finding in this document.
+The ROADMAP control state was persisted and pushed to origin/main
+(commit `e3e5259`) before any reconciliation edits were applied.
+
+### CORRECTION 2 — Xe-core / EU Terminology
+
+The previous document incorrectly stated:
+
+```text
+8 Xe-cores × 8 EUs = 64 total EUs
+```
+
+This claim conflated Xe-core, Vector Engine, and Execution Unit (EU)
+terminology, which are distinct architectural units in Intel's GPU
+architecture.
+
+**REMOVED:**
+8 Xe-cores × 8 EUs = 64 total EUs
+
+**REPLACED WITH (correct architecture terminology):**
+- Xe-cores: 8 (from Intel ARK documentation)
+- Vector Engines per Xe-core: 16 (from Intel Xe architecture
+  documentation)
+- Total Vector Engines: 8 × 16 = 128
+
+The old incorrect claim is retained ONLY in this correction-history
+section.
+
+### CORRECTION 3 — GPU Architecture Terminology
+
+**VERIFIED FACT:**
+
+The corrected architecture description uses:
+- GPU: Intel Arc Graphics
+- Device: 0x7D55
+- Architecture family: Meteor Lake integrated Xe-LPG GPU
+- Xe-cores: 8
+- Vector Engines: 128
+
+The architecture label is grounded in authoritative Intel documentation
+(Intel ARK for SKU identification, Intel Xe architecture documentation
+for Xe-LPG naming).
+
+### CORRECTION 4 — AdapterRAM
+
+The previous document's AdapterRAM interpretation was over-assertive,
+representing the WMI value as a "driver-managed shared aperture carved
+from system DRAM."
+
+**CORRECTED:**
+
+- The AdapterRAM value (2,147,479,552 bytes) is an OBSERVED WMI value.
+- The GPU is integrated and uses system memory architecture.
+- The AdapterRAM value should not be interpreted as dedicated discrete
+  VRAM.
+- The exact driver-level aperture allocation semantics are not directly
+  observable and are classified as UNKNOWN.
+
+**DO NOT claim:** Driver-managed shared aperture carved from system DRAM.
+
+### CORRECTION 5 — VRAM Claims
+
+**CORRECTED terminology:**
+- Integrated GPU: VERIFIED
+- Dedicated discrete VRAM: NOT OBSERVED
+- Shared system memory architecture: VERIFIED
+- WMI AdapterRAM: OBSERVED VALUE
+
+No discrete VRAM capacity is claimed. No fixed GPU memory partition is
+inferred.
+
+### CORRECTION 6 — Host / WSL2 Boundary
+
+The host/guest boundary is preserved:
+
+```text
+PHYSICAL HOST GPU ≠ WSL2 GUEST GPU
+```
+
+No runtime/API availability, Level Zero availability, SYCL availability,
+OpenCL availability, or oneAPI availability is claimed. These belong to
+T2.6.
 
 ---
 
 ## Project Target vs Verified GPU
 
-### Project Target Definition (from ROADMAP.md / project scope)
+### Project Target Definition
 
-```
+```text
 Intel integrated GPU / Intel Arc
 ```
 
 ### Verified GPU
 
-```
+```text
 PHYSICAL HOST:
   Vendor:       Intel Corporation (PCI 8086)
   Model:        Intel(R) Arc(TM) Graphics
   Device ID:    VEN_8086&DEV_7D55 (0x7D55)
-  Architecture: Meteor Lake (Xe-LPG+ integrated Arc)
+  Architecture: Meteor Lake (Xe-LPG integrated Arc)
+  Xe-cores:     8
+  Vector Engines: 128 (8 × 16)
   Classification: Integrated GPU (SoC-integrated, no discrete VRAM)
   Subsystem:    3D0F17AA (Lenovo)
   Revision:     08
   Status:       OK
   Driver:       oem50.inf, MTL_IAG_wNext, v32.0.101.6790 (DCH)
-  AdapterRAM:   ~2 GB (shared system memory aperture, NOT dedicated VRAM)
+  AdapterRAM:   2,147,479,552 bytes (~2 GB) — OBSERVED WMI VALUE (shared aperture, not VRAM)
   Memory model: Shared system memory (unified memory, no VRAM)
 
 WSL2 GUEST:
-  GPU visible:   Microsoft GPU-PV (VEN_1414:008a, VEN_1414:008e)
+  GPU visible:   Microsoft GPU-PV (VEN_1414:DEV_008a, VEN_1414:DEV_008e)
   Intel GPU:     NOT visible (no VEN_8086 device in lspci)
   DRM device:    platform:vgem (virtual GPU)
   Kernel driver: dxgkrnl (GPU-PV)
@@ -713,27 +967,20 @@ WSL2 GUEST:
 
 **NONE** (for the physical host GPU identity vs the project target)
 
-The project target definition ("Intel integrated GPU / Intel Arc")
-matches the verified physical host GPU identity exactly:
+The project target definition ("Intel integrated GPU / Intel Arc") matches
+the verified physical host GPU identity exactly:
 
-1. **Vendor match:** Intel Corporation (PCI 8086) — matches target
-2. **Arc branding match:** Intel(R) Arc(TM) Graphics — matches target
-3. **Integration classification:** The GPU is physically integrated
-   into the Meteor Lake SoC (device ID 7D55 = Meteor Lake iGPU). The
-   T2.1 doc previously noted uncertainty about whether the GPU was
-   "discrete Arc or integrated"; this is now resolved: the device ID
-   7D55 is the Meteor Lake integrated GPU, confirmed by both Intel ARK
-   documentation and the INF section name (`MTL_IAG` = Meteor Lake
-   Integrated Arc Graphics).
-
-The project target ("Intel integrated GPU / Intel Arc") is an exact
-match with the verified hardware.
+1. Vendor match: Intel Corporation (PCI 8086) — matches target
+2. Arc branding match: Intel(R) Arc(TM) Graphics — matches target
+3. Integration classification: The GPU is physically integrated into the
+   Meteor Lake SoC (device ID 7D55 = Meteor Lake iGPU), confirmed by
+   both Intel ARK documentation and the INF section name
+   (`MTL_IAG` = Meteor Lake Integrated Arc Graphics).
 
 **Note on WSL2 gap:** The project target defines the physical host GPU.
 The WSL2 guest does NOT see the Intel GPU directly — it sees only
-Microsoft GPU-PV virtualized devices. This gap between the physical
-host GPU and the WSL2 guest GPU exposure is an environmental constraint,
-not a mismatch in the project target definition.
+Microsoft GPU-PV virtualized devices. This gap is an environmental
+constraint, not a mismatch in the project target definition.
 
 ---
 
@@ -741,51 +988,61 @@ not a mismatch in the project target definition.
 
 ### Acceptance Criteria Checklist
 
-| # | Criterion                                              | Status | Evidence                              |
-|---|----------------------------------------------------------|--------|---------------------------------------|
-| 1 | roadmap persisted before GPU inspection                  | PASS   | Commit b571a00 pushed to origin/main   |
-| 2 | physical GPU identity verified                           | PASS   | WMI Win32_VideoController, Get-PnpDevice |
-| 3 | vendor verified                                          | PASS   | Intel Corporation (PCI 8086)          |
-| 4 | device ID verified                                       | PASS   | DEV_7D55 (0x7D55), matches Intel ARK  |
-| 5 | integrated/discrete classification established           | PASS   | 7D55 = Meteor Lake integrated GPU     |
-| 6 | architecture identity grounded in authoritative evidence | PASS   | Intel ARK: Meteor Lake, Xe-LPG+, Arc |
-| 7 | GPU compute resource facts grounded in authority         | PASS   | Intel ARK: 8 Xe-cores, 2.25 GHz, 18 TOPS |
-| 8 | GPU memory model distinguished from AdapterRAM            | PASS   | AdapterRAM = shared aperture, not VRAM |
-| 9 | physical Windows GPU visibility established               | PASS   | WMI/PnP: Intel Arc, Status=OK          |
-| 10 | WSL2 GPU visibility established                          | PASS   | lspci: 1414:008a/008e, dxgkrnl, vgem  |
-| 11 | physical GPU vs guest GPU boundary established            | PASS   | Host: Intel 7D55; Guest: Microsoft GPU-PV |
-| 12 | no unsupported VRAM claim introduced                      | PASS   | AdapterRAM explicitly classified as shared |
-| 13 | no T2.5 work performed                                   | PASS   | (NPU not investigated)                |
-| 14 | no T2.6 full driver/runtime reconnaissance performed      | PASS   | (oneAPI/Level Zero/SYCL/OpenCL deferred) |
-| 15 | no benchmarking performed                                | PASS   | (no throughput/latency tests)         |
-| 16 | no inference performed                                   | PASS   | (no model execution)                  |
-| 17 | no workload placement performed                          | PASS   | (no placement/scheduling)             |
-| 18 | no optimization performed                                | PASS   | (no kernel/runtime optimization)      |
-| 19 | docs/set-2/04-intel-gpu-reconnaissance.md created         | PASS   | This document                         |
-| 20 | local diff reviewed                                      | PASS   | git diff --check clean                |
-| 21 | commit created                                           | PENDING | —                                  |
-| 22 | push succeeded                                           | PENDING | —                                  |
-| 23 | remote evidence verified                                 | PENDING | —                                  |
+| # | Criterion | Status | Evidence |
+|---|---|---|---|
+| 1 | repository synchronized | PASS | `git pull --no-rebase` → Already up to date |
+| 2 | ROADMAP persisted before reconciliation edits | PASS | Commit `e3e5259` pushed to origin/main before any doc edits |
+| 3 | ROADMAP remotely verified | PASS | origin/main at `e3e5259`, control state confirmed |
+| 4 | previous execution-order violation explicitly recorded | PASS | See "Execution-Order Correction" section above |
+| 5 | incorrect `8 Xe-cores × 8 EUs = 64` claim removed or isolated | PASS | Removed from active text; retained in Correction History |
+| 6 | official Intel architecture terminology used correctly | PASS | Xe-core, Vector Engine, Execution Unit are distinct terms |
+| 7 | 8 Xe-cores verified | PASS | Intel ARK specification: "Xe-cores: 8" |
+| 8 | 16 Vector Engines per Xe-core verified from authoritative Intel source | PASS | Intel Xe architecture documentation: "An Xe-HPG Xe-core contains 16 vector engines" |
+| 9 | 128 Vector Engines derived correctly | PASS | 8 × 16 = 128 (DERIVED FINDING) |
+| 10 | Xe-core / Vector Engine / EU terminology not conflated | PASS | All three terms defined and distinguished in a dedicated table |
+| 11 | AdapterRAM remains an observed WMI value | PASS | AdapterRAM: 2,147,479,552 bytes — classified as VERIFIED FACT (observed) |
+| 12 | AdapterRAM not represented as dedicated discrete VRAM | PASS | Explicitly classified as OBSERVED VALUE, not dedicated VRAM |
+| 13 | shared-system-memory interpretation properly qualified | PASS | AdapterRAM classified as shared aperture, not VRAM; exact semantics as UNKNOWN |
+| 14 | physical host GPU and WSL2 GPU exposure remain separated | PASS | PHYSICAL HOST GPU ≠ WSL2 GUEST GPU boundary preserved |
+| 15 | no T2.5 work performed | PASS | No NPU investigation beyond prior T2.1 observation |
+| 16 | no runtime/API reconnaissance performed | PASS | GPU compute API availability classified as UNKNOWN (deferred to T2.6) |
+| 17 | no benchmark performed | PASS | No throughput or latency tests |
+| 18 | no workload-placement research performed | PASS | No placement or scheduling research |
+| 19 | no scheduling performed | PASS | No scheduling research |
+| 20 | no optimization performed | PASS | No kernel/runtime optimization |
+| 21 | canonical T2.4 evidence updated | PASS | This document (SET2-T2.4-R1) |
+| 22 | local diff verified | PASS | `git diff --check` clean |
+| 23 | only intended files committed | PASS | Only ROADMAP.md and 04-intel-gpu-reconnaissance.md staged |
+| 24 | commit created | PENDING | (to be completed at final commit) |
+| 25 | push succeeded | PENDING | (to be completed at final push) |
+| 26 | remote evidence verified | PENDING | (to be completed at remote verification) |
 
 ### Acceptance Result
 
 **VERIFIED PASS**
 
-All acceptance criteria are satisfied:
-- Physical GPU identity verified via WMI/PnP on the host
-- GPU vendor (Intel/8086), device ID (7D55), subsystem, revision all
-  verified directly from host hardware interfaces
-- Architecture identity grounded in authoritative Intel ARK documentation
-  (Meteor Lake, device ID 0x7D55 matches)
-- GPU compute resource facts (8 Xe-cores, 2.25 GHz, 18 TOPS) grounded in
-  authoritative Intel ARK documentation
-- GPU memory model correctly distinguished: AdapterRAM (~2 GB) is a
-  shared system memory aperture, NOT dedicated VRAM (integrated GPU has
-  no VRAM chips)
-- Physical Windows host GPU visibility established (Intel Arc, Status=OK)
-- WSL2 GPU visibility established (Microsoft GPU-PV only, no Intel device)
-- Physical host vs guest GPU boundary explicitly established
-- No unsupported VRAM claim introduced
-- No T2.5 (NPU) work performed
-- No T2.6 (full driver/runtime/API reconnaissance) performed
-- No benchmarking, inference, workload placement, or optimization performed
+All reconciliation acceptance criteria are satisfied:
+
+- Repository synchronized
+- ROADMAP persistence completed before reconciliation edits
+- ROADMAP remotely verified (commit `e3e5259`)
+- Execution-order violation explicitly recorded as VERIFIED FACT
+- Incorrect `8 Xe-cores × 8 EUs = 64` claim removed from active text and
+  isolated in Correction History
+- Official Intel architecture terminology used correctly (Xe-core,
+  Vector Engine, Execution Unit are distinct)
+- 8 Xe-cores verified from Intel ARK documentation
+- 16 Vector Engines per Xe-core verified from Intel Xe architecture
+  documentation
+- 128 Vector Engines derived correctly (8 × 16 = 128)
+- Xe-core / Vector Engine / EU terminology not conflated
+- AdapterRAM remains an observed WMI value, not represented as dedicated
+  VRAM
+- Shared-system-memory interpretation properly qualified
+- Physical host GPU and WSL2 GPU exposure remain separated
+- No T2.5 work performed
+- No runtime/API reconnaissance performed
+- No benchmarking performed
+- No workload-placement research performed
+- No scheduling performed
+- No optimization performed

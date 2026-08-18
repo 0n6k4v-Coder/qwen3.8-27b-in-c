@@ -11,7 +11,7 @@
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **ACTIVE**
-* Current control task: **SET2-T2.4-R2**
+* Current control task: **SET2-T2.5**
 
 ---
 
@@ -467,16 +467,16 @@ SET2-T2.3-R1:
 ✅ PASS
 
 SET2-T2.4:
-⚠ PARTIAL — REQUIRES CORRECTION
+✅ PASS
 
 SET2-T2.4-R1:
-⚠ PARTIAL — REQUIRES CORRECTION
+✅ PASS
 
 SET2-T2.4-R2:
-🔜 NEXT
+✅ PASS
 
 SET2-T2.5:
-⏸ BLOCKED
+🔜 NEXT
 
 SET2-T2.6:
 🔒 NOT STARTED
@@ -496,6 +496,9 @@ SET2-CLOSE:
 SET 3:
 🔒 NOT STARTED
 ```
+
+CURRENT NEXT TASK:
+SET2-T2.5
 
 ### Dependency
 
@@ -525,11 +528,20 @@ SET2-T2.1-R1:
 SET2-T2.2:
 ✅ PASS
 
-SET2-T2.2-R1:
+SET2-T2.3-R1:
+✅ PASS
+
+SET2-T2.4:
+✅ PASS
+
+SET2-T2.4-R1:
+✅ PASS
+
+SET2-T2.4-R2:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.4-R2
+SET2-T2.5
 
 NEXT TASK OWNER:
 🛠 EXECUTOR
@@ -829,7 +841,7 @@ SYSTEM MEMORY CAPABILITY / CONSTRAINT PROFILE
 
 **Responsibility:** 🛠 EXECUTOR
 
-**Status:** ⚠ PARTIAL — REQUIRES CORRECTION
+**Status:** ✅ PASS
 
 **Dependency:** `SET2-T2.1 PASS`
 
@@ -879,9 +891,9 @@ INTEL GPU CAPABILITY MATRIX
 
 **Responsibility:** 🛠 EXECUTOR
 
-**Status:** ⏸ BLOCKED
+**Status:** 🔜 NEXT
 
-**Dependency:** `SET2-T2.1 PASS`
+**Dependency:** `SET2-T2.4-R2 PASS`
 
 **Objective:**
 
@@ -1449,7 +1461,7 @@ SET2-READINESS-GATE:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.4-R2
+SET2-T2.5
 
 NEXT TASK OWNER:
 🛠 EXECUTOR
@@ -1470,16 +1482,16 @@ SET2-T2.3-R1:
 ✅ PASS
 
 SET2-T2.4:
-⚠ PARTIAL — REQUIRES CORRECTION
+✅ PASS
 
 SET2-T2.4-R1:
-⚠ PARTIAL — REQUIRES CORRECTION
+✅ PASS
 
 SET2-T2.4-R2:
-🔜 NEXT
+✅ PASS
 
 SET2-T2.5:
-⏸ BLOCKED
+🔜 NEXT
 
 SET 3:
 🔒 NOT STARTED
@@ -1636,7 +1648,7 @@ SET 2:
 🟢 READY FOR EXECUTION
 
 Current next task:
-SET2-T2.4-R2
+SET2-T2.5
 
 SET2-T2.1:
 ✅ PASS
@@ -1654,16 +1666,16 @@ SET2-T2.3-R1:
 ✅ PASS
 
 SET2-T2.4:
-⚠ PARTIAL — REQUIRES CORRECTION
+✅ PASS
 
 SET2-T2.4-R1:
-⚠ PARTIAL — REQUIRES CORRECTION
+✅ PASS
 
 SET2-T2.4-R2:
-🔜 NEXT
+✅ PASS
 
 SET2-T2.5:
-⏸ BLOCKED
+🔜 NEXT
 
 SET 3:
 🔒 NOT STARTED

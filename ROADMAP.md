@@ -535,7 +535,7 @@ SET 1 downstream checkpoint contract:
 
 ```text
 SET 2:
-🟢 ACTIVE
+✅ CLOSED
 
 SET2-READINESS-GATE:
 ✅ PASS
@@ -566,13 +566,13 @@ SET2-T2.5:
 
 SET2-T2.5-R1:
 ✅ PASS
-|
+
 SET2-T2.6:
 ✅ PASS
-|
+
 SET2-T2.6-R1:
 ✅ PASS
-|
+
 SET2-T2.7:
 ✅ PASS
 
@@ -593,6 +593,12 @@ SET2-T2.9-R2:
 
 SET2-T2.9-R3:
 ✅ PASS
+
+SET2-CLOSE:
+✅ CLOSED
+
+SET3-READINESS-GATE:
+🔜 NEXT
 
 NEXT TASK OWNER:
 🧠 LUNA

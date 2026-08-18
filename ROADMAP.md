@@ -478,11 +478,14 @@ SET2-T2.4-R2:
 SET2-T2.5:
 ✅ PASS
 
+SET2-T2.5-R1:
+✅ PASS
+
 SET2-T2.6:
-🔜 NEXT
+✅ PASS
 
 SET2-T2.7:
-🔒 NOT STARTED
+🔜 NEXT
 
 SET2-T2.8:
 🔒 NOT STARTED
@@ -547,7 +550,7 @@ SET2-T2.5-R1:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.6
+SET2-T2.7
 
 NEXT TASK OWNER:
 🧠 LUNA
@@ -941,7 +944,7 @@ NPU CAPABILITY MATRIX
 
 **Execution Support:** 🛠 EXECUTOR
 
-**Status:** 🔒 NOT STARTED
+**Status:** ✅ PASS
 
 **Dependency:** T2.2 + T2.4 + T2.5 evidence
 
@@ -1008,7 +1011,7 @@ Example structure:
 
 **Execution Support:** 🛠 EXECUTOR
 
-**Status:** 🔒 NOT STARTED
+**Status:** 🔜 NEXT
 
 **Dependency:** T2.3 + T2.4 + T2.5 + T2.6
 
@@ -1467,7 +1470,7 @@ SET2-READINESS-GATE:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.6
+SET2-T2.7
 
 NEXT TASK OWNER:
 🧠 LUNA

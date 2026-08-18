@@ -476,10 +476,10 @@ SET2-T2.4-R2:
 ✅ PASS
 
 SET2-T2.5:
-🔜 NEXT
+✅ PASS
 
 SET2-T2.6:
-🔒 NOT STARTED
+🔜 NEXT
 
 SET2-T2.7:
 🔒 NOT STARTED
@@ -498,7 +498,7 @@ SET 3:
 ```
 
 CURRENT NEXT TASK:
-SET2-T2.5
+SET2-T2.6
 
 ### Dependency
 
@@ -540,11 +540,14 @@ SET2-T2.4-R1:
 SET2-T2.4-R2:
 ✅ PASS
 
+SET2-T2.5:
+✅ PASS
+
 CURRENT NEXT TASK:
-SET2-T2.5
+SET2-T2.6
 
 NEXT TASK OWNER:
-🛠 EXECUTOR
+🧠 LUNA
 ```
 
 ### Responsibility
@@ -889,9 +892,9 @@ INTEL GPU CAPABILITY MATRIX
 
 ### SET2-T2.5 — Intel NPU Reconnaissance
 
-**Responsibility:** 🛠 EXECUTOR
+**Responsibility:** 🛠 EXECUTOR (execution), 🧠 LUNA (acceptance)
 
-**Status:** 🔜 NEXT
+**Status:** ✅ PASS
 
 **Dependency:** `SET2-T2.4-R2 PASS`
 

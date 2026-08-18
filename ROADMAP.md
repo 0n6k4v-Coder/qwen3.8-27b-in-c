@@ -11,7 +11,7 @@
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **ACTIVE**
-* Current control task: **SET2-T2.8**
+* Current control task: **SET2-T2.9**
 
 ---
 
@@ -494,10 +494,10 @@ SET2-T2.7-R1:
 ✅ PASS
 
 SET2-T2.8:
-🔜 NEXT
+✅ PASS
 
 SET2-T2.9:
-🔒 NOT STARTED
+🔜 NEXT
 
 SET2-CLOSE:
 🔒 NOT STARTED
@@ -507,7 +507,7 @@ SET 3:
 ```
 
 CURRENT NEXT TASK:
-SET2-T2.8
+SET2-T2.9
 
 ### Dependency
 
@@ -568,10 +568,10 @@ SET2-T2.7-R1:
 ✅ PASS
 
 SET2-T2.8:
-🔜 NEXT
+✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.8
+SET2-T2.9
 |
 NEXT TASK OWNER:
 🧠 LUNA
@@ -1268,7 +1268,7 @@ docs/set-2/07-interconnect-data-movement.md
 
 **Execution Support:** 🛠 EXECUTOR
 
-**Status:** 🔜 NEXT
+**Status:** ✅ PASS
 
 **Dependency:** T2.2–T2.7 (all ✅ PASS after T2.7-R1 reconciliation)
 
@@ -1682,7 +1682,7 @@ SET2-READINESS-GATE:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.8
+SET2-T2.9
 
 NEXT TASK OWNER:
 🧠 LUNA
@@ -1730,7 +1730,7 @@ SET2-T2.7-R1:
 ✅ PASS
 
 SET2-T2.8:
-🔜 NEXT
+✅ PASS
 
 SET 3:
 🔒 NOT STARTED
@@ -1888,7 +1888,7 @@ SET 2:
 🟢 READY FOR EXECUTION
 
 Current next task:
-SET2-T2.8
+SET2-T2.9
 
 SET2-T2.1:
 ✅ PASS
@@ -1933,7 +1933,7 @@ SET2-T2.7-R1:
 ✅ PASS
 
 SET2-T2.8:
-🔜 NEXT
+✅ PASS
 
 SET 3:
 🔒 NOT STARTED

@@ -7,11 +7,11 @@
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
 * Last control update: `2026-08-18`
 * Current integrated branch: `main`
-* Current integrated commit: `01c94ad`
+* Current integrated commit: `1b88cbdc`
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **ACTIVE**
-* Current control task: **SET2-T2.8**
+* Current control task: **SET2-T2.7-R1**
 
 ---
 
@@ -488,10 +488,13 @@ SET2-T2.6-R1:
 ✅ PASS
 
 SET2-T2.7:
-✅ PASS
+⚠ RECONCILIATION REQUIRED
+
+SET2-T2.7-R1:
+🔜 NEXT
 
 SET2-T2.8:
-🔜 NEXT
+⏸ BLOCKED
 
 SET2-T2.9:
 🔒 NOT STARTED
@@ -504,7 +507,7 @@ SET 3:
 ```
 
 CURRENT NEXT TASK:
-SET2-T2.8
+SET2-T2.7-R1
 
 ### Dependency
 
@@ -559,10 +562,13 @@ SET2-T2.6-R1:
 ✅ PASS
 |
 SET2-T2.7:
-✅ PASS
-|
+⚠ RECONCILIATION REQUIRED
+
+SET2-T2.7-R1:
+🔜 NEXT
+
 CURRENT NEXT TASK:
-SET2-T2.8
+SET2-T2.7-R1
 |
 NEXT TASK OWNER:
 🧠 LUNA
@@ -1096,13 +1102,16 @@ SET2-T2.6:
 ✅ PASS (after reconciliation)
 
 SET2-T2.7:
-✅ PASS
+⚠ RECONCILIATION REQUIRED
 
-SET2-T2.8:
+SET2-T2.7-R1:
 🔜 NEXT
 
+SET2-T2.8:
+⏸ BLOCKED
+
 Current control task:
-SET2-T2.8
+SET2-T2.7-R1
 ```
 
 Evidence:
@@ -1120,12 +1129,11 @@ docs/set-2/06-driver-runtime-api-availability.md
 
 **Execution Support:** 🛠 EXECUTOR
 
-**Status:** ✅ PASS
+**Status:** ⚠ RECONCILIATION REQUIRED
 
 **Dependency:** T2.3 + T2.4 + T2.5 + T2.6 + T2.6-R1
 
 **Objective:**
-
 Establish how system resources are connected and what data-movement pathways are supported by evidence.
 
 Required scope:
@@ -1159,7 +1167,7 @@ HARDWARE DATA-MOVEMENT / INTERCONNECT MODEL
 
 ---
 
-### SET2-T2.8 — Hardware Capability & Constraint Synthesis
+### SET2-T2.7-R1 — Interconnect / Data-Movement Evidence Reconciliation
 
 **Responsibility:** 🧠 LUNA
 
@@ -1167,7 +1175,99 @@ HARDWARE DATA-MOVEMENT / INTERCONNECT MODEL
 
 **Status:** 🔜 NEXT
 
-**Dependency:** T2.2–T2.7
+**Dependency:** SET2-T2.7 (⚠ RECONCILIATION REQUIRED)
+
+**Objective:**
+
+Reconcile SET2-T2.7 evidence after independent review identified unsupported
+promotion of `DEVPKEY_PciDevice_ExpressSpecVersion=2` into `PCIe Gen2 x16` link
+claims, over-interpretation of PnP / PCI hierarchy as proof of exact physical
+silicon-level interconnect topology, over-broad claims regarding NPU shared/system
+memory and absence of device-local or near-compute memory, inadequate provenance
+for the CPU MESI classification, and stale ROADMAP integrated-commit metadata.
+
+This revision must:
+
+1. Audit `ROADMAP.md` ACTIVE control-state representations.
+2. Establish the correct T2.7-R1 control state.
+3. Preserve valid T2.7 host and guest observations.
+4. Audit `docs/set-2/07-interconnect-data-movement.md`.
+5. Correct unsupported PCIe-link claims.
+6. Correct physical-topology over-interpretation.
+7. Correct NPU shared-memory / private-memory classification.
+8. Correct CPU MESI provenance.
+9. Preserve known/unknown boundaries.
+10. Reconcile ROADMAP integrated-commit metadata with the actual final commit.
+11. Perform final ACTIVE control-state synchronization.
+12. Commit, push, and remotely verify the reconciled state.
+
+**Roadmap-first boundary:** This revision MUST exist before relying on it as an
+active control state. ROADMAP MUST be updated to the R1 reconciliation state and
+remotely verified before the canonical evidence document is modified.
+
+**Do-not-run:**
+
+```text
+❌ Do NOT begin SET2-T2.8
+❌ Do NOT perform benchmark work
+❌ Do NOT perform GPU/NPU bandwidth testing
+❌ Do NOT perform latency testing
+❌ Do NOT perform workload placement
+❌ Do NOT perform scheduling
+❌ Do NOT perform optimization
+❌ Do NOT perform operator mapping
+❌ Do NOT perform model execution
+❌ Do NOT perform performance characterization
+❌ Do NOT redesign SET2
+❌ Do NOT modify unrelated historical ROADMAP content
+❌ Do NOT modify unrelated evidence documents
+❌ Do NOT stage unrelated working-tree modifications
+```
+
+**Do-NOT-RUN boundaries:**
+
+```text
+Do NOT treat DEVPKEY_PciDevice_ExpressSpecVersion=2 as proof of negotiated/current PCIe Gen2 x16
+Do NOT treat PCIROOT(0) as proof of a complete physical silicon interconnect topology
+Do NOT treat absence of an OS-visible NPU memory property as proof that the NPU has no private or near-compute memory
+Do NOT treat PCIe ATS support as proof of cache coherency
+Do NOT infer bandwidth, latency, throughput, performance, DMA behavior, cache-coherency protocol, or exact internal SoC fabric topology unless directly established by authoritative evidence
+```
+
+**Stop Condition:**
+
+```text
+SET2-T2.7-R1:
+✅ PASS
+
+SET2-T2.7:
+✅ PASS (after reconciliation)
+
+SET2-T2.8:
+🔜 NEXT
+
+Current control task:
+SET2-T2.8
+```
+
+Evidence:
+
+```text
+ROADMAP.md
+docs/set-2/07-interconnect-data-movement.md
+```
+
+---
+
+### SET2-T2.8 — Hardware Capability & Constraint Synthesis
+
+**Responsibility:** 🧠 LUNA
+
+**Execution Support:** 🛠 EXECUTOR
+
+**Status:** ⏸ BLOCKED
+
+**Dependency:** T2.2–T2.7 (T2.7-R1 reconciliation required before T2.8)
 
 **Objective:**
 
@@ -1579,7 +1679,7 @@ SET2-READINESS-GATE:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.8
+SET2-T2.7-R1
 
 NEXT TASK OWNER:
 🧠 LUNA
@@ -1621,7 +1721,13 @@ SET2-T2.6-R1:
 ✅ PASS
 
 SET2-T2.7:
-✅ PASS
+⚠ RECONCILIATION REQUIRED
+
+SET2-T2.7-R1:
+🔜 NEXT
+
+SET2-T2.8:
+⏸ BLOCKED
 
 SET 3:
 🔒 NOT STARTED
@@ -1779,7 +1885,7 @@ SET 2:
 🟢 READY FOR EXECUTION
 
 Current next task:
-SET2-T2.8
+SET2-T2.7-R1
 
 SET2-T2.1:
 ✅ PASS
@@ -1818,7 +1924,13 @@ SET2-T2.6-R1:
 ✅ PASS
 
 SET2-T2.7:
-✅ PASS
+⚠ RECONCILIATION REQUIRED
+
+SET2-T2.7-R1:
+🔜 NEXT
+
+SET2-T2.8:
+⏸ BLOCKED
 
 SET 3:
 🔒 NOT STARTED

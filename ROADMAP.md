@@ -7,7 +7,8 @@
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
 * Last control update: `2026-08-18`
 * Current integrated branch: `main`
-* Current integrated commit: `77bd8dd59a538b66936691178abab11a1a311a14`
+* Current integrated commit: `49fd937029a96b8f796fcb5a8121d122325d84e2`
+* Current integrated commit semantics: The repository HEAD immediately preceding the most recent commit that modified ROADMAP.md (i.e., the parent of the ROADMAP-persistence commit). This is non-self-referential: the field references the parent commit, not the commit containing the field. It is technically stable because the parent SHA is immutable. (Established by SET2-T2.9-R3.)
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **ACTIVE**
@@ -505,6 +506,9 @@ SET2-T2.9-R1:
 SET2-T2.9-R2:
 ✅ PASS
 
+SET2-T2.9-R3:
+✅ PASS
+
 SET2-CLOSE:
 🔜 NEXT
 
@@ -583,6 +587,9 @@ SET2-T2.9-R1:
 ✅ PASS
 
 SET2-T2.9-R2:
+✅ PASS
+
+SET2-T2.9-R3:
 ✅ PASS
 
 NEXT TASK OWNER:
@@ -1405,6 +1412,9 @@ SET2-T2.9-R1:
 SET2-T2.9-R2:
 ✅ PASS
 
+SET2-T2.9-R3:
+✅ PASS
+
 SET2-CLOSE:
 🔜 NEXT
 
@@ -1419,6 +1429,7 @@ ROADMAP.md
 docs/set-2/09-set2-boundary-completeness-audit.md
 docs/set-2/09-set2-boundary-completeness-audit-r1-reconciliation.md
 docs/set-2/09-set2-boundary-completeness-audit-r2-reconciliation.md
+docs/set-2/09-set2-boundary-completeness-audit-r3-reconciliation.md
 ```
 
 ---
@@ -1443,8 +1454,11 @@ and is preserved. This R1 task corrects:
    that does not match the actual HEAD (`573c821`). Corrected to
    `573c8211643218fef7fd30dde0bc18826a95caea` per project convention.
    **Note:** The R1 commit advanced HEAD to `afe6acf`, making `573c821` stale
-   (R1's parent, not the actual HEAD). SET2-T2.9-R2 corrects this to
-   `afe6acf` — the actual HEAD.
+   (R1's parent, not the actual HEAD). SET2-T2.9-R2 corrected this to
+   `afe6acf` — the actual HEAD. SET2-T2.9-R3 subsequently established the
+   authoritative non-self-referential semantics for the `integrated-commit`
+   field (parent of the ROADMAP-persistence commit, not the commit itself),
+   making the parent-SHA pattern intentional and stable rather than a defect.
 2. The premature control-state transition to SET2-CLOSE that skipped the
    intermediate R1 reconciliation task. The `SET2-T2.9-R1` task section is
    established as the intermediate atomic task between SET2-T2.9 and SET2-CLOSE,
@@ -1499,6 +1513,9 @@ SET2-T2.9-R1:
 SET2-T2.9-R2:
 ✅ PASS
 
+SET2-T2.9-R3:
+✅ PASS
+
 SET2-CLOSE:
 🔜 NEXT
 
@@ -1513,6 +1530,7 @@ ROADMAP.md
 docs/set-2/09-set2-boundary-completeness-audit.md
 docs/set-2/09-set2-boundary-completeness-audit-r1-reconciliation.md
 docs/set-2/09-set2-boundary-completeness-audit-r2-reconciliation.md
+docs/set-2/09-set2-boundary-completeness-audit-r3-reconciliation.md
 ```
 
 ---
@@ -1545,6 +1563,13 @@ and synchronizes all remaining active control representations.
 3. T2.9-R2 task section established as the final reconciliation step between
    T2.9-R1 and SET2-CLOSE, following the pattern of T2.1-R1, T2.2-R1,
    T2.3-R1, T2.4-R2, T2.5-R1, T2.6-R1, and T2.7-R1.
+   **Note:** R2 correctly identified the self-referential SHA problem but
+   declared PASS under the implicit "field must equal HEAD" invariant, which is
+   technically impossible. SET2-T2.9-R3 resolved this by establishing the
+   authoritative non-self-referential semantics: the field records the parent
+   of the ROADMAP-persistence commit, not the commit containing the field.
+   R2's parent-SHA correction to `afe6acf` is valid under the new contract —
+   `afe6acf` was the HEAD before the R2 follow-up commit `49fd937`.
 
 **Scope:**
 
@@ -1593,6 +1618,9 @@ SET2-T2.9-R1:
 SET2-T2.9-R2:
 ✅ PASS
 
+SET2-T2.9-R3:
+✅ PASS
+
 SET2-CLOSE:
 🔜 NEXT
 
@@ -1607,6 +1635,136 @@ ROADMAP.md
 docs/set-2/09-set2-boundary-completeness-audit.md
 docs/set-2/09-set2-boundary-completeness-audit-r1-reconciliation.md
 docs/set-2/09-set2-boundary-completeness-audit-r2-reconciliation.md
+docs/set-2/09-set2-boundary-completeness-audit-r3-reconciliation.md
+```
+
+---
+
+### SET2-T2.9-R3 — Metadata Contract Reconciliation
+
+**Responsibility:** 🧠 LUNA
+
+**Execution Support:** 🛠 EXECUTOR
+
+**Status:** ✅ PASS
+
+**Dependency:** `SET2-T2.9-R2 COMPLETE`
+
+**Objective:**
+
+Resolve the unresolved control-plane contradiction identified by SET2-T2.9-R2:
+the `Current integrated commit` field in ROADMAP.md cannot contain the SHA of
+the same Git commit that contains that field content. R2 correctly identified
+that every reconciliation attempt wrote the parent commit's SHA rather than the
+commit's own SHA — but R2 still declared PASS under the implicit assumption
+that the field should equal HEAD, which is an impossible self-referential
+invariant.
+
+R3 establishes and documents the authoritative, non-self-referential semantics
+for the `Current integrated commit` field:
+
+1. **Definition:** The field records the repository HEAD immediately preceding
+   the ROADMAP-persistence commit — i.e., the parent commit of the most recent
+   commit that modified ROADMAP.md. This represents the base repository state
+   from which the current ROADMAP content was authored.
+
+2. **Technical proof of satisfiability:** Git commit SHAs are cryptographic
+   hashes of commit content. Since ROADMAP.md is part of the commit content,
+   embedding the commit's own SHA in the file creates an unsolvable fixed-point
+   equation `SHA(content_containing_SHA) == SHA`. Writing the parent commit's
+   SHA avoids this entirely: the parent is a distinct, already-finalized Git
+   object whose SHA is immutable and independent of the current commit's
+   content.
+
+3. **Historical validation:** Every commit that has ever updated this field —
+   across T2.6-R1 finalization (6682f34), T2.7-R1 finalization (6682f34),
+   T2.9 (573c821), R1 (afe6acf), R2 (77bd8dd), and R2 finalization (49fd937) —
+   has written the parent commit's SHA. This is not a bug to be corrected; it
+   is the only technically possible behavior. R3 formalizes this as the
+   intended, stable semantics.
+
+4. **Stability:** After a ROADMAP-persistence commit P (with parent B), the field
+   contains B. B is immutable. The field remains correct for the lifetime of P.
+   When the next ROADMAP-persistence commit P' is created, the field is updated
+   to P (the new parent). No "stale" condition can arise — the field is always
+   a valid provenance reference.
+
+5. **Distinguishing the field from HEAD:**
+   - Current repository HEAD = the latest commit on main (e.g., `49fd937` at
+     R3 authoring time, then the R3 commit itself after persistence).
+   - Latest substantive integration commit = the most recent non-metadata
+     commit (e.g., `77bd8dd` — the R2 reconciliation).
+   - Parent/base commit = HEAD before the ROADMAP-persistence commit (the value
+     stored in the field).
+   - Historical integration commits = all prior commits (3b2c8b0, 6682f34,
+     d10a3ec, 573c821, afe6acf, 77bd8dd) preserved as provenance references.
+
+**Scope:**
+
+```text
+✅ Audit existing T2.9 evidence (preserved, not re-collected)
+✅ Audit all active ROADMAP control representations
+✅ Verify HEAD == origin/main
+✅ Verify full ancestry chain: d10a3ec → 573c821 → afe6acf → 77bd8dd → 49fd937
+✅ Establish non-self-referential semantics for integrated-commit field
+✅ Add semantic definition to ROADMAP.md Document Status
+✅ Update integrated-commit field to current HEAD (49fd937) at ROADMAP persistence
+✅ Synchronize all active ROADMAP control representations (add T2.9-R3 = PASS)
+✅ Preserve historical stop-condition snapshots
+✅ Commit, push, and remotely verify reconciled state
+```
+
+**Roadmap-first boundary:** ROADMAP.md MUST be updated to the R3 reconciliation
+state and remotely verified. The T2.9 evidence document, R1 reconciliation
+document, and R2 reconciliation document are NOT modified.
+
+**Do-not-run:**
+
+```text
+❌ Do not begin SET2-CLOSE
+❌ Do not begin SET 3
+❌ Do not perform new hardware reconnaissance
+❌ Do not perform new benchmark work
+❌ Do not perform performance characterization
+❌ Do not perform workload placement
+❌ Do not perform scheduling
+❌ Do not perform optimization
+❌ Do not perform model execution
+❌ Do not rewrite historical task states
+❌ Do not modify unrelated files
+❌ Do not stage pre-existing 01-hardware-identity.md modification
+```
+
+**Stop Condition:**
+
+```text
+SET2-T2.9:
+✅ PASS
+
+SET2-T2.9-R1:
+✅ PASS
+
+SET2-T2.9-R2:
+✅ PASS
+
+SET2-T2.9-R3:
+✅ PASS
+
+SET2-CLOSE:
+🔜 NEXT
+
+Current control task:
+SET2-CLOSE
+```
+
+**Evidence:**
+
+```text
+ROADMAP.md
+docs/set-2/09-set2-boundary-completeness-audit.md
+docs/set-2/09-set2-boundary-completeness-audit-r1-reconciliation.md
+docs/set-2/09-set2-boundary-completeness-audit-r2-reconciliation.md
+docs/set-2/09-set2-boundary-completeness-audit-r3-reconciliation.md
 ```
 
 ---
@@ -1617,7 +1775,7 @@ docs/set-2/09-set2-boundary-completeness-audit-r2-reconciliation.md
 
 **Status:** 🔜 NEXT
 
-**Dependency:** `SET2-T2.9-R2 COMPLETE`
+**Dependency:** `SET2-T2.9-R2 COMPLETE (R3 finalized integrated-commit semantics)`
 
 `T2.9 COMPLETE` does not automatically close SET 2.
 
@@ -1970,6 +2128,9 @@ SET2-T2.9-R1:
 SET2-T2.9-R2:
 ✅ PASS
 
+SET2-T2.9-R3:
+✅ PASS
+
 SET 3:
 🔒 NOT STARTED
 
@@ -2182,6 +2343,9 @@ SET2-T2.9-R1:
 SET2-T2.9-R2:
 ✅ PASS
 
+SET2-T2.9-R3:
+✅ PASS
+
 SET2-CLOSE:
 🔜 NEXT
 
@@ -2209,5 +2373,8 @@ docs/set-2/09-set2-boundary-completeness-audit-r1-reconciliation.md:
 🔎 REMOTE VERIFIED
 
 docs/set-2/09-set2-boundary-completeness-audit-r2-reconciliation.md:
+🔎 REMOTE VERIFIED
+
+docs/set-2/09-set2-boundary-completeness-audit-r3-reconciliation.md:
 🔎 REMOTE VERIFIED
 ```

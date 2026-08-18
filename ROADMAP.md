@@ -7,11 +7,11 @@
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
 * Last control update: `2026-08-18`
 * Current integrated branch: `main`
-* Current integrated commit: `d10a3ecaf81b5358c9090d044db884780c2b989e`
+* Current integrated commit: `573c8211643218fef7fd30dde0bc18826a95caea`
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **ACTIVE**
-* Current control task: **SET2-T2.9**
+* Current control task: **SET2-CLOSE**
 
 ---
 
@@ -499,6 +499,9 @@ SET2-T2.8:
 SET2-T2.9:
 ✅ PASS
 
+SET2-T2.9-R1:
+✅ PASS
+
 SET2-CLOSE:
 🔜 NEXT
 
@@ -571,6 +574,9 @@ SET2-T2.8:
 ✅ PASS
 
 SET2-T2.9:
+✅ PASS
+
+SET2-T2.9-R1:
 ✅ PASS
 
 NEXT TASK OWNER:
@@ -1403,13 +1409,100 @@ docs/set-2/09-set2-boundary-completeness-audit.md
 
 ---
 
+### SET2-T2.9-R1 — T2.9 Control-Plane Reconciliation
+
+**Responsibility:** 🧠 LUNA
+
+**Execution Support:** 🛠 EXECUTOR
+
+**Status:** ✅ PASS
+
+**Dependency:** `SET2-T2.9 COMPLETE`
+
+**Objective:**
+
+Reconcile the active ROADMAP control-plane defect left by the SET2-T2.9
+substantive audit commit (`573c821`). The substantive T2.9 evidence remains valid
+and is preserved. This R1 task corrects:
+
+1. Stale `Current integrated commit` metadata (`d10a3ec` — the T2.8 parent commit)
+   that does not match the actual HEAD (`573c821`). Corrected to
+   `573c8211643218fef7fd30dde0bc18826a95caea` per project convention.
+2. The premature control-state transition to SET2-CLOSE that skipped the
+   intermediate R1 reconciliation task. The `SET2-T2.9-R1` task section is
+   established as the intermediate atomic task between SET2-T2.9 and SET2-CLOSE,
+   following the pattern of T2.1-R1, T2.2-R1, T2.3-R1, T2.4-R2, T2.5-R1,
+   T2.6-R1, and T2.7-R1.
+3. All ACTIVE ROADMAP control representations synchronized to reflect
+   T2.9 = ✅ PASS, T2.9-R1 = ✅ PASS, SET2-CLOSE = 🔜 NEXT.
+
+**Scope:**
+
+```text
+✅ Audit existing T2.9 evidence (preserved, not re-collected)
+✅ Audit all ACTIVE ROADMAP control representations
+✅ Verify HEAD == origin/main
+✅ Verify commit ancestry (d10a3ec is ancestor of 573c821)
+✅ Correct stale integrated-commit metadata to actual HEAD
+✅ Establish SET2-T2.9-R1 task section as intermediate control step
+✅ Synchronize all ACTIVE control representations
+✅ Preserve historical stop-condition snapshots
+✅ Commit, push, and remotely verify reconciled state
+```
+
+**Roadmap-first boundary:** ROADMAP.md MUST be updated to the R1 reconciliation
+state and remotely verified. The T2.9 evidence document is NOT modified.
+
+**Do-not-run:**
+
+```text
+❌ Do not begin SET2-CLOSE
+❌ Do not begin SET 3
+❌ Do not perform new hardware reconnaissance
+❌ Do not perform new benchmark work
+❌ Do not perform performance characterization
+❌ Do not perform workload placement
+❌ Do not perform scheduling
+❌ Do not perform optimization
+❌ Do not perform model execution
+❌ Do not rewrite historical task states
+❌ Do not modify unrelated files
+❌ Do not stage pre-existing 01-hardware-identity.md modification
+```
+
+**Stop Condition:**
+
+```text
+SET2-T2.9:
+✅ PASS
+
+SET2-T2.9-R1:
+✅ PASS
+
+SET2-CLOSE:
+🔜 NEXT
+
+Current control task:
+SET2-CLOSE
+```
+
+Evidence:
+
+```text
+ROADMAP.md
+docs/set-2/09-set2-boundary-completeness-audit.md
+docs/set-2/09-set2-boundary-completeness-audit-r1-reconciliation.md
+```
+
+---
+
 ### SET2-CLOSE — Formal SET 2 Acceptance
 
 **Responsibility:** 🧠 LUNA
 
 **Status:** 🔜 NEXT
 
-**Dependency:** `SET2-T2.9 COMPLETE`
+**Dependency:** `SET2-T2.9-R1 COMPLETE`
 
 `T2.9 COMPLETE` does not automatically close SET 2.
 
@@ -1445,7 +1538,8 @@ docs/set-2/
 ├── 06-driver-runtime-api-availability.md
 ├── 07-interconnect-data-movement.md
 ├── 08-hardware-capability-synthesis.md
-└── 09-set2-boundary-completeness-audit.md
+├── 09-set2-boundary-completeness-audit.md
+├── 09-set2-boundary-completeness-audit-r1-reconciliation.md
 ```
 
 Formal acceptance remains a separate control task:
@@ -1702,7 +1796,7 @@ SET2-READINESS-GATE:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.9
+SET2-CLOSE
 
 NEXT TASK OWNER:
 🧠 LUNA
@@ -1753,6 +1847,9 @@ SET2-T2.8:
 ✅ PASS
 
 SET2-T2.9:
+✅ PASS
+
+SET2-T2.9-R1:
 ✅ PASS
 
 SET 3:
@@ -1961,6 +2058,9 @@ SET2-T2.8:
 SET2-T2.9:
 ✅ PASS
 
+SET2-T2.9-R1:
+✅ PASS
+
 SET2-CLOSE:
 🔜 NEXT
 
@@ -1982,5 +2082,8 @@ docs/set-2/08-hardware-capability-synthesis.md:
 PERSISTED
 
 docs/set-2/09-set2-boundary-completeness-audit.md:
+🔎 REMOTE VERIFIED
+
+docs/set-2/09-set2-boundary-completeness-audit-r1-reconciliation.md:
 🔎 REMOTE VERIFIED
 ```

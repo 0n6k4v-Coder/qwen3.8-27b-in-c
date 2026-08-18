@@ -11,7 +11,7 @@
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **ACTIVE**
-* Current control task: **SET2-T2.6**
+* Current control task: **SET2-T2.6-R1**
 
 ---
 
@@ -440,7 +440,7 @@ SET 2 prerequisite:                ✅ SATISFIED
 ### Status
 
 ```text
-✅ PASS
+⚠ RECONCILIATION IN PROGRESS (SET2-T2.6-R1)
 
 SET 2 execution:
 🟢 ACTIVE
@@ -482,10 +482,13 @@ SET2-T2.5-R1:
 ✅ PASS
 
 SET2-T2.6:
-✅ PASS
+⚠ RECONCILIATION REQUIRED
+
+SET2-T2.6-R1:
+🔜 NEXT
 
 SET2-T2.7:
-🔜 NEXT
+⏸ BLOCKED
 
 SET2-T2.8:
 🔒 NOT STARTED
@@ -501,7 +504,7 @@ SET 3:
 ```
 
 CURRENT NEXT TASK:
-SET2-T2.6
+SET2-T2.6-R1
 
 ### Dependency
 
@@ -548,10 +551,19 @@ SET2-T2.5:
 
 SET2-T2.5-R1:
 ✅ PASS
-
+|
+SET2-T2.6:
+⚠ RECONCILIATION REQUIRED
+|
+SET2-T2.6-R1:
+🔜 NEXT
+|
+SET2-T2.7:
+⏸ BLOCKED
+|
 CURRENT NEXT TASK:
-SET2-T2.7
-
+SET2-T2.6-R1
+|
 NEXT TASK OWNER:
 🧠 LUNA
 ```
@@ -944,7 +956,7 @@ NPU CAPABILITY MATRIX
 
 **Execution Support:** 🛠 EXECUTOR
 
-**Status:** ✅ PASS
+**Status:** ⚠ RECONCILIATION REQUIRED
 
 **Dependency:** T2.2 + T2.4 + T2.5 evidence
 
@@ -1005,7 +1017,7 @@ Example structure:
 
 ---
 
-### SET2-T2.7 — Interconnect / Data-Movement Reconnaissance
+### SET2-T2.6-R1 — Driver / Runtime / API Availability — Control & Evidence Reconciliation
 
 **Responsibility:** 🧠 LUNA
 
@@ -1013,7 +1025,101 @@ Example structure:
 
 **Status:** 🔜 NEXT
 
-**Dependency:** T2.3 + T2.4 + T2.5 + T2.6
+**Dependency:** SET2-T2.6 (RECONCILIATION REQUIRED)
+
+**Objective:**
+
+Reconcile SET2-T2.6 after the original execution produced technically useful
+runtime evidence but violated the required ROADMAP-first execution-order
+boundary.
+
+This revision must:
+
+1. reconcile the execution-order violation;
+2. audit every active ROADMAP control representation;
+3. preserve valid T2.6 runtime evidence;
+4. qualify unsupported Vulkan interpretation;
+5. verify the semantic remote ROADMAP state;
+6. ensure T2.6 is legitimately closed;
+7. keep T2.7 blocked until T2.6-R1 passes.
+
+**Scope:**
+
+```text
+✅ Audit the existing T2.6 evidence document
+✅ Audit every ACTIVE ROADMAP control representation
+✅ Verify SET2-T2.6 state
+✅ Verify SET2-T2.6-R1 state
+✅ Verify SET2-T2.7 dependency/state
+✅ Verify Current Control Task
+✅ Verify CURRENT NEXT TASK
+✅ Verify Current next task
+✅ Verify NEXT TASK OWNER
+✅ Verify Stop Condition
+✅ Verify detailed T2.6 task status
+✅ Verify detailed T2.7 task status
+✅ Verify SET-level state
+✅ Verify remote ROADMAP state
+✅ Correct unsupported or over-broad Vulkan wording
+✅ Preserve the existing runtime evidence unless directly contradicted
+✅ Reconcile the original execution-order violation explicitly
+```
+
+**Roadmap-first boundary:** This revision exists because the original T2.6
+execution occurred before the required ROADMAP control-state persistence
+boundary. ROADMAP MUST be updated to the R1 reconciliation state and remotely
+verified before the canonical evidence document is modified.
+
+**Do-not-run:**
+
+```text
+❌ Do not begin SET2-T2.7
+❌ Do not perform new benchmark work
+❌ Do not perform optimization
+❌ Do not perform workload placement
+❌ Do not perform scheduling
+❌ Do not perform model execution
+❌ Do not perform operator mapping
+❌ Do not benchmark Vulkan, OpenCL, Level Zero, SYCL, GPU, NPU, or CPU performance
+❌ Do not interpret driver-file presence as runtime usability
+❌ Do not interpret host visibility as guest visibility
+❌ Do not interpret Vulkan loader initialization as proof of physical Intel Arc execution
+```
+
+**Stop Condition:**
+
+```text
+SET2-T2.6-R1:
+✅ PASS
+
+SET2-T2.6:
+✅ PASS (after reconciliation)
+
+SET2-T2.7:
+🔜 NEXT
+
+Current control task:
+SET2-T2.7
+```
+
+Evidence:
+
+```text
+ROADMAP.md
+docs/set-2/06-driver-runtime-api-availability.md
+```
+
+---
+
+### SET2-T2.7 — Interconnect / Data-Movement Reconnaissance
+
+**Responsibility:** 🧠 LUNA
+
+**Execution Support:** 🛠 EXECUTOR
+
+**Status:** ⏸ BLOCKED
+
+**Dependency:** T2.3 + T2.4 + T2.5 + T2.6 + T2.6-R1
 
 **Objective:**
 
@@ -1470,7 +1576,7 @@ SET2-READINESS-GATE:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.7
+SET2-T2.6-R1
 
 NEXT TASK OWNER:
 🧠 LUNA
@@ -1504,6 +1610,15 @@ SET2-T2.5:
 
 SET2-T2.5-R1:
 ✅ PASS
+
+SET2-T2.6:
+⚠ RECONCILIATION REQUIRED
+
+SET2-T2.6-R1:
+🔜 NEXT
+
+SET2-T2.7:
+⏸ BLOCKED
 
 SET 3:
 🔒 NOT STARTED
@@ -1661,7 +1776,7 @@ SET 2:
 🟢 READY FOR EXECUTION
 
 Current next task:
-SET2-T2.6
+SET2-T2.6-R1
 
 SET2-T2.1:
 ✅ PASS
@@ -1693,6 +1808,15 @@ SET2-T2.5:
 SET2-T2.5-R1:
 ✅ PASS
 
+SET2-T2.6:
+⚠ RECONCILIATION REQUIRED
+
+SET2-T2.6-R1:
+🔜 NEXT
+
+SET2-T2.7:
+⏸ BLOCKED
+
 SET 3:
 🔒 NOT STARTED
 
@@ -1701,6 +1825,6 @@ Do not begin SET 3.
 ROADMAP.md:
 PERSISTED
 
-docs/set-2/02-cpu-capability-reconnaissance.md:
-PERSISTED
+docs/set-2/06-driver-runtime-api-availability.md:
+PERSISTED (R1 reconciliation in progress)
 ```

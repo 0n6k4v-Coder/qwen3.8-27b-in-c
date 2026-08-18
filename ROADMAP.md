@@ -7,7 +7,7 @@
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
 * Last control update: `2026-08-18`
 * Current integrated branch: `main`
-* Current integrated commit: `afe6acfdceb991bbe1a316f600a2b296ed32a525`
+* Current integrated commit: `77bd8dd59a538b66936691178abab11a1a311a14`
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **ACTIVE**

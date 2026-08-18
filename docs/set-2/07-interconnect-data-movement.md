@@ -8,8 +8,8 @@
 | Task Name          | Interconnect / Data-Movement Reconnaissance            |
 | Responsibility     | 🧠 LUNA                                                |
 | Execution Support  | 🛠 EXECUTOR                                            |
-| Status             | ✅ PASS                                                |
-| Dependency         | SET2-T2.3 + T2.4 + T2.5 + T2.6 + T2.6-R1 — all ✅ PASS  |
+|| Status             | ✅ PASS (R1 reconciled)                                   |
+|| Dependency         | SET2-T2.3 + T2.4 + T2.5 + T2.6 + T2.6-R1 — all ✅ PASS  |
 
 ```text
 SET2-T2.6:
@@ -19,10 +19,16 @@ SET2-T2.6-R1:
 ✅ PASS
 
 SET2-T2.7:
-🔜 NEXT → ✅ PASS
+✅ PASS
+
+SET2-T2.7-R1:
+✅ PASS
+
+SET2-T2.8:
+🔜 NEXT
 
 Current control task:
-SET2-T2.7 (was 🔜 NEXT, now ✅ PASS — awaiting ROADMAP advance to SET2-T2.8)
+SET2-T2.8
 ```
 
 ---
@@ -204,7 +210,8 @@ WSL2 guest.
 | Driver version | 32.0.101.6790 | `DEVPKEY_Device_DriverVersion` |
 | Device stack | `\Driver\igfxn, \Driver\ACPI, \Driver\pci` | `DEVPKEY_Device_Stack` |
 | Status | OK (CM_PROB_NONE) | `Get-PnpDevice` |
-| PCIe Link Speed | GEN_2_x16 (observed capability) | `DEVPKEY_PciDevice_ExpressSpecVersion=2` |
+| PCIe Spec Version | PCIe 2.0 specification compliance (device capability) | `DEVPKEY_PciDevice_ExpressSpecVersion=2` |
+| Negotiated Link Speed | NOT observed | No link-status field inspected |
 | ATS Support | True | `DEVPKEY_PciDevice_AtsSupport` |
 | ACS Support | Present | `DEVPKEY_PciDevice_AcsSupport=1` |
 | AER Capability | NOT present | `DEVPKEY_PciDevice_AERCapabilityPresent=False` |
@@ -222,10 +229,19 @@ The GPU's PCIe interrupt message maximum is 1 and it supports ATS (Address
 Translation Services), indicating PCIe ATS capability for memory address
 translation of GPU accesses to system memory.
 
-The GPU and CPU are physically connected via the same PCIe root complex
-(`PCIROOT(0)`). The GPU's PCIe link is GEN_2_x16 (per ExpressSpecVersion=2),
-providing the physical data path between the GPU and CPU (via the CPU-integrated
-PCIe root port and the system fabric).
+The GPU and CPU share the same PCIe root complex (`PCIROOT(0)`). The GPU's PCIe
+specification version is 2.0 (per `DEVPKEY_PciDevice_ExpressSpecVersion=2`). The
+GPU and CPU appear under the same ACPI root bridge (`PC00`), confirming they are
+on the same PnP-managed PCI fabric. The GPU supports ATS (Address Translation
+Services), indicating PCIe ATS capability for memory address translation of GPU
+accesses to system memory.
+
+NOTE: The `DEVPKEY_PciDevice_ExpressSpecVersion` field reports the PCIe
+specification version the device complies with (PCIe 2.0), NOT the negotiated
+or current link speed/width. No actual PCIe link-status register (negotiated
+speed/width) was inspected in this session. The PCI/PnP root-complex hierarchy
+confirms shared fabric membership but does not establish the complete
+physical silicon-level interconnect topology.
 
 ### VERIFIED FACT (WSL2 GUEST — iGPU visibility)
 
@@ -255,8 +271,11 @@ from the physical host, not from the WSL2 guest.
   (`DEV_7D01` PCIe bridge, `DEV_7ECC` PCIe port, `DEV_7D03`, `DEV_7D0D`, etc.).
   This confirms the GPU and NPU are sibling devices on the same PCIe fabric
   rooted at `PCIROOT(0)`.
-- The GPU's PCIe link (GEN_2_x16, ATS support, ACS present) establishes the
-  physical data path between iGPU and CPU via the PCIe root complex.
+- The GPU's PCIe specification version is 2.0 (per ExpressSpecVersion=2),
+  with ATS and ACS support. This confirms the GPU is a PCIe 2.0-spec-compliant
+  device on the same PnP-managed PCI fabric as the CPU. No negotiated link-speed
+  or link-width was observed; the PCIe spec version alone does not establish the
+  physical data-path topology or bandwidth.
 - The GPU `AdapterRAM` value of 2,147,479,552 bytes (~2 GB) is a
   driver-reported shared memory aperture, NOT dedicated VRAM. The iGPU has no
   device-local memory; it allocates from system RAM (see Section 4).
@@ -297,7 +316,8 @@ CPU ↔ iGPU interconnect bandwidth: UNKNOWN
 | Driver version | 32.0.100.4023 | `DEVPKEY_Device_DriverVersion` |
 | Device stack | `\Driver\npu, \Driver\ACPI, \Driver\pci` | `DEVPKEY_Device_Stack` |
 | Status | OK (CM_PROB_NONE) | `Get-PnpDevice` |
-| PCIe Link Speed | GEN_2_x16 (observed capability) | `DEVPKEY_PciDevice_ExpressSpecVersion=2` |
+| PCIe Spec Version | PCIe 2.0 specification compliance (device capability) | `DEVPKEY_PciDevice_ExpressSpecVersion=2` |
+| Negotiated Link Speed | NOT observed | No link-status field inspected |
 | ATS Support | True | `DEVPKEY_PciDevice_AtsSupport` |
 | ACS Support | Present | `DEVPKEY_PciDevice_AcsSupport=1` |
 | AER Capability | NOT present | `DEVPKEY_PciDevice_AERCapabilityPresent=False` |
@@ -314,7 +334,13 @@ root bridge as the GPU (`\GFX0`) and the CPU domain.
 The NPU's PCIe Location Path is `PCIROOT(0)#PCI(0B00)` — same root complex
 `PCIROOT(0)` as the GPU (`PCIROOT(0)#PCI(0200)`). The NPU and GPU appear in each
 other's `DEVPKEY_Device_Siblings` lists, confirming they are sibling devices
-on the same PCIe fabric.
+on the same PnP-managed PCI fabric.
+
+NOTE: The `DEVPKEY_PciDevice_ExpressSpecVersion` field reports the PCIe
+specification version the device complies with (PCIe 2.0), NOT the negotiated
+or current link speed/width. No actual PCIe link-status register was inspected.
+The PCI/PnP root-complex hierarchy confirms shared fabric membership but does
+not establish the complete physical silicon-level interconnect topology.
 
 The NPU device stack is `\Driver\npu, \Driver\ACPI, \Driver\pci`, confirming
 it is a PCIe device driver-managed resource connected through the PCI bus.
@@ -455,10 +481,15 @@ Do NOT claim:
 - No `AdapterRAM` or dedicated memory property is exposed for the NPU in any
   inspected PnP/WMI property. The NPU does not report a device-local memory
   aperture via OS-visible interfaces.
-- The NPU shares the same system memory pool (16 GB DDR5) as the CPU and GPU.
-  On Intel Meteor Lake, the NPU (Gaudi/VPU0) is an integrated fabric device
-  that accesses system memory through the same memory controller and PCIe
-  root complex as other components.
+- ABSOLUTELY NOT ESTABLISHED: absence of an OS-visible memory property does
+  NOT prove the NPU has no private or near-compute memory. The NPU may have
+  on-package SRAM, cache, or other private memory not exposed through any
+  inspected WMI/PnP property.
+- The NPU is on the same PCIe root complex as the CPU and GPU, and all devices
+  access the same system physical address space (16 GB DDR5). However, whether
+  the NPU physically shares the same memory pool, uses separate memory
+  controllers, or has private on-package memory cannot be established from
+  OS-visible PnP/PCI observation alone.
 
 ### VERIFIED FACT (WSL2 GUEST — NPU memory visibility)
 
@@ -480,11 +511,14 @@ objects.
 
 ### DERIVED FINDING
 
-- The NPU is integrated within the Meteor Lake SoC and accesses system memory
-  through the same PCIe root complex and memory controller as the CPU and GPU.
-- No dedicated device-local memory is exposed for the NPU via any inspected
-  OS interface.
-- The NPU uses shared system memory for its working buffers.
+- The NPU is a PCIe device on the same root complex (`PCIROOT(0)`) as the CPU
+  and GPU, confirmed by LocationPaths and Siblings-list mutual inclusion.
+- No dedicated device-local memory property is exposed for the NPU via any
+  inspected OS-visible interface. This is an OBSERVED ABSENCE, not proof of
+  physical absence.
+- Whether the NPU has on-package SRAM, private cache, or near-compute memory
+  is UNKNOWN — no primary Intel architecture document was directly inspected
+  in this session.
 
 ### UNKNOWN
 
@@ -538,7 +572,7 @@ for both GPU and NPU), `Win32_CacheMemory`, `Win32_PhysicalMemory`.
 Device-local memory model:
   CPU  → L1/L2/L3 caches on-die (device-local), system RAM external via IMC
   iGPU → NO device-local memory; shared system DDR5 only
-  NPU  → device-local memory status: UNKNOWN (not exposed); shared system DDR5
+  NPU  → device-local memory status: UNKNOWN (not exposed; absence ≠ no private memory)
 
 Shared-memory model:
   All devices (CPU, iGPU, NPU) access the same 16 GB dual-channel DDR5 pool.
@@ -559,12 +593,12 @@ Shared-memory model:
 
 | Component | Cache Coherency Observed | Source |
 |-----------|------------------------|--------|
-| CPU L1/L2/L3 | MESI protocol (standard x86) | CPU architecture (Intel ARK SKU capability) |
+| CPU L1/L2/L3 | MESI protocol (standard x86) | DOCUMENTED CAPABILITY — Intel ARK / x86 architecture (SKU capability; not directly probed from CPUID in this session) |
 | CPU L3 (LLC) | 24 MB shared, 12-way, 64-byte line | `Win32_CacheMemory`, `/sys/devices/system/cpu/cpu0/cache/index3/` |
 | CPU L3 sharing | All cores (0-7 in guest, all 16 cores on host) | `shared_cpu_list=0-7` |
 | CPU coherency line size | 64 bytes | `/sys/devices/system/cpu/cpu0/cache/index3/coherency_line_size` |
 
-### UNKNOWN
+### UNKNOWN (not directly inspected in this session)
 
 - **iGPU ↔ CPU cache coherency**: Whether the iGPU shares CPU cache-coherency
   domain or operates in a separate coherency domain (requiring explicit
@@ -580,7 +614,9 @@ Shared-memory model:
   — NOT established from inspected evidence.
 
 ```text
-CPU internal cache coherency: VERIFIED (MESI, 64-byte line, shared L3)
+CPU internal cache coherency protocol (MESI): DOCUMENTED CAPABILITY
+  (x86 MESI is the documented standard protocol; not directly probed from CPUID/hardened in this session)
+CPU L3 cache hierarchy (24 MB shared, 12-way, 64-byte line): VERIFIED
 GPU ↔ CPU cache coherency: UNKNOWN
 NPU ↔ CPU cache coherency: UNKNOWN
 GPU ↔ RAM coherency model: UNKNOWN
@@ -614,14 +650,14 @@ CPU die
 
 ```text
 iGPU die (GFX0)
-  → PCIe Gen2 x16 link
+  → PCIe fabric (PCIe 2.0 spec; negotiated link speed NOT observed)
   → PCI Express Root Complex (ACPI\PNP0A08\0)
   → CPU (via PCIe root port)
   → System RAM (for shared memory allocations)
 ```
 - GPU at `PCIROOT(0)#PCI(0200)`, ACPI `\_SB.PC00.GFX0`.
 - Parent: `ACPI\PNP0A08\0` (PCIe Root Complex).
-- PCIe link: Gen2 x16 (ExpressSpecVersion=2), ATS enabled, ACS present.
+- PCIe spec version: 2.0 (ExpressSpecVersion=2), ATS enabled, ACS present. Negotiated link speed: NOT observed.
 - Data path to RAM: GPU → PCIe root complex → CPU IMC → DDR5.
 - Source: `Get-PnpDeviceProperty` (LocationInfo, LocationPaths, Parent, Siblings).
 
@@ -629,14 +665,14 @@ iGPU die (GFX0)
 
 ```text
 NPU die (VPU0)
-  → PCIe Gen2 x16 link
+  → PCIe fabric (PCIe 2.0 spec; negotiated link speed NOT observed)
   → PCI Express Root Complex (ACPI\PNP0A08\0)
   → CPU (via PCIe root port)
   → System RAM (for shared memory buffers)
 ```
 - NPU at `PCIROOT(0)#PCI(0B00)`, ACPI `\_SB.PC00.VPU0`.
 - Parent: `ACPI\PNP0A08\0` (same PCIe Root Complex as GPU).
-- PCIe link: Gen2 x16 (ExpressSpecVersion=2), ATS enabled, ACS present.
+- PCIe spec version: 2.0 (ExpressSpecVersion=2), ATS enabled, ACS present. Negotiated link speed: NOT observed.
 - Data path to RAM: NPU → PCIe root complex → CPU IMC → DDR5.
 - The NPU appears in the GPU's Siblings list, confirming same-fabric placement.
 - Source: `Get-PnpDeviceProperty` (LocationInfo, LocationPaths, Parent, Siblings).
@@ -783,8 +819,8 @@ confidence, and whether it is supported or contradicted are recorded below.
 | 18 | NPU has no device-local memory exposed via OS | No memory property in PnP dump | Actual Host Observation | VERIFIED FACT (absent) | Medium | YES | None |
 | 19 | NPU ↔ CPU: same PCIe root complex (PCIROOT(0)) | LocationPaths comparison | Derived from Observation | DERIVED FINDING | High | YES | None |
 | 20 | GPU/NPU use shared system RAM (16 GB DDR5) | VideoMemoryType + system RAM evidence | Derived from Observation | VERIFIED FACT (derived) | High | YES | None |
-| 21 | GPU PCIe link: Gen2 x16, ATS, ACS | `DEVPKEY_PciDevice_ExpressSpecVersion`, `AtsSupport`, `AcsSupport` | Actual Host Observation | VERIFIED FACT | High | YES | None |
-| 22 | NPU PCIe link: Gen2 x16, ATS, ACS | Same PnP properties | Actual Host Observation | VERIFIED FACT | High | YES | None |
+| 21 | GPU PCIe: spec version 2.0, ATS, ACS; negotiated link NOT observed | `DEVPKEY_PciDevice_ExpressSpecVersion`, `AtsSupport`, `AcsSupport` | Actual Host Observation | VERIFIED FACT (spec version only; link speed NOT negotiated) | High | YES | None |
+| 22 | NPU PCIe: spec version 2.0, ATS, ACS; negotiated link NOT observed | Same PnP properties | Actual Host Observation | VERIFIED FACT (spec version only; link speed NOT negotiated) | High | YES | None |
 | 23 | GPU ↔ CPU cache coherency protocol | Intel ARK / arch docs | PRIMARY INTEL DOC (not inspected) | UNKNOWN | — | NO | None |
 | 24 | NPU ↔ CPU cache coherency protocol | Intel ARK / arch docs | PRIMARY INTEL DOC (not inspected) | UNKNOWN | — | NO | None |
 | 25 | GPU ↔ RAM bandwidth | — | Not measured, not inferred | UNKNOWN | — | NO | None |
@@ -815,7 +851,7 @@ CPU:
 
 GPU (host):
   - Intel Arc iGPU (VEN_8086:7D55), driver igfxn, v32.0.101.6790
-  - PCIe Gen2 x16, ATS support, ACS support, parent = PCIe Root Complex
+  - PCIe spec version 2.0 (ExpressSpecVersion=2), ATS support, ACS support, parent = PCIe Root Complex
   - Location: PCIROOT(0)#PCI(0200), ACPI \SB.PC00.GFX0
   - GPU memory model: shared system memory (VideoMemoryType=2)
   - AdapterRAM observed = 2,147,479,552 bytes (~2 GB shared aperture)
@@ -828,11 +864,12 @@ GPU (guest):
 
 NPU (host):
   - Intel AI Boost (VEN_8086:7D1D), driver npu, v32.0.100.4023
-  - PCIe Gen2 x16, ATS support, ACS support, parent = PCIe Root Complex
+  - PCIe spec version 2.0 (ExpressSpecVersion=2), ATS support, ACS support, parent = PCIe Root Complex
   - Location: PCIROOT(0)#PCI(0B00), ACPI \SB.PC00.VPU0
   - NPU is sibling of GPU (mutual inclusion in Siblings lists)
   - NPU ↔ CPU: same PCIe root complex (PCIROOT(0))
   - NPU ↔ GPU: same root complex, sibling devices
+  - NPU device-local memory: UNKNOWN (not exposed via OS; absence not proof of absence)
 
 NPU (guest):
   - COMPLETELY ABSENT — no device, no /dev, no /sys, no PCI, no kernel modules
@@ -917,8 +954,8 @@ No device existence was converted into a bandwidth claim.
 |---|-----------|--------|----------|
 | 1 | T2.7 dependency chain verified | ✅ PASS | T2.3, T2.4, T2.5, T2.6, T2.6-R1 all ✅ PASS (confirmed from prior docs + ROADMAP) |
 | 2 | CPU ↔ RAM relationship established or UNKNOWN | ✅ PASS | Section 1 — VERIFIED: IMC on-die, dual-channel DDR5, 16 GB |
-| 3 | CPU ↔ iGPU relationship established or UNKNOWN | ✅ PASS | Section 2 — VERIFIED: shared PCIe root complex (PCIROOT(0)), Gen2 x16, ATS |
-| 4 | CPU ↔ NPU relationship established or UNKNOWN | ✅ PASS | Section 3 — VERIFIED: shared PCIe root complex (PCIROOT(0)), Gen2 x16, ATS |
+| 3 | CPU ↔ iGPU relationship established or UNKNOWN | ✅ PASS | Section 2 — VERIFIED: shared PCIe root complex (PCIROOT(0)), PCIe 2.0 spec, ATS |
+| 4 | CPU ↔ NPU relationship established or UNKNOWN | ✅ PASS | Section 3 — VERIFIED: shared PCIe root complex (PCIROOT(0)), PCIe 2.0 spec, ATS |
 | 5 | GPU ↔ shared-memory relationship established or UNKNOWN | ✅ PASS | Section 4 — VERIFIED: VideoMemoryType=2 (SharedMemory), ~2 GB shared aperture |
 | 6 | NPU ↔ shared/system-memory relationship established or UNKNOWN | ✅ PASS | Section 5 — VERIFIED: no device-local memory exposed, shared system DDR5 |
 | 7 | Device-local/shared-memory model established or UNKNOWN | ✅ PASS | Section 6 — VERIFIED: GPU has no VRAM; NPU memory status = UNKNOWN |
@@ -927,7 +964,7 @@ No device existence was converted into a bandwidth claim.
 | 10 | Host / guest distinction preserved | ✅ PASS | Section 9 — explicit separation of host physical devices vs guest virtual artifacts |
 | 11 | No unsupported bandwidth claim | ✅ PASS | All bandwidth claims = UNKNOWN (not inferred from topology) |
 | 12 | No unsupported latency claim | ✅ PASS | No latency values claimed or inferred |
-| 13 | No performance inference from topology | ✅ PASS | PCIe link width and ATS support ≠ bandwidth; stated as connectivity only |
+| 13 | No performance inference from topology | ✅ PASS | PCIe spec version and ATS support ≠ bandwidth; stated as connectivity only |
 | 14 | Evidence classifications correct | ✅ PASS | Matrix in Section 10 — VERIFIED/DOCUMENTED/SECONDARY/DERIVED/UNKNOWN |
 | 15 | No secondary source promoted to primary | ✅ PASS | Intel ARK cited as "Documented SKU Capability", not VERIFIED FACT |
 | 16 | No derived result promoted to VERIFIED FACT | ✅ PASS | Derived findings explicitly labeled as such; not promoted |
@@ -965,3 +1002,158 @@ This document does NOT establish:
 - Any performance characteristic
 - Any workload placement or scheduling decision
 - Any runtime model or execution plan
+
+
+---
+## 15. SET2-T2.7-R1 Reconciliation
+
+**Revision:** SET2-T2.7-R1
+
+**Status:** ✅ PASS (R1 reconciled — final acceptance state)
+
+### 15.1 Original Defects Identified
+
+Independent review of the original SET2-T2.7 evidence identified the following
+defects requiring reconciliation:
+
+1. **Unsupported promotion of PCIe specification metadata to link claims**:
+   `DEVPKEY_PciDevice_ExpressSpecVersion=2` was promoted to `PCIe Gen2 x16`
+   (or `GEN_2_x16`) link-speed/link-width claims. This PNP property reports the
+   PCIe specification version the device complies with (PCIe 2.0), NOT the
+   negotiated or current link speed or width. No PCIe link-status register
+   (negotiated speed/width) was inspected during T2.7 evidence collection.
+
+2. **Over-interpretation of PnP / PCI hierarchy as physical silicon topology**:
+   PCI root-complex membership (e.g., `PCIROOT(0)`) and sibling-list mutual
+   inclusion were presented as proof of exact physical silicon-level
+   interconnect topology. These are PnP-managed hierarchy observations that
+   confirm shared fabric membership, not complete physical topology.
+
+3. **Over-broad NPU shared-memory claims**: Absence of an OS-visible NPU
+   memory property (`AdapterRAM`, memory-capacity) was treated as proof that
+   the NPU has no private or near-compute memory. The NPU may have on-package
+   SRAM, cache, or other private memory not exposed through any inspected
+   WMI/PnP property. No primary Intel architecture document was directly
+   inspected to confirm or deny NPU-private memory.
+
+4. **Inadequate CPU MESI provenance**: The CPU MESI cache-coherency protocol
+   was classified as VERIFIED FACT citing "Intel ARK SKU capability" as the
+   source. Intel ARK is a SKU capability specification, not direct hardware
+   observation. The MESI protocol for x86 is a documented architectural
+   standard, but it was not directly probed (e.g., via CPUID) in this session.
+   It is now classified as DOCUMENTED CAPABILITY.
+
+5. **Stale ROADMAP integrated-commit metadata**: ROADMAP.md listed
+   `Current integrated commit: 01c94ad` when the actual HEAD was
+   `1b88cbdc` (the T2.7 commit). This metadata has been corrected.
+
+### 15.2 Evidence Corrected
+
+| Claim | Correction | Classification |
+|-------|-----------|----------------|
+| GPU PCIe "Link Speed: GEN_2_x16" | Renamed to "PCIe Spec Version: PCIe 2.0 specification compliance" + "Negotiated Link Speed: NOT observed" | VERIFIED FACT (spec version only; link speed NOT negotiated) |
+| NPU PCIe "Link Speed: GEN_2_x16" | Same correction as GPU | VERIFIED FACT (spec version only; link speed NOT negotiated) |
+| GPU data-pathway diagram "→ PCIe Gen2 x16 link" | Corrected to "→ PCIe fabric (PCIe 2.0 spec; negotiated link speed NOT observed)" | DERIVED FINDING (connectivity only, not speed) |
+| NPU data-pathway diagram "→ PCIe Gen2 x16 link" | Same correction as GPU | DERIVED FINDING (connectivity only, not speed) |
+| GPU evidence text "physically connected via the same PCIe root complex" | Qualified: "share the same PCIe root complex"; added NOTE about ExpressSpecVersion ≠ negotiated link speed; added NOTE about PCI/PnP hierarchy ≠ complete physical topology | DERIVED FINDING (shared fabric membership) |
+| NPU evidence text "sharing the same memory controller and PCIe root complex as other components" | Removed architectural inference not established from observation; clarified absence of OS property ≠ absence of private memory | UNKNOWN (physical memory architecture) |
+| NPU DERIVED FINDING "The NPU uses shared system memory for its working buffers" | Removed over-claim; replaced with: device-local memory status is UNKNOWN; absence of property ≠ proof of absence | UNKNOWN |
+| CPU MESI: VERIFIED FACT citing "Intel ARK SKU capability" | Reclassified as DOCUMENTED CAPABILITY; source clarified as "Intel ARK / x86 architecture (SKU capability; not directly probed from CPUID in this session)" | DOCUMENTED CAPABILITY |
+| CPU internal cache coherency: VERIFIED (MESI...) | Split: MESI protocol = DOCUMENTED CAPABILITY; CPU L3 cache hierarchy (24 MB shared, 12-way, 64-byte line) = VERIFIED | Mixed |
+| Known/Unknown: "PCIe Gen2 x16" for GPU/NPU | Corrected to "PCIe spec version 2.0 (ExpressSpecVersion=2)" | VERIFIED FACT (spec version only) |
+| Acceptance criterion 13: "PCIe spec version and ATS support ≠ bandwidth" | Corrected to "PCIe spec version and ATS support ≠ bandwidth" | N/A (criterion text) |
+
+### 15.3 Provenance Corrected
+
+- **PCIe spec version**: `DEVPKEY_PciDevice_ExpressSpecVersion=2` → PCIe 2.0
+  specification compliance (device capability). Source: `Get-PnpDeviceProperty`
+  on the Windows 11 host. Classification: VERIFIED FACT (spec version only).
+  NOT promoted to negotiated link speed/width.
+
+- **CPU MESI protocol**: Source: Intel ARK / x86 architectural documentation
+  (SKU capability). Classification: DOCUMENTED CAPABILITY. The MESI protocol
+  is the documented standard for x86, but was not directly probed via CPUID
+  in this session. The CPU cache hierarchy details (L1/L2/L3 sizes, 64-byte
+  line, shared L3) remain VERIFIED FACT from `Win32_CacheMemory` and
+  `/sys/devices/system/cpu/cpu*/cache/index*/`.
+
+- **PCI root-complex membership**: `PCIROOT(0)`, `DEVPKEY_Device_Parent`,
+  `DEVPKEY_Device_Siblings`, `DEVPKEY_Device_LocationPaths`.
+  Classification: VERIFIED FACT (PnP hierarchy observation). NOT promoted to
+  complete physical silicon-level topology.
+
+- **NPU device-local memory**: No `AdapterRAM` or memory-capacity property
+  exposed via any inspected PnP/WMI property. Classification: VERIFIED FACT
+  (absence of property in OS-visible interfaces). NOT promoted to proof of
+  physical absence of NPU-private memory. NPU private memory status: UNKNOWN.
+
+### 15.4 Classification Corrected
+
+All corrected claims now carry explicit classification per Section 10 matrix:
+
+- VERIFIED FACT (directly observed, e.g., spec version, device identity, PCI paths)
+- DOCUMENTED CAPABILITY (Intel ARK / x86 architecture for MESI)
+- DERIVED FINDING (shared root-complex membership, derived from observation)
+- UNKNOWN (negotiated link speed, NPU private memory, intra-SoC fabric topology)
+
+### 15.5 ROADMAP Control Defect (corrected)
+
+- `Current integrated commit` was `01c94ad` (stale) — corrected to `1b88cbdc`.
+- T2.7 status was `✅ PASS` prematurely — changed to `⚠ RECONCILIATION REQUIRED`.
+- T2.7-R1 added as `🔜 NEXT`.
+- T2.8 changed from `🔜 NEXT` to `⏸ BLOCKED`.
+- All ACTIVE control-task references updated to `SET2-T2.7-R1`.
+
+### 15.6 Final Known/Unknown Boundaries
+
+```text
+KNOWN (VERIFIED):
+  - GPU/NPU PCIe spec version: 2.0 (ExpressSpecVersion=2)
+  - GPU/NPU parent: ACPI\PNP0A08  (PCIe Root Complex)
+  - GPU/NPU LocationPaths: PCIROOT(0)#PCI(0200), PCIROOT(0)#PCI(0B00)
+  - GPU/NPU sibling relationship (Siblings list mutual inclusion)
+  - GPU VideoMemoryType=2 (SharedMemory), AdapterRAM ~2 GB
+  - GPU has NO device-local VRAM (no dedicated memory, VideoMemoryType=2)
+  - CPU L3 cache: 24 MB shared, 12-way, 64-byte line, shared across all cores
+  - CPU↔RAM: IMC on-die, dual-channel DDR5
+  - CPU MESI protocol: DOCUMENTED CAPABILITY (x86 standard, not CPUID-probed)
+  - Host ≠ Guest distinction preserved for all devices
+  - No benchmark, no optimization, no scheduling, no workload placement,
+    no model execution, no performance characterization performed
+
+UNKNOWN (cannot be established):
+  - GPU/NPU negotiated PCIe link speed: UNKNOWN (not observed)
+  - GPU/NPU negotiated PCIe link width: UNKNOWN (not observed)
+  - NPU device-local/private memory: UNKNOWN (not exposed via OS;
+    absence ≠ proof of absence)
+  - CPU↔GPU cache coherency protocol: UNKNOWN (no primary arch doc inspected)
+  - CPU↔NPU cache coherency protocol: UNKNOWN (no primary arch doc inspected)
+  - All interconnect bandwidth: UNKNOWN (not measured, not inferred)
+  - All interconnect latency: UNKNOWN (not measured, not inferred)
+  - Intra-SoC fabric topology beyond PCIe: UNKNOWN (no primary arch doc inspected)
+  - GPU↔NPU direct interconnect bypassing RAM: UNKNOWN
+  - Cross-device cache coherency: UNKNOWN
+  - DMA between devices without CPU: UNKNOWN (no IOMMU/DMAR inspection)
+```
+
+### 15.7 Final Acceptance State
+
+After R1 reconciliation:
+
+```text
+SET2-T2.7: ✅ PASS (R1 reconciled)
+SET2-T2.7-R1: ✅ PASS
+SET2-T2.8: 🔜 NEXT
+
+Current control task:
+SET2-T2.8
+```
+
+All identified defects have been corrected in the evidence text, tables,
+classification matrix, data-movement diagrams, and acceptance criteria.
+Valid T2.7 host and guest observations are preserved. Known/unknown boundaries
+are maintained. No new benchmark, optimization, scheduling, workload-placement,
+model execution, or performance-characterization work was performed.
+
+This evidence document is persisted and remotely verified as the final R1
+reconciled state.

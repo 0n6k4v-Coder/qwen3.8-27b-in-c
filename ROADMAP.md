@@ -5,13 +5,13 @@
 * Document: `ROADMAP.md`
 * Role: Project Control / Roadmap State
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
-* Last control update: `2026-08-17`
+* Last control update: `2026-08-18`
 * Current integrated branch: `main`
-* Current integrated commit: `a30455e`
+* Current integrated commit: `01c94ad`
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **ACTIVE**
-* Current control task: **SET2-T2.7**
+* Current control task: **SET2-T2.8**
 
 ---
 
@@ -488,10 +488,10 @@ SET2-T2.6-R1:
 ✅ PASS
 
 SET2-T2.7:
-🔜 NEXT
+✅ PASS
 
 SET2-T2.8:
-🔒 NOT STARTED
+🔜 NEXT
 
 SET2-T2.9:
 🔒 NOT STARTED
@@ -504,7 +504,7 @@ SET 3:
 ```
 
 CURRENT NEXT TASK:
-SET2-T2.7
+SET2-T2.8
 
 ### Dependency
 
@@ -559,10 +559,10 @@ SET2-T2.6-R1:
 ✅ PASS
 |
 SET2-T2.7:
-🔜 NEXT
+✅ PASS
 |
 CURRENT NEXT TASK:
-SET2-T2.7
+SET2-T2.8
 |
 NEXT TASK OWNER:
 🧠 LUNA
@@ -1096,10 +1096,13 @@ SET2-T2.6:
 ✅ PASS (after reconciliation)
 
 SET2-T2.7:
+✅ PASS
+
+SET2-T2.8:
 🔜 NEXT
 
 Current control task:
-SET2-T2.7
+SET2-T2.8
 ```
 
 Evidence:
@@ -1117,7 +1120,7 @@ docs/set-2/06-driver-runtime-api-availability.md
 
 **Execution Support:** 🛠 EXECUTOR
 
-**Status:** 🔜 NEXT
+**Status:** ✅ PASS
 
 **Dependency:** T2.3 + T2.4 + T2.5 + T2.6 + T2.6-R1
 
@@ -1162,7 +1165,7 @@ HARDWARE DATA-MOVEMENT / INTERCONNECT MODEL
 
 **Execution Support:** 🛠 EXECUTOR
 
-**Status:** 🔒 NOT STARTED
+**Status:** 🔜 NEXT
 
 **Dependency:** T2.2–T2.7
 
@@ -1576,7 +1579,7 @@ SET2-READINESS-GATE:
 ✅ PASS
 
 CURRENT NEXT TASK:
-SET2-T2.7
+SET2-T2.8
 
 NEXT TASK OWNER:
 🧠 LUNA
@@ -1618,7 +1621,7 @@ SET2-T2.6-R1:
 ✅ PASS
 
 SET2-T2.7:
-🔜 NEXT
+✅ PASS
 
 SET 3:
 🔒 NOT STARTED
@@ -1776,7 +1779,7 @@ SET 2:
 🟢 READY FOR EXECUTION
 
 Current next task:
-SET2-T2.7
+SET2-T2.8
 
 SET2-T2.1:
 ✅ PASS
@@ -1815,7 +1818,7 @@ SET2-T2.6-R1:
 ✅ PASS
 
 SET2-T2.7:
-🔜 NEXT
+✅ PASS
 
 SET 3:
 🔒 NOT STARTED

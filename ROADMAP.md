@@ -7,12 +7,12 @@
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
 * Last control update: `2026-08-18`
 * Current integrated branch: `main`
-* Current integrated commit: `49fd937029a96b8f796fcb5a8121d122325d84e2`
+* Current integrated commit: `58199ce34bbd41dd83d14f7876533f033331a1c1`
 * Current integrated commit semantics: The repository HEAD immediately preceding the most recent commit that modified ROADMAP.md (i.e., the parent of the ROADMAP-persistence commit). This is non-self-referential: the field references the parent commit, not the commit containing the field. It is technically stable because the parent SHA is immutable. (Established by SET2-T2.9-R3.)
-* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 hardware reconnaissance in progress**
+* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 operator/computation model ready for gate**
 * SET 1 execution: **CLOSED**
-* SET 2 execution: **ACTIVE**
-* Current control task: **SET2-CLOSE**
+* SET 2 execution: **CLOSED**
+* Current control task: **SET3-READINESS-GATE**
 
 ---
 
@@ -33,10 +33,12 @@ PROJECT
 │   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 2 — Hardware Reconnaissance
-│   🔜 NEXT — READINESS GATE
+│   ✅ TECHNICAL COMPLETE
+│   ✅ EVIDENCE COMPLETE
+│   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 3 — Operator / Computation Model
-│   🔒 NOT STARTED
+│   🔜 NEXT — READINESS GATE
 │
 ├── SET 4 — Runtime Memory Model
 │   🔒 NOT STARTED
@@ -1773,9 +1775,9 @@ docs/set-2/09-set2-boundary-completeness-audit-r3-reconciliation.md
 
 **Responsibility:** 🧠 LUNA
 
-**Status:** 🔜 NEXT
+**Status:** ✅ CLOSED
 
-**Dependency:** `SET2-T2.9-R2 COMPLETE (R3 finalized integrated-commit semantics)`
+**Dependency:** `SET2-T2.9-R3 PASS`
 
 `T2.9 COMPLETE` does not automatically close SET 2.
 
@@ -1813,6 +1815,9 @@ docs/set-2/
 ├── 08-hardware-capability-synthesis.md
 ├── 09-set2-boundary-completeness-audit.md
 ├── 09-set2-boundary-completeness-audit-r1-reconciliation.md
+├── 09-set2-boundary-completeness-audit-r2-reconciliation.md
+├── 09-set2-boundary-completeness-audit-r3-reconciliation.md
+├── 10-set2-close-acceptance.md
 ```
 
 Formal acceptance remains a separate control task:
@@ -1892,11 +1897,13 @@ SET 2 STOP
 
 **Objective:** Translate verified model structure into an explicit operator/computation model without prematurely assuming runtime behavior.
 
-**Status:** 🔒 NOT STARTED
+**Status:** 🔜 NEXT — READINESS GATE
 
 **Responsibility:** 🧠 LUNA
 
 **Dependency:** SET 1 + SET 2 verified evidence
+
+**Readiness dependency:** `SET2-CLOSE PASS`
 
 ---
 
@@ -2063,13 +2070,16 @@ SET 1 FORMAL ACCEPTANCE:
 ✅ CLOSED
 
 SET 2:
-🟢 READY FOR EXECUTION
+✅ CLOSED
 
 SET2-READINESS-GATE:
 ✅ PASS
 
+SET2-CLOSE:
+✅ CLOSED
+
 CURRENT NEXT TASK:
-SET2-CLOSE
+SET3-READINESS-GATE
 
 NEXT TASK OWNER:
 🧠 LUNA
@@ -2284,10 +2294,10 @@ SET 1:
 ✅ FORMALLY CLOSED
 
 SET 2:
-🟢 READY FOR EXECUTION
+✅ CLOSED
 
 Current next task:
-SET2-CLOSE
+SET3-READINESS-GATE
 
 SET2-T2.1:
 ✅ PASS
@@ -2347,12 +2357,15 @@ SET2-T2.9-R3:
 ✅ PASS
 
 SET2-CLOSE:
+✅ CLOSED
+
+SET3-READINESS-GATE:
 🔜 NEXT
 
 SET 3:
 🔒 NOT STARTED
 
-Do not begin SET 3.
+Do not begin SET 3 without SET3-READINESS-GATE.
 
 ROADMAP.md:
 PERSISTED

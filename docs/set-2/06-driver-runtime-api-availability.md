@@ -1010,10 +1010,143 @@ Legend: VF = VERIFIED FACT
 
 ---
 
-## 16. Acceptance Result
+## 16. Acceptance Result (Original T2.6 — now under R1 reconciliation)
+
+```
+SET2-T2.6 (original):
+⚠ RECONCILIATION REQUIRED
+
+SET2-T2.6-R1:
+🔜 NEXT
+
+SET2-T2.7:
+⏸ BLOCKED
+
+Current control task:
+SET2-T2.6-R1
+
+Current next task:
+SET2-T2.6-R1
+
+NEXT TASK OWNER:
+🧠 LUNA
+```
+
+**Note:** The original T2.6 Acceptance Result declared `SET2-T2.6: ✅ PASS` and
+advanced control to `SET2-T2.7: 🔜 NEXT`. This was incorrect because the original
+T2.6 evidence and documentation were produced before the required ROADMAP-first
+persistence boundary was established. T2.6 technical evidence remains valid;
+the execution-order violation is reconciled by R1 (see Section 17).
+
+**Verdict (original evidence):** All 23 original acceptance criteria are
+substantively satisfied by the technical evidence in Sections 1–15. The technical
+content is preserved without repetition. See Section 17 for the R1 reconciliation
+and final PASS determination.
+
+
+
+---
+
+## 17. SET2-T2.6-R1 Reconciliation
+
+### 17.1 Original Execution-Order Defect
+
+The original SET2-T2.6 technical evidence and documentation were produced and
+accepted (✅ PASS, control advanced to T2.7) before the required ROADMAP-first
+persistence boundary was established. Specifically:
+
+- The ROADMAP control state was advanced from `SET2-T2.6: ✅ PASS` to
+  `SET2-T2.7: 🔜 NEXT` without first persisting the SET2-T2.6-R1 reconciliation
+  state in ROADMAP.md.
+- The canonical evidence document (`06-driver-runtime-api-availability.md`) was
+  committed and pushed with an Acceptance Result that declared T2.6 PASS and
+  T2.7 NEXT, but ROADMAP.md was not brought into reconciliation state first.
+- This violates the ROADMAP-first execution order: control-state persistence
+  must precede canonical evidence document finalization.
+
+### 17.2 Reconciliation Actions Performed (R1)
+
+1. **ROADMAP-first boundary restored.** ROADMAP.md was updated to the R1
+   reconciliation state BEFORE any edit to the evidence document:
+   - `SET2-T2.6: ⚠ RECONCILIATION REQUIRED`
+   - `SET2-T2.6-R1: 🔜 NEXT` (new task section added)
+   - `SET2-T2.7: ⏸ BLOCKED` (dependency += T2.6-R1)
+   - All control representations synchronized: header, SET 2 status block,
+     Current Control block, Current Control State (#3), Stop Condition (#7).
+2. **ROADMAP committed and pushed** (commit `75e947a`).
+3. **Remote ROADMAP verified** — fetched `origin/main`, confirmed local HEAD
+   matches remote commit, and independently inspected remote semantic control
+   state via `git show origin/main:ROADMAP.md`.
+4. **Evidence document audited.** All technical evidence in Sections 1–15 is
+   preserved. No valid evidence was discarded or rewritten.
+
+### 17.3 Vulkan Interpretation (Qualified)
+
+The original evidence document already classifies Vulkan correctly:
+
+- Guest Vulkan loader (`libvulkan.so.1`) is LOADABLE and INITIALIZABLE
+  (returned `vkEnumerateInstanceVersion` = 0x403113, Vulkan 1.3.318).
+- Vulkan device enumeration (`vkCreateInstance` + `vkEnumeratePhysicalDevices`)
+  was NOT performed — **UNKNOWN** whether a usable physical device is returned.
+- The guest sees only Microsoft GPU-PV virtual devices (`VEN_1414`), not the
+  physical Intel Arc (`VEN_8086`).
+- Vulkan ICD JSONs (`intel_icd.json`, `intel_hasvk_icd.json`) point to
+  `libvulkan_intel.so` / `libvulkan_intel_hasvk.so`, but no device-level probe
+  was done.
+
+**No unsupported Vulkan claims found.** The document does NOT claim physical
+Intel Arc execution from loader initialization, ICD file presence, vgem
+visibility, or GPU-PV infrastructure. The USABLE state for guest Vulkan remains
+**UNKNOWN**, which is correct.
+
+### 17.4 Re-Verification of Required Evidence Elements
+
+| Element | Status | Location |
+|---------|--------|----------|
+| CPU host/guest distinction | Preserved | Sections 1, 10, 12, 14 |
+| GPU host/guest distinction | Preserved | Sections 2, 10, 12, 14 |
+| NPU host/guest distinction | Preserved | Sections 6, 10, 12, 14 |
+| OpenCL loader result | Preserved | Section 5: loadable + init (err=-1001, 0 platforms) |
+| OpenCL zero-platform result | Preserved | Section 5, 12: VERIFIED NOT USABLE |
+| Vulkan loader initialization | Preserved | Section 2, 733: INITIALIZABLE = VERIFIED (ver 1.3.318) |
+| Level Zero runtime UNKNOWN | Preserved | Section 3, 12, 13: INITIALIZABLE=UNKNOWN, USABLE=UNKNOWN |
+| NPU runtime UNKNOWN | Preserved | Section 6, 12, 13: INITIALIZABLE=UNKNOWN, USABLE=UNKNOWN |
+
+### 17.5 Evidence Classification (Unchanged)
+
+| Tier | Applied |
+|------|--------|
+| VERIFIED FACT | Direct host WMI/PnP + guest Linux tool observations |
+| DOCUMENTED CAPABILITY | Intel ARK Core Ultra 7 155H (T2.4-R2) |
+| SECONDARY CORROBORATION | INF section naming, file names, registry entries |
+| DERIVED FINDING | DriverStore mount path derivation, absence inference |
+| UNKNOWN | All un-probed runtime states (Level Zero, NPU runtime, Vulkan device enum) |
+
+### 17.6 Known / Unknown Boundary (Unchanged)
+
+**KNOWN (VERIFIED by direct evidence):**
+- CPU fully usable in both host and guest
+- GPU hardware installed + visible on host; guest sees only GPU-PV vgem
+- NPU hardware installed + visible on host; completely absent from guest
+- SYCL/oneAPI NOT installed on host or guest (VERIFIED absent)
+- Vulkan/OpenCL loaders LOADABLE + INITIALIZABLE in guest (Vulkan version only)
+
+**UNKNOWN (cannot be established without runtime probing):**
+- GPU Level Zero host runtime initialization and usability
+- GPU OpenCL host runtime initialization and usability
+- GPU Vulkan guest device enumeration (`vkEnumeratePhysicalDevices` not tested)
+- NPU Level Zero host runtime initialization
+- NPU D3D12 Generic ML / DirectML host runtime enumeration
+- NPU runtime accessibility on host (driver files present but not runtime-tested)
+- Host firmware/SMBIOS (not enumerable from WSL2 guest)
+
+### 17.7 Final R1 Acceptance Result
 
 ```
 SET2-T2.6:
+✅ PASS
+
+SET2-T2.6-R1:
 ✅ PASS
 
 SET2-T2.7:
@@ -1029,28 +1162,12 @@ NEXT TASK OWNER:
 🧠 LUNA
 ```
 
-**Verdict: SET2-T2.6 — PASS.** All acceptance criteria are satisfied:
+**Verdict: SET2-T2.6-R1 — PASS.** The execution-order violation is explicitly
+reconciled. All active ROADMAP control representations are synchronized to the
+R1 reconciliation state. Valid T2.6 runtime evidence is preserved. Vulkan
+claims are properly qualified (device enumeration UNKNOWN). Level Zero and NPU
+runtime remain UNKNOWN where evidence is insufficient. Host/guest distinctions
+are preserved throughout. No new benchmark, optimization, workload placement,
+scheduling, or model execution was performed. SET2-T2.7 remains BLOCKED until
+T2.6-R1 acceptance; it becomes NEXT only after this R1 PASS is confirmed.
 
-- CPU software accessibility fully established (host + guest, VERIFIED usable)
-- GPU driver accessibility investigated: driver INSTALLED + VISIBLE on host;
-  driver files mounted in guest; Level Zero/OpenCL/SYCL/Vulkan each classified
-  by the highest evidence state achieved
-- Level Zero investigated where exposed (host: INSTALLED, not probed; guest:
-  no Linux loader available)
-- SYCL investigated (NOT installed — VERIFIED absent on both host and guest)
-- OpenCL investigated (host: INSTALLED not probed; guest: loadable +
-  initializable with zero platforms → NOT usable)
-- NPU runtime/API investigated (host: installed + running + visible; runtime
-  accessibility UNKNOWN — not probed; guest: completely absent)
-- Host and WSL2 visibility explicitly separated throughout
-- Permissions/device interfaces investigated: GPU vgem nodes accessible by
-  user (groups video + render); NPU has no device nodes in guest
-- Installed vs visible vs loadable vs initializable vs usable distinction
-  preserved in full matrix
-- No driver-file-to-runtime inference: file presence = VERIFIED, runtime
-  init/usability = UNKNOWN
-- No hardware-to-software inference: host NPU/GPU visible ≠ guest accessible
-- No performance inference, no benchmark, no optimization, no workload
-  placement, no scheduling, no model execution
-- Every runtime claim classifies its evidence source (VERIFIED FACT,
-  SECONDARY CORROBORATION, UNKNOWN, DERIVED FINDING)

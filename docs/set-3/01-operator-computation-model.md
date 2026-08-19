@@ -627,14 +627,14 @@ Layer N Input (hidden_states)
     │
     ▼
 RMSNorm  ──────────────────► (residual connection) ──► + ─► Layer N Output
-    │                                                       ▲
-    ▼                                                       │
-Token Mixer                                                 │
-  ├── Type-dispatched:                              ┌───────┘
-  │   linear_attention → OC-4 (Qwen3_5GatedDeltaNet)│
-  │   full_attention   → OC-3 (Qwen3_5Attention)    │
-  │
-  ▼
+    │                                                         ▲
+    ▼                                                         │
+Token Mixer                                                   │
+    ├── Type-dispatched:                              ┌───────┘
+    │   linear_attention → OC-4 (Qwen3_5GatedDeltaNet)│
+    │   full_attention   → OC-3 (Qwen3_5Attention)    │
+    │
+    ▼
 RMSNorm                                             (residual path)
     │
     ▼
@@ -780,10 +780,10 @@ Layer 2 ─► OC-4 (Linear Attn) ─┤            │
 Layer 3 ─► OC-3 (Full Attn) ───┤            │
            OC-5 (MLP) ─────────┤            │
         │                      │            │
-   [LA→LA→LA→FA] × 16         │            │
+   [LA→LA→LA→FA] × 16         │             │
         │                      │            │
 Layer 63 ─► OC-3 ──────────────┘            │
-           OC-5 ───────────────────────────┤
+            OC-5 ───────────────────────────┤
                                             ▼
 OC-7 (Final RMSNorm) ─► [seq, 5120]
                                             │

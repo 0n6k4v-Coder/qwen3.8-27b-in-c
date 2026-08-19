@@ -83,8 +83,8 @@ PROJECT
 | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------ | --------------------- |
 | SET 0  | Establish verified model/source-of-truth foundation                                                  | ✅ CLOSED                 | 🧠 LUNA + 🛠 EXECUTOR |
 | SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth                     | ✅ CLOSED                 | 🧠 LUNA               |
-| SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | 🔜 NEXT — READINESS GATE | 🧠 LUNA + 🛠 EXECUTOR |
-| SET 3  | Define operator and computation model                                                                | 🔒 NOT STARTED           | 🧠 LUNA               |
+|| SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | ✅ CLOSED                 | 🧠 LUNA + 🛠 EXECUTOR |
+|| SET 3  | Define operator and computation model                                                                | 🔜 NEXT — READINESS GATE | 🧠 LUNA               |
 | SET 4  | Define runtime memory model                                                                          | 🔒 NOT STARTED           | 🧠 LUNA               |
 | SET 5  | Build correctness-first reference inference engine                                                   | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
 | SET 6  | Validate numerical/correctness behavior                                                              | 🔒 NOT STARTED           | 🧠 LUNA + 🛠 EXECUTOR |
@@ -446,7 +446,7 @@ SET 2 prerequisite:                ✅ SATISFIED
 ✅ PASS
 
 SET 2 execution:
-🟢 ACTIVE
+✅ CLOSED
 
 SET2-READINESS-GATE:
 ✅ PASS
@@ -512,14 +512,17 @@ SET2-T2.9-R3:
 ✅ PASS
 
 SET2-CLOSE:
+✅ CLOSED
+
+SET3-READINESS-GATE:
 🔜 NEXT
 
 SET 3:
-🔒 NOT STARTED
+🔜 NEXT — READINESS GATE
 ```
 
 CURRENT NEXT TASK:
-SET2-CLOSE
+SET3-READINESS-GATE
 
 ### Dependency
 
@@ -2148,7 +2151,7 @@ SET2-T2.9-R3:
 ✅ PASS
 
 SET 3:
-🔒 NOT STARTED
+🔜 NEXT — READINESS GATE
 
 ```
 
@@ -2369,7 +2372,7 @@ SET3-READINESS-GATE:
 🔜 NEXT
 
 SET 3:
-🔒 NOT STARTED
+🔜 NEXT — READINESS GATE
 
 Do not begin SET 3 without SET3-READINESS-GATE.
 

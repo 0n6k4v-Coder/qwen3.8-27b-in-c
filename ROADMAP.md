@@ -12,7 +12,7 @@
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **CLOSED**
-* Current control task: **SET3-CLOSE**
+* Current control task: **SET4-READINESS-GATE**
 
 ---
 
@@ -43,7 +43,7 @@ PROJECT
 │   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 4 — Runtime Memory Model
-│   🔒 NOT STARTED
+│   🔜 NEXT — READINESS GATE
 │
 ├── SET 5 — Reference Inference Engine
 │   🔒 NOT STARTED
@@ -87,7 +87,7 @@ PROJECT
 | SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth                     | ✅ CLOSED                 | 🧠 LUNA               |
 || SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | ✅ CLOSED                 | 🧠 LUNA + 🛠 EXECUTOR |
 || SET 3  | Define operator and computation model                                                                | ✅ CLOSED                 | 🧠 LUNA               |
-| SET 4  | Define runtime memory model                                                                          | 🔒 NOT STARTED           | 🧠 LUNA               |
+| SET 4  | Define runtime memory model                                                                          | 🔜 NEXT — READINESS GATE | 🧠 LUNA               |
 | SET 5  | Build correctness-first reference inference engine                                                   | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
 | SET 6  | Validate numerical/correctness behavior                                                              | 🔒 NOT STARTED           | 🧠 LUNA + 🛠 EXECUTOR |
 | SET 7  | Enable execution under memory constraints                                                            | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
@@ -517,14 +517,20 @@ SET2-CLOSE:
 ✅ CLOSED
 
 SET3-READINESS-GATE:
-🔜 NEXT
+✅ PASS
+
+SET3-CLOSE:
+✅ CLOSED
 
 SET 3:
-🔜 NEXT — READINESS GATE
-```
+✅ CLOSED
 
 CURRENT NEXT TASK:
-SET3-READINESS-GATE
+SET4-READINESS-GATE
+
+NEXT TASK OWNER:
+🧠 LUNA
+```
 
 ### Dependency
 
@@ -603,7 +609,16 @@ SET2-CLOSE:
 ✅ CLOSED
 
 SET3-READINESS-GATE:
-🔜 NEXT
+✅ PASS
+
+SET3-CLOSE:
+✅ CLOSED
+
+SET 3:
+✅ CLOSED
+
+CURRENT NEXT TASK:
+SET4-READINESS-GATE
 
 NEXT TASK OWNER:
 🧠 LUNA
@@ -1908,7 +1923,7 @@ SET 2 STOP
 
 **Objective:** Translate verified model structure into an explicit operator/computation model without prematurely assuming runtime behavior.
 
-**Status:** ✅ PASS
+**Status:** ✅ CLOSED
 
 **Responsibility:** 🧠 LUNA
 
@@ -1918,11 +1933,30 @@ SET 2 STOP
 
 ---
 
+## SET 3 — Operator / Computation Model (Acceptance)
+
+**Status:** ✅ PASS
+
+**Acceptance evidence:**
+- 11 operator classes (OC-1 through OC-11) defined with verified tensor dependencies
+- All 1,199 tensors mapped to operator classes (100% reconciliation)
+- Computation/dataflow relationships established from verified evidence
+- 15 explicit unknowns cataloged (UK-001 through UK-015)
+- No performance, placement, scheduling, or optimization claims introduced
+- Scope boundaries preserved (no runtime memory model — deferred to SET 4)
+- 0 contradictions identified
+- Verdict: SET3 — PASS
+
+**Evidence:** `docs/set-3/01-operator-computation-model.md` (1,142 lines)
+**Commit:** `24304a9`
+
+---
+
 ## SET 4 — Runtime Memory Model
 
 **Objective:** Build a verified runtime memory model covering weights, activations, state, and relevant execution buffers.
 
-**Status:** 🔒 NOT STARTED
+**Status:** 🔜 NEXT — READINESS GATE
 
 **Responsibility:** 🧠 LUNA
 
@@ -2090,7 +2124,7 @@ SET2-CLOSE:
 ✅ CLOSED
 
 CURRENT NEXT TASK:
-SET3-CLOSE
+SET4-READINESS-GATE
 
 NEXT TASK OWNER:
 🧠 LUNA
@@ -2160,6 +2194,12 @@ SET3-CLOSE:
 
 SET 3:
 ✅ CLOSED
+
+SET4-READINESS-GATE:
+🔜 NEXT
+
+NEXT TASK OWNER:
+🧠 LUNA
 ```
 
 ---
@@ -2313,7 +2353,7 @@ SET 2:
 ✅ CLOSED
 
 Current next task:
-SET3-CLOSE
+SET4-READINESS-GATE
 
 SET2-T2.1:
 ✅ PASS
@@ -2383,6 +2423,9 @@ SET3-CLOSE:
 
 SET 3:
 ✅ CLOSED
+
+SET4-READINESS-GATE:
+🔜 NEXT
 
 SET 3 operator/computation model evidence persisted and verified.
 

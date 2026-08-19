@@ -5,14 +5,14 @@
 * Document: `ROADMAP.md`
 * Role: Project Control / Roadmap State
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
-* Last control update: `2026-08-18`
+* Last control update: `2026-08-19`
 * Current integrated branch: `main`
 * Current integrated commit: `58199ce34bbd41dd83d14f7876533f033331a1c1`
 * Current integrated commit semantics: The repository HEAD immediately preceding the most recent commit that modified ROADMAP.md (i.e., the parent of the ROADMAP-persistence commit). This is non-self-referential: the field references the parent commit, not the commit containing the field. It is technically stable because the parent SHA is immutable. (Established by SET2-T2.9-R3.)
-* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 operator/computation model ready for gate**
+* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **CLOSED**
-* Current control task: **SET3-READINESS-GATE**
+* Current control task: **SET3-CLOSE**
 
 ---
 
@@ -38,7 +38,9 @@ PROJECT
 │   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 3 — Operator / Computation Model
-│   🔜 NEXT — READINESS GATE
+│   ✅ TECHNICAL COMPLETE
+│   ✅ EVIDENCE COMPLETE
+│   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 4 — Runtime Memory Model
 │   🔒 NOT STARTED
@@ -84,7 +86,7 @@ PROJECT
 | SET 0  | Establish verified model/source-of-truth foundation                                                  | ✅ CLOSED                 | 🧠 LUNA + 🛠 EXECUTOR |
 | SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth                     | ✅ CLOSED                 | 🧠 LUNA               |
 || SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | ✅ CLOSED                 | 🧠 LUNA + 🛠 EXECUTOR |
-|| SET 3  | Define operator and computation model                                                                | 🔜 NEXT — READINESS GATE | 🧠 LUNA               |
+|| SET 3  | Define operator and computation model                                                                | ✅ CLOSED                 | 🧠 LUNA               |
 | SET 4  | Define runtime memory model                                                                          | 🔒 NOT STARTED           | 🧠 LUNA               |
 | SET 5  | Build correctness-first reference inference engine                                                   | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
 | SET 6  | Validate numerical/correctness behavior                                                              | 🔒 NOT STARTED           | 🧠 LUNA + 🛠 EXECUTOR |
@@ -1906,7 +1908,7 @@ SET 2 STOP
 
 **Objective:** Translate verified model structure into an explicit operator/computation model without prematurely assuming runtime behavior.
 
-**Status:** 🔜 NEXT — READINESS GATE
+**Status:** ✅ PASS
 
 **Responsibility:** 🧠 LUNA
 
@@ -2064,7 +2066,7 @@ SET 2 STOP
 
 ```text
 CURRENT SET:
-SET 2 — Hardware Reconnaissance
+SET 3 — Operator / Computation Model
 
 SET 0:
 ✅ FORMALLY CLOSED
@@ -2088,7 +2090,7 @@ SET2-CLOSE:
 ✅ CLOSED
 
 CURRENT NEXT TASK:
-SET3-READINESS-GATE
+SET3-CLOSE
 
 NEXT TASK OWNER:
 🧠 LUNA
@@ -2150,9 +2152,14 @@ SET2-T2.9-R2:
 SET2-T2.9-R3:
 ✅ PASS
 
-SET 3:
-🔜 NEXT — READINESS GATE
+SET3-READINESS-GATE:
+✅ PASS
 
+SET3-CLOSE:
+✅ CLOSED
+
+SET 3:
+✅ CLOSED
 ```
 
 ---
@@ -2306,7 +2313,7 @@ SET 2:
 ✅ CLOSED
 
 Current next task:
-SET3-READINESS-GATE
+SET3-CLOSE
 
 SET2-T2.1:
 ✅ PASS
@@ -2369,12 +2376,15 @@ SET2-CLOSE:
 ✅ CLOSED
 
 SET3-READINESS-GATE:
-🔜 NEXT
+✅ PASS
+
+SET3-CLOSE:
+✅ CLOSED
 
 SET 3:
-🔜 NEXT — READINESS GATE
+✅ CLOSED
 
-Do not begin SET 3 without SET3-READINESS-GATE.
+SET 3 operator/computation model evidence persisted and verified.
 
 ROADMAP.md:
 PERSISTED
@@ -2398,5 +2408,10 @@ docs/set-2/09-set2-boundary-completeness-audit-r2-reconciliation.md:
 🔎 REMOTE VERIFIED
 
 docs/set-2/09-set2-boundary-completeness-audit-r3-reconciliation.md:
+🔎 REMOTE VERIFIED
+
+docs/set-3/01-operator-computation-model.md:
+📌 PERSISTED
+☁ PUSHED
 🔎 REMOTE VERIFIED
 ```

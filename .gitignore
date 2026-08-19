@@ -1,0 +1,74 @@
+# Build outputs
+*.o
+*.obj
+*.so
+*.so.*
+*.a
+*.lib
+*.dll
+*.dylib
+*.exe
+*.out
+build/
+build-*/
+cmake-build-*/
+out/
+dist/
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CMakeUserPresets.json
+install_manifest.txt
+compile_commands.json
+
+# Compiled headers
+*.gch
+*.pch
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Hermes infrastructure (local runtime scratch)
+.hermes/
+
+# Model artifacts (large binaries — keep raw metadata only, tracked by reference)
+model/official/*.safetensors
+model/official/*.bin
+model/official/weights/
+model/official/checkpoint/
+model/official/raw-checkpoint-metadata/shards/*.safetensors
+!model/official/raw-checkpoint-metadata/shards/*.header.json
+
+# Logs
+*.log
+logs/
+log/
+
+# Temp / cache
+tmp/
+temp/
+*.tmp
+*.temp
+*.cache
+.cache/
+
+# Coverage / profiling
+*.gcda
+*.gcno
+*.gcov
+coverage/
+htmlcov/
+*.profdata
+*.profraw
+
+# Test outputs
+test-results/
+junit/

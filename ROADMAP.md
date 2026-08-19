@@ -83,10 +83,10 @@ PROJECT
 
 | SET    | Objective                                                                                            | Status                   | Responsibility        |
 | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------ | --------------------- |
-| SET 0  | Establish verified model/source-of-truth foundation                                                  | ✅ CLOSED                 | 🧠 LUNA + 🛠 EXECUTOR |
-| SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth                     | ✅ CLOSED                 | 🧠 LUNA               |
-|| SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | ✅ CLOSED                 | 🧠 LUNA + 🛠 EXECUTOR |
-|| SET 3  | Define operator and computation model                                                                | ✅ CLOSED                 | 🧠 LUNA               |
+| SET 0  | Establish verified model/source-of-truth foundation                                                  | ✅ CLOSED                | 🧠 LUNA + 🛠 EXECUTOR |
+| SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth                     | ✅ CLOSED                | 🧠 LUNA               |
+| SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | ✅ CLOSED                | 🧠 LUNA + 🛠 EXECUTOR |
+| SET 3  | Define operator and computation model                                                                | ✅ CLOSED                | 🧠 LUNA               |
 | SET 4  | Define runtime memory model                                                                          | 🔜 NEXT — READINESS GATE | 🧠 LUNA               |
 | SET 5  | Build correctness-first reference inference engine                                                   | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
 | SET 6  | Validate numerical/correctness behavior                                                              | 🔒 NOT STARTED           | 🧠 LUNA + 🛠 EXECUTOR |
@@ -1954,13 +1954,317 @@ SET 2 STOP
 
 ## SET 4 — Runtime Memory Model
 
-**Objective:** Build a verified runtime memory model covering weights, activations, state, and relevant execution buffers.
+**Objective:** Establish a verified, parameterized runtime memory model for the Qwen3.8-27B inference path, covering model weights, activations, attention state, linear-attention state, MTP-related state, workspaces, temporary tensors, and other execution buffers, while explicitly separating VERIFIED FACT, DERIVED FINDING, DOCUMENTED CAPABILITY, CONDITIONAL MODEL, and UNKNOWN.
 
 **Status:** 🔜 NEXT — READINESS GATE
 
 **Responsibility:** 🧠 LUNA
 
-**Dependency:** SET 2 + SET 3
+**Dependency:** SET 2 + SET 3 formally closed
+
+**Readiness dependency:** `SET4-READINESS-GATE PASS`
+
+### SET 4 Mission
+
+SET 4 is the **Runtime Memory Truth Layer** between the verified SET 3 Operator / Computation Model and the SET 5 Reference Inference Engine.
+
+SET 3 establishes:
+
+`what the model computes`
+
+SET 4 establishes:
+
+`what runtime memory that computation requires`
+
+SET 4 does not implement the runtime. It establishes the memory model that the runtime implementation must later conform to.
+
+### SET 4 Agenda
+
+SET 4 SHALL establish the following memory domains:
+
+1. **Runtime Memory Inventory**
+   - Identify every runtime memory object required by the accepted operator/computation model.
+   - Distinguish persistent, transient, reusable, stateful, and execution-workspace memory.
+   - Establish provenance and classification for each material memory object.
+
+2. **Weight Residency Model**
+   - Model runtime residency of model weights, embeddings, LM head, vision weights, MTP weights, and other persistent parameters.
+   - Distinguish checkpoint logical bytes from runtime-resident memory.
+   - Identify which memory quantities are exact, derived, conditional, or UNKNOWN.
+   - Do not assume checkpoint storage size equals runtime resident memory.
+
+3. **Activation Lifetime Model**
+   - Establish activation memory requirements as a function of batch, sequence length, operator shape, and execution lifetime.
+   - Identify persistent activations, transient activations, reusable buffers, and peak activation requirements.
+   - Model buffer reuse where structurally derivable.
+   - Do not sum all intermediate tensors blindly when their lifetimes permit reuse.
+
+4. **Full-Attention State Model**
+   - Establish the verified and derived memory requirements of full-attention state, including K/V state where applicable.
+   - Model dependency on batch size, sequence length, number of full-attention layers, KV heads, head dimension, dtype, and K/V multiplicity.
+   - Produce parameterized formulas rather than a single unqualified memory number.
+   - Clearly distinguish derived KV-memory requirements from observed runtime allocator behavior.
+
+5. **Linear-Attention State Model**
+   - Establish the runtime memory model for recurrent/stateful linear-attention computation.
+   - Determine which portions are exactly derivable from accepted evidence.
+   - Where the exact linear-attention algorithm or state representation remains UNKNOWN, produce bounded or conditional memory models rather than inventing an algorithm.
+   - Preserve `UK-001` and `UK-012` as UNKNOWN unless independently resolved by authoritative evidence.
+   - Conditional models MAY be used where memory behavior can be expressed safely as an explicit dependency on an unresolved algorithm/state representation.
+
+6. **Workspace / Temporary Buffer Model**
+   - Identify operator workspaces, intermediate tensors, temporary projection buffers, normalization buffers, convolution buffers, MLP intermediates, multimodal buffers, and MTP-related execution buffers where applicable.
+   - Establish lifetime, reuse, and peak requirements where derivable.
+   - Keep workspace memory separate from persistent model state.
+
+7. **Peak Runtime Memory Model**
+   - Combine the verified memory domains into a parameterized runtime memory model.
+   - Establish total memory as a composition of:
+     - persistent weight memory
+     - persistent runtime state
+     - activation memory
+     - attention state
+     - linear-attention state
+     - workspace memory
+     - temporary execution buffers
+   - Identify peak rather than merely cumulative allocation where lifetime/reuse information permits.
+   - Provide formulas and dependency variables for batch size, sequence length, dtype, state model, and other relevant parameters.
+
+8. **Hardware Constraint Reconciliation**
+   - Compare the runtime memory model against the accepted SET 2 hardware truth layer.
+   - Determine memory fit, non-fit, conditional fit, and UNKNOWN conditions.
+   - Do not perform workload placement, scheduling, optimization, or runtime implementation.
+   - Do not convert hardware capability into runtime behavior without evidence.
+
+9. **SET 4 Boundary / Completeness Audit**
+   - Verify that all material runtime-memory categories have been addressed.
+   - Verify provenance/classification for every material claim.
+   - Verify that unresolved runtime behavior remains explicitly UNKNOWN.
+   - Verify that SET 5 receives a complete and usable memory contract.
+   - Verify that no SET 5+ implementation work was performed inside SET 4.
+
+### SET 4 Core Memory Model
+
+The final model SHALL distinguish at minimum:
+
+`WEIGHT MEMORY`
+
+`ACTIVATION MEMORY`
+
+`FULL-ATTENTION STATE`
+
+`LINEAR-ATTENTION STATE`
+
+`WORKSPACE MEMORY`
+
+`TEMPORARY / EXECUTION BUFFERS`
+
+`PEAK RUNTIME MEMORY`
+
+`MEMORY SCALING MODEL`
+
+`HARDWARE MEMORY CONSTRAINTS`
+
+`UNKNOWN / CONDITIONAL MEMORY`
+
+The model SHALL preserve the distinction:
+
+`CHECKPOINT STORAGE TRUTH ≠ RUNTIME MEMORY TRUTH`
+
+and:
+
+`STRUCTURAL TRUTH ≠ RUNTIME IMPLEMENTATION TRUTH`
+
+### SET 4 Atomic Task State
+
+`SET4-READINESS-GATE`
+- Verify SET 1, SET 2, and SET 3 closure.
+- Verify SET 4 contract and dependencies.
+- Verify no premature SET 4 implementation exists.
+- Verify target evidence and boundaries.
+- Result required: `PASS / FAIL / BLOCKED / RECONCILIATION REQUIRED`
+
+`SET4-T4.1 — Runtime Memory Inventory`
+- Identify all runtime memory domains and objects.
+- Establish provenance and initial classification.
+- Dependency: `SET4-READINESS-GATE PASS`
+
+`SET4-T4.2 — Weight Residency Model`
+- Establish persistent weight-memory requirements and residency boundaries.
+- Dependency: `SET4-T4.1 PASS`
+
+`SET4-T4.3 — Activation Lifetime Model`
+- Establish activation shapes, lifetimes, reuse, and peak requirements.
+- Dependency: `SET4-T4.2 PASS`
+
+`SET4-T4.4 — Full-Attention State Model`
+- Establish parameterized full-attention state / KV-memory requirements.
+- Dependency: `SET4-T4.3 PASS`
+
+`SET4-T4.5 — Linear-Attention State Model`
+- Establish verified, bounded, or conditional linear-attention state memory.
+- Dependency: `SET4-T4.4 PASS`
+
+`SET4-T4.6 — Workspace / Buffer Model`
+- Establish temporary and execution-buffer requirements.
+- Dependency: `SET4-T4.5 PASS`
+
+`SET4-T4.7 — Peak Runtime Memory Model`
+- Combine the memory domains into a parameterized peak-memory model.
+- Dependency: `SET4-T4.6 PASS`
+
+`SET4-T4.8 — Memory Constraint Reconciliation`
+- Compare the model against the accepted SET 2 hardware truth layer.
+- Dependency: `SET4-T4.7 PASS`
+
+`SET4-T4.9 — SET 4 Boundary / Completeness Audit`
+- Verify completeness, provenance, classification, scope, and downstream usability.
+- Dependency: `SET4-T4.8 PASS`
+
+`SET4-CLOSE — Formal SET 4 Acceptance`
+- Accept the Runtime Memory Truth Layer.
+- Establish SET 5 readiness dependency.
+- Dependency: `SET4-T4.9 COMPLETE`
+
+### SET 4 Output Contract
+
+SET 4 SHALL produce a verified runtime-memory contract containing, at minimum:
+
+- Runtime Memory Inventory
+- Weight Residency Model
+- Activation Lifetime Model
+- Full-Attention State Model
+- Linear-Attention State Model
+- Workspace / Buffer Model
+- Peak Runtime Memory Model
+- Memory Scaling Model
+- Hardware Constraint Reconciliation
+- SET 4 Boundary / Completeness Audit
+- Explicit Unknown / Conditional Memory Register
+
+Every material claim SHALL be classified as one of:
+
+`VERIFIED FACT`
+
+`DOCUMENTED CAPABILITY`
+
+`DERIVED FINDING`
+
+`CONDITIONAL MODEL`
+
+`UNKNOWN`
+
+No material runtime assumption may be presented as VERIFIED FACT unless independently established by authoritative evidence.
+
+### SET 4 Expected Deliverables
+
+```text
+docs/set-4/
+├── 01-runtime-memory-inventory.md
+├── 02-weight-residency-model.md
+├── 03-activation-lifetime-model.md
+├── 04-full-attention-state-model.md
+├── 05-linear-attention-state-model.md
+├── 06-workspace-buffer-model.md
+├── 07-peak-runtime-memory-model.md
+├── 08-memory-constraint-reconciliation.md
+└── 09-set4-boundary-completeness-audit.md
+```
+
+The exact file structure MAY be refined during execution provided that the required SET 4 output contract remains fully represented and traceable.
+
+### SET 4 Hard Boundary
+
+SET 4 SHALL NOT:
+
+- implement an inference engine
+- implement a memory allocator
+- implement runtime memory management
+- design or optimize kernels
+- benchmark throughput or latency
+- perform performance optimization
+- make CPU/GPU/NPU workload-placement decisions
+- perform runtime scheduling
+- implement streaming
+- implement paging
+- implement memory-constrained execution
+- perform production runtime integration
+- begin SET 5 work
+- begin SET 6+ work
+- silently resolve SET 3 UNKNOWNs without authoritative evidence
+
+SET 4 MAY derive memory requirements and conditional models when mathematically justified by accepted evidence.
+
+### SET 4 Unknown Handling Rule
+
+An UNKNOWN does not automatically fail SET 4.
+
+A runtime-memory question MAY remain UNKNOWN when:
+
+1. the required evidence is not yet available;
+2. the unknown is explicitly classified;
+3. its effect on the memory model is bounded, parameterized, or conditionally represented where possible;
+4. no unsupported assumption is introduced; and
+5. the resulting contract remains sufficient for the stated SET 4 objective.
+
+The final SET 4 audit SHALL distinguish:
+
+`UNKNOWN BUT ACCEPTABLE`
+
+from:
+
+`UNKNOWN THAT BLOCKS SET 4 COMPLETION`
+
+### SET 4 Completion Criteria
+
+SET 4 MAY be formally closed only when:
+
+- Runtime memory inventory = `PASS`
+- Weight residency model = `PASS`
+- Activation lifetime model = `PASS`
+- Full-attention state model = `PASS`
+- Linear-attention state model = `PASS`, bounded, or explicitly conditional
+- Workspace / buffer model = `PASS`
+- Peak runtime memory model = `PASS`
+- Memory scaling model = `PASS`
+- Hardware constraint reconciliation = `PASS`
+- Material claims have provenance and classification
+- Runtime assumptions are explicitly separated from verified facts
+- Acceptable UNKNOWNs are explicitly documented
+- No blocking UNKNOWN remains
+- No unsupported performance claims are introduced
+- No SET 5+ implementation work has been performed
+- SET 4 Boundary / Completeness Audit = `PASS`
+
+### SET 4 Closure State
+
+At successful closure:
+
+`SET4 = ✅ CLOSED`
+
+`SET4-CLOSE = ✅ CLOSED`
+
+`SET5 = 🔜 NEXT`
+
+`CURRENT NEXT TASK = SET5`
+
+The SET 4 closure SHALL establish a downstream contract for SET 5:
+
+`SET 4 Runtime Memory Truth → SET 5 Reference Inference Engine`
+
+SET 5 SHALL use the SET 4 memory contract as an authoritative input and SHALL NOT silently replace it with unverified runtime assumptions.
+
+### SET 4 Stop Condition
+
+SET 4 stops only when:
+
+- `SET4-CLOSE` acceptance criteria are satisfied; or
+- a genuine blocking contradiction remains unresolved; or
+- an explicit scope/safety STOP condition is triggered.
+
+SET 4 MUST NOT advance to SET 5 merely because individual technical subtasks passed.
+
+The complete SET 4 output contract, boundary audit, authoritative control state, and downstream dependency SHALL be established before formal closure.
 
 ---
 

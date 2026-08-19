@@ -7,7 +7,7 @@
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
 * Last control update: `2026-08-19`
 * Current integrated branch: `main`
-* Current integrated commit: `58199ce34bbd41dd83d14f7876533f033331a1c1`
+* Current integrated commit: `8b5b7d8235a86c552e01698f7f40dbe809b954f0`
 * Current integrated commit semantics: The repository HEAD immediately preceding the most recent commit that modified ROADMAP.md (i.e., the parent of the ROADMAP-persistence commit). This is non-self-referential: the field references the parent commit, not the commit containing the field. It is technically stable because the parent SHA is immutable. (Established by SET2-T2.9-R3.)
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed**
 * SET 1 execution: **CLOSED**

@@ -12,7 +12,7 @@
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **CLOSED**
-* Current control task: **SET4-READINESS-GATE**
+* Current control task: **SET4-T4.1 — Runtime Memory Inventory (COMPLETE)**
 
 ---
 
@@ -1956,13 +1956,36 @@ SET 2 STOP
 
 **Objective:** Establish a verified, parameterized runtime memory model for the Qwen3.8-27B inference path, covering model weights, activations, attention state, linear-attention state, MTP-related state, workspaces, temporary tensors, and other execution buffers, while explicitly separating VERIFIED FACT, DERIVED FINDING, DOCUMENTED CAPABILITY, CONDITIONAL MODEL, and UNKNOWN.
 
-**Status:** 🔜 NEXT — READINESS GATE
+**Status:** 🔜 IN PROGRESS — T4.1 COMPLETE
 
 **Responsibility:** 🧠 LUNA
 
 **Dependency:** SET 2 + SET 3 formally closed
 
 **Readiness dependency:** `SET4-READINESS-GATE PASS`
+
+### SET 4 Atomic Task State
+
+```text
+SET4-READINESS-GATE:
+✅ PASS
+🧠 LUNA
+Dependencies: SET2-CLOSE PASS, SET3-CLOSE PASS, no premature SET4 implementation exists
+
+SET4-T4.1 — Runtime Memory Inventory:
+✅ PASS
+🧠 LUNA
+Dependency: SET4-READINESS-GATE PASS
+Evidence: docs/set-4/01-runtime-memory-inventory.md (47 memory objects, RM-001 through RM-047)
+       📌 PERSISTED
+       ☁ PUSHED
+       🔎 REMOTE VERIFIED
+
+SET4-T4.2 — Weight Residency Model:
+🔜 NEXT
+🧠 LUNA
+Dependency: SET4-T4.1 PASS
+```
 
 ### SET 4 Mission
 
@@ -2500,7 +2523,18 @@ SET 3:
 ✅ CLOSED
 
 SET4-READINESS-GATE:
-🔜 NEXT
+✅ PASS
+
+SET4-T4.1 — Runtime Memory Inventory:
+✅ PASS
+🧠 LUNA
+Evidence: docs/set-4/01-runtime-memory-inventory.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
+
+CURRENT NEXT TASK:
+SET4-T4.2 — Weight Residency Model
 
 NEXT TASK OWNER:
 🧠 LUNA
@@ -2729,7 +2763,18 @@ SET 3:
 ✅ CLOSED
 
 SET4-READINESS-GATE:
-🔜 NEXT
+✅ PASS
+
+SET4-T4.1 — Runtime Memory Inventory:
+✅ PASS
+🧠 LUNA
+Evidence: docs/set-4/01-runtime-memory-inventory.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
+
+CURRENT NEXT TASK:
+SET4-T4.2 — Weight Residency Model
 
 SET 3 operator/computation model evidence persisted and verified.
 

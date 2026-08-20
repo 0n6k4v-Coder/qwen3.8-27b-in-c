@@ -1065,11 +1065,19 @@ A_fa_layer(B, S, E) =
 + A_mlp(B, S, E)      (AC-17–AC-21: MLP intermediates, see §15.3)
 + B·S·5120·E          (AC-12: fa_output / AC-13: residual / AC-24: layer_output)
 
-Simplified (lower bound, assuming no fusion, E=2, E_qk=E_sm=E_attn=2):
-A_fa_layer_min(B, S) = B·S·(5120 + 5120 + 12288 + 1024 + 1024 + 256 + 256 + 24·256) + B·24·S²·2 + B·24·S²·2 + B·24·S·256·2 + A_mlp_min(B, S) + B·S·5120·2
+Simplified (structural upper bound, assuming no fusion, E=2, E_qk=E_sm=E_attn=2):
+A_fa_layer_max(B, S) = B·S·(5120 + 5120 + 12288 + 1024 + 1024 + 256 + 256 + 24·256)·E + B·24·S²·E_qk + B·24·S²·E_sm + B·24·S·256·E_attn + A_mlp_max(B, S) + B·S·5120·E
 
-= B·S·(31224) + B·S²·(96 + 256) + A_mlp_min(B, S)
-= B·S·31224 + B·S²·352 + A_mlp_min(B, S)
+Applying E=2, E_qk=2, E_sm=2, E_attn=2:
+= B·S·(5120 + 5120 + 12288 + 1024 + 1024 + 256 + 256 + 24·256 + 5120)·2 + B·24·S²·2 + B·24·S²·2
+= B·S·(31224 + 5120)·2 + B·24·S²·(2 + 2)
+= B·S·36344·2 + B·S²·96
+= B·S·72688 + B·S²·96 + A_mlp_max(B, S)
+
+Dimensional audit:
+- B·S terms (all [B, S, D] or [B, 24, S, 256] → O(B·S)): 5120+5120+12288+1024+1024+256+256+6144+5120 = 36344, ×E=2 → 72688
+- B·S² terms (all [B, 24, S, S] → O(B·S²)): 24+24 = 48, ×E_qk=E_sm=2 → 96
+- Weighted sum [B, 24, S, 256] is O(B·S), not O(B·S²): correctly classified above
 ```
 
 **Linear-attention layer L (48 of 64 layers):**
@@ -1084,9 +1092,18 @@ A_la_layer(B, S, E) =
 + A_mlp(B, S, E)      (AC-17–AC-21: MLP intermediates)
 + B·S·5120·E          (AC-16: la_output / AC-13: residual / AC-24: layer_output)
 
-Simplified (lower bound, assuming no fusion, E=2, A_gdelta=0):
-A_la_layer_min(B, S) = B·S·(5120 + 5120 + 10240 + 6144 + 5120) + A_mlp_min(B, S)
-= B·S·26624 + A_mlp_min(B, S)
+Simplified (structural upper bound, assuming no fusion, E=2, A_gdelta parameterized):
+A_la_layer_max(B, S) = B·S·(5120 + 5120 + 10240 + 6144 + 5120)·E + A_gdelta(B, S) + A_mlp_max(B, S)
+
+Applying E=2:
+= B·S·(5120 + 5120 + 10240 + 6144 + 5120)·2 + A_gdelta(B, S) + A_mlp_max(B, S)
+= B·S·26624·2 + A_gdelta(B, S) + A_mlp_max(B, S)
+= B·S·53248 + A_gdelta(B, S) + A_mlp_max(B, S)
+
+Dimensional audit:
+- B·S terms: 5120+5120+10240+6144+5120 = 26624, ×E=2 → 53248
+- A_gdelta: parameterized per UK-001 (shapes UNKNOWN)
+- A_mlp_max: included (see §15.3)
 ```
 
 ### 15.3 MLP Activation Memory (Per-Layer)
@@ -1100,9 +1117,18 @@ A_mlp(B, S, E) =
 + B·S·17408·E         (AC-20: gate × up product — may overlap with AC-17/18)
 + B·S·5120·E          (AC-21: down_proj output)
 
-Simplified (lower bound, no fusion, E=2, E_silu=2):
-A_mlp_min(B, S) = B·S·(5120 + 17408 + 17408 + 17408 + 17408 + 5120)
-= B·S·72432
+Simplified (structural upper bound, no fusion, E=2, E_silu=2):
+A_mlp_max(B, S) = B·S·(5120 + 17408 + 17408 + 17408 + 17408 + 5120)·E
+
+Applying E=2 (and E_silu=2 for the SiLU gate):
+= B·S·(5120 + 17408 + 17408 + 17408 + 17408 + 5120)·2
+= B·S·72432·2
+= B·S·144864
+
+Dimensional audit:
+- All 6 terms are [B, S, 17408] or [B, S, 5120] → O(B·S)
+- Sum: 5120+17408+17408+17408+17408+5120 = 72432, ×E=2 → 144864
+- SiLU gate (AC-19) uses E_silu=2 (same as E, so E=2 applies consistently)
 ```
 
 ### 15.4 Language Stack: Embed + Final Phase
@@ -1113,10 +1139,20 @@ A_embed_final(B, S, E) =
 + B·S·5120·E          (AC-22: final_norm_out — single, not per-layer)
 + B·S·248320·E_logits   (AC-23: logits — E_logits = UNKNOWN, UK-004)
 
-Simplified (lower bound, E=2 for norm, E_logits=2):
-A_embed_final_min(B, S) = B·S·(5120 + 5120) + B·S·248320·2
-= B·S·10240 + B·S·496640
-= B·S·506880
+Simplified (structural upper bound, E=2 for norm, E_logits=2):
+A_embed_final_max(B, S) = B·S·(5120 + 5120)·E + B·S·248320·E_logits
+
+Applying E=2, E_logits=2:
+= B·S·(5120 + 5120)·2 + B·S·248320·2
+= B·S·10240·2 + B·S·496640
+= B·S·20480 + B·S·496640
+= B·S·517120
+
+Dimensional audit:
+- AC-01 embeddings [B, S, 5120]: 5120·E = 5120·2 = 10240
+- AC-22 final_norm [B, S, 5120]: 5120·E = 5120·2 = 10240
+- AC-23 logits [B, S, 248320]: 248320·E_logits = 248320·2 = 496640
+- Sum: 10240 + 10240 + 496640 = 517120
 ```
 
 ### 15.5 Vision Activations (Conditional)
@@ -1180,7 +1216,7 @@ Whether kernel fusion occurs determines whether intermediate buffers (AC-05 Q/K/
 - **Materialized (no fusion):** buffer is allocated, consuming the full byte size
 - **Fused (in-place or streaming):** buffer is not materialized, contributing 0 bytes to peak
 
-This is not resolved from available evidence. The parameterized formulas in §15 present the **materialized (no-fusion)** case as a **lower bound** (upper bound on memory). The **fully-fused** case is an upper bound on memory savings. Actual runtime behavior is UNKNOWN (UK-003).
+This is not resolved from available evidence. The parameterized formulas in §15 present the **materialized (no-fusion)** case as a **structural upper bound** (worst-case materialization bound). The **fully-fused** case is a lower bound on memory (a bound on memory savings). Actual runtime behavior is UNKNOWN (UK-003).
 
 **Classification:** CONDITIONAL MODEL (bounded between materialized and fully-fused cases).
 
@@ -1269,35 +1305,35 @@ Under the structural assumptions of:
 - BF16 computation (E=2) for materialized intermediates
 - Ignoring cross-layer overlap for the conservative bound
 
-The peak simultaneously-live activation memory for the language stack, assuming only one layer is active at a time:
+The peak simultaneously-live activation memory for the language stack is determined by the **phase model**: the execution decomposes into temporally distinct phases (T_INIT, T_EMBED, T_LAYER, T_FINAL, T_VISION, T_MTP) per §13.2. Under sequential layer execution, per-layer phases are mutually exclusive in time. The embed phase and final phase are also temporally distinct from layer phases. Therefore the peak is the maximum across phases, not the sum:
 
 ```
 A_peak_language(B, S, E) = max(
-  A_fa_layer_min(B, S, E),    (full-attention layer peak)
-  A_la_layer_min(B, S, E)     (linear-attention layer peak)
-) + A_embed_final_min(B, S, E)
+  A_fa_layer_max(B, S, E),      (full-attention layer phase — worst layer)
+  A_la_layer_max(B, S, E),      (linear-attention layer phase)
+  A_embed_final_max(B, S, E)    (embed + final + logits phase — distinct phases)
+)
 ```
 
-The full-attention layer has the larger per-layer activation footprint because of the 24×S² attention matrices:
+The full-attention layer has the larger per-layer activation footprint because of the 24×S² attention matrices (E_qk, E_sm):
 
-```
-A_peak_language_min(B, S, E=2) =
-  max(
-    B·S·31224 + B·S²·352 + B·S·72432 + B·S·5120,   // full-attention layer
-    B·S·26624 + B·S·72432 + B·S·5120                // linear-attention layer
-  ) + B·S·506880  // embed + final + logits
+A_fa_layer_max(B, S, E=2) = B·S·72688 + B·S²·96 + A_mlp_max(B, S, E=2)
+                         = B·S·72688 + B·S²·96 + B·S·144864
+                         = B·S·217552 + B·S²·96
 
-= B·S·31224 + B·S²·352 + B·S·72432 + B·S·5120 + B·S·506880 + (cross-layer)
+A_la_layer_max(B, S, E=2) = B·S·53248 + A_gdelta(B, S) + A_mlp_max(B, S, E=2)
+                         = B·S·53248 + B·S·144864 + A_gdelta(B, S)
+                         = B·S·198112 + A_gdelta(B, S)     (A_gdelta = UNKNOWN per UK-001)
 
-= B·S · (31224 + 72432 + 5120 + 506880) + B·S² · 352
-= B·S · 615656 + B·S² · 352
-```
+A_embed_final_max(B, S, E=2) = B·S·517120
 
 **This is a STRUCTURAL UPPER BOUND (no-fusion assumption).** It does not account for:
 - Kernel fusion (UK-003) — could reduce peak
 - Buffer reuse / in-place operations (UK-003, UK-006) — could reduce peak
 - Cross-layer buffer recycling (§14.2) — could reduce peak
 - Backward-pass activation retention — NOT in T4.3 scope
+- The relative magnitudes of A_mlp_max and A_embed_final_max depend on B, S
+  which are UNKNOWN (UK-009); the exact max cannot be resolved without B, S
 
 **Classification:** CONDITIONAL MODEL (bounded upper bound, parameterized by B, S).
 
@@ -1315,7 +1351,11 @@ A_peak_language_min(B, S, E=2) =
 The peak activation memory for the language forward-pass, **parameterized** and **bounded above** by the no-fusion assumption, is:
 
 ```
-A_peak_language_min(B, S) = B·S · 615656 + B·S² · 352   (bytes, E=2, no fusion)
+A_peak_language_max(B, S, E=2) = max(
+  B·S·217552 + B·S²·96,              // A_fa_layer_max (full-attention layer phase)
+  B·S·198112 + A_gdelta(B, S),       // A_la_layer_max (linear-attention layer phase, A_gdelta = UNKNOWN)
+  B·S·517120                        // A_embed_final_max (embed + final + logits phase)
+)
 ```
 
 This formula is conditional on:
@@ -1324,6 +1364,7 @@ This formula is conditional on:
 - No kernel fusion (UK-003)
 - No backward pass (SET6 domain)
 - No cross-layer buffer reuse (UK-003)
+- A_gdelta (linear-attention gated-delta intermediates) = UNKNOWN (UK-001)
 
 A fully-fused, maximally-reused execution path would have lower peak activation memory, but the exact reduction is UNKNOWN (UK-003).
 
@@ -1360,7 +1401,7 @@ T4.7 will consume:
 
 - **§15 formulas** (A_fa_layer, A_la_layer, A_mlp, A_embed_final): For computing the language-stack activation peak
 - **§16 conditional cases** (fusion bounds, dtype bounds): For bounding the activation contribution under UK-002, UK-003, UK-004
-- **§18 peak formula** (A_peak_language_min): As the activation-memory component of the combined peak
+- **§18 peak formula** (A_peak_language_max): As the activation-memory component of the combined peak
 - **AC-07, AC-36**: As the state-memory component — ACTIVATION BOUNDARY observations only (T4.4, T4.5 will model the actual state)
 - **T4.2 weight-residency model**: As the weight-memory component
 - T4.4 (KV-cache state), T4.5 (linear-attention state), T4.6 (workspace) contributions

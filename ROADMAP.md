@@ -5,14 +5,14 @@
 * Document: `ROADMAP.md`
 * Role: Project Control / Roadmap State
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
-* Last control update: `2026-08-19`
+* Last control update: `2026-08-20`
 * Current integrated branch: `main`
-* Current integrated commit: `8b5b7d8235a86c552e01698f7f40dbe809b954f0`
+* Current integrated commit: `1be3384a9c0de2352d103049201381daa3aa38cc`
 * Current integrated commit semantics: The repository HEAD immediately preceding the most recent commit that modified ROADMAP.md (i.e., the parent of the ROADMAP-persistence commit). This is non-self-referential: the field references the parent commit, not the commit containing the field. It is technically stable because the parent SHA is immutable. (Established by SET2-T2.9-R3.)
 * Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **CLOSED**
-* Current control task: **SET4-T4.1 — Runtime Memory Inventory (COMPLETE)**
+* Current control task: **SET4-T4.3 — Activation Lifetime Model**
 
 ---
 
@@ -43,7 +43,7 @@ PROJECT
 │   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 4 — Runtime Memory Model
-│   🔜 NEXT — READINESS GATE
+│   🔜 IN PROGRESS — T4.2 COMPLETE
 │
 ├── SET 5 — Reference Inference Engine
 │   🔒 NOT STARTED
@@ -87,7 +87,7 @@ PROJECT
 | SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth                     | ✅ CLOSED                | 🧠 LUNA               |
 | SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | ✅ CLOSED                | 🧠 LUNA + 🛠 EXECUTOR |
 | SET 3  | Define operator and computation model                                                                | ✅ CLOSED                | 🧠 LUNA               |
-| SET 4  | Define runtime memory model                                                                          | 🔜 NEXT — READINESS GATE | 🧠 LUNA               |
+| SET 4  | Define runtime memory model                                                                          | 🔜 IN PROGRESS — T4.2 COMPLETE | 🧠 LUNA               |
 | SET 5  | Build correctness-first reference inference engine                                                   | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
 | SET 6  | Validate numerical/correctness behavior                                                              | 🔒 NOT STARTED           | 🧠 LUNA + 🛠 EXECUTOR |
 | SET 7  | Enable execution under memory constraints                                                            | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
@@ -1956,7 +1956,7 @@ SET 2 STOP
 
 **Objective:** Establish a verified, parameterized runtime memory model for the Qwen3.8-27B inference path, covering model weights, activations, attention state, linear-attention state, MTP-related state, workspaces, temporary tensors, and other execution buffers, while explicitly separating VERIFIED FACT, DERIVED FINDING, DOCUMENTED CAPABILITY, CONDITIONAL MODEL, and UNKNOWN.
 
-**Status:** 🔜 IN PROGRESS — T4.1 COMPLETE
+**Status:** 🔜 IN PROGRESS — T4.2 COMPLETE
 
 **Responsibility:** 🧠 LUNA
 
@@ -1982,9 +1982,19 @@ Evidence: docs/set-4/01-runtime-memory-inventory.md (47 memory objects, RM-001 t
        🔎 REMOTE VERIFIED
 
 SET4-T4.2 — Weight Residency Model:
-🔜 NEXT
+✅ PASS / COMPLETE
 🧠 LUNA
 Dependency: SET4-T4.1 PASS
+Evidence: docs/set-4/02-weight-residency-model.md
+       📌 PERSISTED
+       ☁ PUSHED
+       🔎 REMOTE VERIFIED
+       📌 T4.2 PERSISTENCE COMMIT: `1be3384a9c0de2352d103049201381daa3aa38cc`
+
+SET4-T4.3 — Activation Lifetime Model:
+🔜 NEXT
+🧠 LUNA
+Dependency: SET4-T4.2 PASS
 ```
 
 ### SET 4 Mission
@@ -2533,11 +2543,26 @@ Evidence: docs/set-4/01-runtime-memory-inventory.md
 ☁ PUSHED
 🔎 REMOTE VERIFIED
 
+SET4-T4.2 — Weight Residency Model:
+✅ PASS / COMPLETE
+🧠 LUNA
+Evidence: docs/set-4/02-weight-residency-model.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
+📌 T4.2 PERSISTENCE COMMIT: `1be3384a9c0de2352d103049201381daa3aa38cc`
+
+CURRENT CONTROL TASK:
+SET4-T4.3 — Activation Lifetime Model
+
 CURRENT NEXT TASK:
-SET4-T4.2 — Weight Residency Model
+SET4-T4.3 — Activation Lifetime Model
 
 NEXT TASK OWNER:
 🧠 LUNA
+
+SET4-T4.3 dependency:
+SET4-T4.2 PASS
 ```
 
 ---
@@ -2773,8 +2798,26 @@ Evidence: docs/set-4/01-runtime-memory-inventory.md
 ☁ PUSHED
 🔎 REMOTE VERIFIED
 
+SET4-T4.2 — Weight Residency Model:
+✅ PASS / COMPLETE
+🧠 LUNA
+Evidence: docs/set-4/02-weight-residency-model.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
+📌 T4.2 PERSISTENCE COMMIT: `1be3384a9c0de2352d103049201381daa3aa38cc`
+
+CURRENT CONTROL TASK:
+SET4-T4.3 — Activation Lifetime Model
+
 CURRENT NEXT TASK:
-SET4-T4.2 — Weight Residency Model
+SET4-T4.3 — Activation Lifetime Model
+
+NEXT TASK OWNER:
+🧠 LUNA
+
+SET4-T4.3 dependency:
+SET4-T4.2 PASS
 
 SET 3 operator/computation model evidence persisted and verified.
 

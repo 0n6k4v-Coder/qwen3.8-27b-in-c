@@ -9,7 +9,7 @@
 * Current integrated branch: `main`
 * Current integrated commit: `28e278cea70ca1b81e73c7004bc73d5af6296827`
 * Current integrated commit semantics: The repository HEAD immediately preceding the most recent commit that modified ROADMAP.md (i.e., the parent of the ROADMAP-persistence commit). This is non-self-referential: the field references the parent commit, not the commit containing the field. It is technically stable because the parent SHA is immutable. (Established by SET2-T2.9-R3.)
-* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 technical evidence complete (control authority blocked); SET 3 technical evidence complete (control authority blocked); SET 4+ technical work historically executed (control authority blocked)**
+* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 technical evidence complete (control authority blocked); SET 3 technical evidence complete (control authority blocked); SET 4 = CURRENT TECHNICAL SET (T4.1/T4.2/T4.3 technically PASS, persisted on origin/main — control authority blocked pending first-drift adjudication)**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **TECHNICAL COMPLETE — CONTROL AUTHORITY BLOCKED**
 * SET 3 execution: **TECHNICAL COMPLETE — CONTROL AUTHORITY BLOCKED**
@@ -2021,7 +2021,8 @@ Evidence: docs/set-4/02-weight-residency-model.md
        📌 T4.2 PERSISTENCE COMMIT: `1be3384a9c0de2352d103049201381daa3aa38cc`
 
 SET4-T4.3 — Activation Lifetime Model:
-⛔ BLOCKED — NOT AUTHORIZED (CONTROL AUTHORITY BLOCKED PENDING FIRST-DRIFT RE-ADJUDICATION)
+✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED — NOT AUTHORIZED for downstream advancement
+       Technical artifact: docs/set-4/03-activation-lifetime-model.md (commit 4a73ec3, on origin/main)
 🧠 LUNA
 Dependency: SET4-T4.2 PASS
 
@@ -2483,7 +2484,21 @@ The complete SET 4 output contract, boundary audit, authoritative control state,
 > REQUIRED and is the current control action.
 
 ```text
-CURRENT SET:
+CURRENT TECHNICAL SET:
+SET 4 — Runtime Memory Model (T4.1, T4.2, T4.3 complete; technical evidence persisted)
+
+CURRENT TECHNICAL TASK:
+SET4-T4.3 — Activation Lifetime Model — ✅ PASS (technical) — docs/set-4/03-activation-lifetime-model.md (commit 4a73ec3)
+
+CURRENT CONTROL TASK:
+SET2-T2.7-R1 — FIRST-DRIFT AUTHORIZATION RE-ADJUDICATION / ROADMAP RECONCILIATION
+
+TECHNICAL STATE ≠ CONTROL AUTHORIZATION
+The SET 2 first-drift governance defect does NOT technically invalidate T4.3.
+T4.3 is technically PASS and persisted on origin/main, but its downstream
+authorization is CONTROL AUTHORITY BLOCKED pending first-drift adjudication.
+
+CURRENT SET (control):
 SET 2 — Hardware Reconnaissance (technical evidence complete, control authority blocked)
 
 SET 0:
@@ -2586,22 +2601,28 @@ SET 3:
 ✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
 
 SET4-READINESS-GATE:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
 
 SET4-T4.1 — Runtime Memory Inventory:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
+       Evidence: docs/set-4/01-runtime-memory-inventory.md (47 memory objects, RM-001..RM-047)
 
 SET4-T4.2 — Weight Residency Model:
-✅ PASS / COMPLETE (HISTORICAL — NOT AUTHORIZED)
+✅ PASS / COMPLETE (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
+       Evidence: docs/set-4/02-weight-residency-model.md
 
 SET4-T4.3 — Activation Lifetime Model:
-⛔ BLOCKED — NOT AUTHORIZED
+✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED — NOT AUTHORIZED for downstream advancement
+       Technical artifact: docs/set-4/03-activation-lifetime-model.md (commit 4a73ec3, on origin/main)
 
 DOWNSTREAM:
-⛔ BLOCKED — no T2.8, SET2-CLOSE, SET3, SET4, T4.4, SET5 advancement authorized
+⛔ BLOCKED — no T2.8, SET2-CLOSE, SET3, SET4-CLOSE, T4.4, SET5 advancement authorized
+   (SET4-T4.1, T4.2, T4.3 are technically complete; downstream ADVANCEMENT remains control-blocked)
 
-SET4-T4.3 dependency:
-NOT MET (downstream advancement blocked)
+SET4-T4.3 technical dependency:
+MET (T4.2 PASS, persisted on origin/main)
+SET4-T4.3 control authorization:
+NOT GRANTED (control authority blocked pending first-drift adjudication)
 ```
 ```
 
@@ -2747,7 +2768,10 @@ Executor must use the exact roadmap state supplied by LUNA and must not redesign
 
 > **Control-plane reconciliation (2026-08-20):** Reconciled to the first-drift
 > adjudication. Current control task is SET2-T2.7-R1 first-drift
-> re-adjudication / ROADMAP reconciliation. Downstream advancement is BLOCKED.
+> re-adjudication / ROADMAP reconciliation. Downstream ADVANCEMENT is BLOCKED.
+> SET4 is the CURRENT TECHNICAL SET (T4.1, T4.2, T4.3 technically PASS, persisted).
+> The governance drift does NOT invalidate T4.3 — technical and control state are
+> distinguished below.
 
 ```text
 SET 0:
@@ -2835,22 +2859,28 @@ SET 3:
 ✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
 
 SET4-READINESS-GATE:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
 
 SET4-T4.1 — Runtime Memory Inventory:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
+       Evidence: docs/set-4/01-runtime-memory-inventory.md (47 memory objects, RM-001..RM-047)
 
 SET4-T4.2 — Weight Residency Model:
-✅ PASS / COMPLETE (HISTORICAL — NOT AUTHORIZED)
+✅ PASS / COMPLETE (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
+       Evidence: docs/set-4/02-weight-residency-model.md
 
 SET4-T4.3 — Activation Lifetime Model:
-⛔ BLOCKED — NOT AUTHORIZED
+✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED — NOT AUTHORIZED for downstream advancement
+       Technical artifact: docs/set-4/03-activation-lifetime-model.md (commit 4a73ec3, on origin/main)
 
 DOWNSTREAM:
-⛔ BLOCKED — no T2.8, SET2-CLOSE, SET3, SET4, T4.4, SET5 advancement authorized
+⛔ BLOCKED — no T2.8, SET2-CLOSE, SET3, SET4-CLOSE, T4.4, SET5 advancement authorized
+   (SET4-T4.1, T4.2, T4.3 are technically complete; downstream ADVANCEMENT remains control-blocked)
 
-SET4-T4.3 dependency:
-NOT MET (downstream advancement blocked)
+SET4-T4.3 technical dependency:
+MET (T4.2 PASS, persisted on origin/main)
+SET4-T4.3 control authorization:
+NOT GRANTED (control authority blocked pending first-drift adjudication)
 
 SET 3 operator/computation model evidence persisted and verified.
 ROADMAP.md:

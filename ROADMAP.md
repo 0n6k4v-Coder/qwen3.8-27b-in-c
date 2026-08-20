@@ -7,14 +7,12 @@
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
 * Last control update: `2026-08-20`
 * Current integrated branch: `main`
-* Current integrated commit: `28e278cea70ca1b81e73c7004bc73d5af6296827`
+* Current integrated commit: `1be3384a9c0de2352d103049201381daa3aa38cc`
 * Current integrated commit semantics: The repository HEAD immediately preceding the most recent commit that modified ROADMAP.md (i.e., the parent of the ROADMAP-persistence commit). This is non-self-referential: the field references the parent commit, not the commit containing the field. It is technically stable because the parent SHA is immutable. (Established by SET2-T2.9-R3.)
-* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 technical evidence complete (control authority blocked); SET 3 technical evidence complete (control authority blocked); SET 4 = CURRENT TECHNICAL SET (T4.1/T4.2/T4.3 technically PASS, persisted on origin/main — control authority blocked pending first-drift adjudication)**
+* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed; SET 4 current technical set — T4.3 complete; T4.4 next**
 * SET 1 execution: **CLOSED**
-* SET 2 execution: **TECHNICAL COMPLETE — CONTROL AUTHORITY BLOCKED**
-* SET 3 execution: **TECHNICAL COMPLETE — CONTROL AUTHORITY BLOCKED**
-* SET 4 execution: **TECHNICAL EVIDENCE COMPLETE — CONTROL AUTHORITY BLOCKED**
-* Current control task: **SET2-T2.7-R1 — FIRST-DRIFT AUTHORIZATION RE-ADJUDICATION / ROADMAP RECONCILIATION**
+* SET 2 execution: **CLOSED**
+* Current control task: **SET4-T4.4 — Full-Attention State Model — AUTHORIZATION / EXECUTOR DISPATCH**
 
 ---
 
@@ -37,15 +35,15 @@ PROJECT
 ├── SET 2 — Hardware Reconnaissance
 │   ✅ TECHNICAL COMPLETE
 │   ✅ EVIDENCE COMPLETE
-│   ⚠ HISTORICAL — CONTROL AUTHORITY BLOCKED
+│   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 3 — Operator / Computation Model
 │   ✅ TECHNICAL COMPLETE
 │   ✅ EVIDENCE COMPLETE
-│   ⚠ HISTORICAL — CONTROL AUTHORITY BLOCKED
+│   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 4 — Runtime Memory Model
-│   ⚠ HISTORICAL — T4.2 COMPLETE (CONTROL AUTHORITY BLOCKED)
+│   🔜 IN PROGRESS — T4.3 COMPLETE — T4.4 NEXT
 │
 ├── SET 5 — Reference Inference Engine
 │   🔒 NOT STARTED
@@ -86,10 +84,10 @@ PROJECT
 | SET    | Objective                                                                                            | Status                   | Responsibility        |
 | ------ | ---------------------------------------------------------------------------------------------------- | ------------------------ | --------------------- |
 | SET 0  | Establish verified model/source-of-truth foundation                                                  | ✅ CLOSED                | 🧠 LUNA + 🛠 EXECUTOR |
-| SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth                     | ✅ CLOSED                | 🧠 LUNA               |
-| SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | ⚠ TECHNICAL COMPLETE (CONTROL BLOCKED) | 🧠 LUNA + 🛠 EXECUTOR |
-| SET 3  | Define operator and computation model                                                                | ⚠ TECHNICAL COMPLETE (CONTROL BLOCKED) | 🧠 LUNA               |
-| SET 4  | Define runtime memory model                                                                          | ⚠ TECHNICAL EVIDENCE COMPLETE (CONTROL BLOCKED) | 🧠 LUNA               |
+| SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth                     | ✅ CLOSED               | 🧠 LUNA               |
+| SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | ✅ CLOSED                | 🧠 LUNA + 🛠 EXECUTOR |
+| SET 3  | Define operator and computation model                                                                | ✅ CLOSED                | 🧠 LUNA               |
+| SET 4  | Define runtime memory model                                                                          | 🔜 IN PROGRESS — T4.3 COMPLETE — T4.4 NEXT | 🧠 LUNA               |
 | SET 5  | Build correctness-first reference inference engine                                                   | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
 | SET 6  | Validate numerical/correctness behavior                                                              | 🔒 NOT STARTED           | 🧠 LUNA + 🛠 EXECUTOR |
 | SET 7  | Enable execution under memory constraints                                                            | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
@@ -446,16 +444,11 @@ SET 2 prerequisite:                ✅ SATISFIED
 
 ### Status
 
-> **Control-plane reconciliation note (2026-08-20):** The technical-pass records
-> below are preserved as historical evidence. SET 2 technical work is complete,
-> but its control authority is BLOCKED pending first-drift adjudication. See
-> Section 3 and Section 7 for the authoritative active control state.
-
 ```text
-✅ PASS — TECHNICAL
+✅ PASS
 
 SET 2 execution:
-✅ TECHNICAL COMPLETE — CONTROL AUTHORITY BLOCKED
+✅ CLOSED
 
 SET2-READINESS-GATE:
 ✅ PASS
@@ -500,48 +493,43 @@ SET2-T2.6-R1:
 ✅ PASS
 
 SET2-T2.7:
-✅ PASS — LEGITIMATE BASELINE
+✅ PASS
 
 SET2-T2.7-R1:
-⚠ RE-ADJUDICATION REQUIRED (not independently established before execution)
+✅ PASS
 
 SET2-T2.8:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9-R1:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9-R2:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9-R3:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-CLOSE:
-✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
+✅ CLOSED
 
 SET3-READINESS-GATE:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET3-CLOSE:
-✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
+✅ CLOSED
 
 SET 3:
-✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
-
-> **Control-plane reconciliation note (2026-08-20):** The CURRENT NEXT TASK and
-> NEXT TASK OWNER below are historical snapshots, SUPERSEDED by the first-drift
-> adjudication. The active control task is now SET2-T2.7-R1 first-drift
-> re-adjudication / ROADMAP reconciliation; all downstream advancement is BLOCKED.
+✅ CLOSED
 
 CURRENT NEXT TASK:
-SET4-READINESS-GATE (HISTORICAL — OVERRIDDEN BY FIRST-DRIFT ADJUDICATION)
+SET4-READINESS-GATE
 
 NEXT TASK OWNER:
-🧠 LUNA (historical — current reconciliation action is EXECUTOR-led)
+🧠 LUNA
 ```
 
 ### Dependency
@@ -556,91 +544,84 @@ SET 1 downstream checkpoint contract:
 
 ### Current Control
 
-> **Control-plane reconciliation note (2026-08-20):** This block documents the
-> historical control state as it existed before the first-drift adjudication.
-> The authoritative active control state has moved to Section 3 and Section 7.
-
 ```text
 SET 2:
-⚠ TECHNICAL COMPLETE — CONTROL AUTHORITY BLOCKED
+✅ CLOSED
 
 SET2-READINESS-GATE:
 ✅ PASS
 
 SET2-T2.1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.1-R1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.2:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.3-R1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.4:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.4-R1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.4-R2:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.5:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.5-R1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.6:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.6-R1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.7:
-✅ PASS — LEGITIMATE BASELINE
+✅ PASS
 
 SET2-T2.7-R1:
-⚠ RE-ADJUDICATION REQUIRED (not independently established before execution)
+✅ PASS
 
 SET2-T2.8:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9-R1:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9-R2:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9-R3:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-CLOSE:
-✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
+✅ CLOSED
 
 SET3-READINESS-GATE:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET3-CLOSE:
-✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
+✅ CLOSED
 
 SET 3:
-✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
-
-> CURRENT NEXT TASK / NEXT TASK OWNER below are SUPERSEDED:
-> active control task is now SET2-T2.7-R1 first-drift re-adjudication (BLOCKED downstream)
+✅ CLOSED
 
 CURRENT NEXT TASK:
-SET4-READINESS-GATE (HISTORICAL — OVERRIDDEN BY FIRST-DRIFT ADJUDICATION)
+SET4-READINESS-GATE
 
 NEXT TASK OWNER:
-🧠 LUNA (historical — current reconciliation action is EXECUTOR-led)
+🧠 LUNA
 ```
 
 ### Responsibility
@@ -1249,8 +1230,8 @@ HARDWARE DATA-MOVEMENT / INTERCONNECT MODEL
 **Objective:**
 
 Reconcile SET2-T2.7 evidence after independent review identified unsupported
-promotion of `DEVPKEY_PciDevice_ExpressSpecVersion=2` into `PCIe Gen2 x16` link
-claims, over-interpretation of PnP / PCI hierarchy as proof of exact physical
+promotion of `DEVPKEY_PciDevice_ExpressSpecVersion=2` into `PCIe Gen2 x16`
+link claims, over-interpretation of PnP / PCI hierarchy as proof of exact physical
 silicon-level interconnect topology, over-broad claims regarding NPU shared/system
 memory and absence of device-local or near-compute memory, inadequate provenance
 for the CPU MESI classification, and stale ROADMAP integrated-commit metadata.
@@ -1863,14 +1844,7 @@ docs/set-2/
 ├── 09-set2-boundary-completeness-audit-r2-reconciliation.md
 ├── 09-set2-boundary-completeness-audit-r3-reconciliation.md
 ├── 10-set2-close-acceptance.md
-├── 11-authorization-ledger-post-t2.7.md
-└── 12-first-drift-adjudication.md
 ```
-
-> **Control-plane note:** All SET 2 technical evidence files above are preserved
-> as historical work. The `12-first-drift-adjudication.md` file establishes the
-> authoritative current control boundary. Technical persistence does NOT imply
-> authorization for downstream advancement.
 
 Formal acceptance remains a separate control task:
 
@@ -1949,21 +1923,19 @@ SET 2 STOP
 
 **Objective:** Translate verified model structure into an explicit operator/computation model without prematurely assuming runtime behavior.
 
-**Status:** ⚠ TECHNICAL COMPLETE — CONTROL AUTHORITY BLOCKED
+**Status:** ✅ CLOSED
 
 **Responsibility:** 🧠 LUNA
 
 **Dependency:** SET 1 + SET 2 verified evidence
 
-**Readiness dependency:** `SET2-CLOSE PASS` — TECHNICAL EVIDENCE COMPLETE (CONTROL BLOCKED PENDING FIRST-DRIFT RE-ADJUDICATION)
+**Readiness dependency:** `SET2-CLOSE PASS`
 
-> **Control-plane note (reconciled 2026-08-20):** SET 3 technical evidence is complete and preserved. Its control authority remains BLOCKED under the first-drift adjudication (docs/set-2/12-first-drift-adjudication.md). The SET 3 acceptance verdict below documents historical technical execution, not current authorization.
+---
 
 ## SET 3 — Operator / Computation Model (Acceptance)
 
-**Status:** ⚠ PASS — TECHNICAL (CONTROL AUTHORITY BLOCKED)
-
-> **Control-plane note (reconciled 2026-08-20):** The acceptance verdict below records historical technical execution only. Under the first-drift adjudication, SET 3 is NOT authorized for downstream advancement.
+**Status:** ✅ PASS
 
 **Acceptance evidence:**
 - 11 operator classes (OC-1 through OC-11) defined with verified tensor dependencies
@@ -1984,22 +1956,21 @@ SET 2 STOP
 
 **Objective:** Establish a verified, parameterized runtime memory model for the Qwen3.8-27B inference path, covering model weights, activations, attention state, linear-attention state, MTP-related state, workspaces, temporary tensors, and other execution buffers, while explicitly separating VERIFIED FACT, DERIVED FINDING, DOCUMENTED CAPABILITY, CONDITIONAL MODEL, and UNKNOWN.
 
-**Status:** ⚠ TECHNICAL EVIDENCE COMPLETE — CONTROL AUTHORITY BLOCKED (DOWNSTREAM: BLOCKED)
+**Status:** 🔜 IN PROGRESS — T4.3 COMPLETE — T4.4 NEXT
 
 **Responsibility:** 🧠 LUNA
 
-**Dependency:** SET 2 + SET 3 technically evidence complete — CONTROL AUTHORITY BLOCKED
-**Readiness dependency:** `SET4-READINESS-GATE PASS` — TECHNICAL (CONTROL BLOCKED PENDING FIRST-DRIFT RE-ADJUDICATION)
+**Dependency:** SET 2 + SET 3 formally closed
 
-> **Control-plane note (reconciled 2026-08-20):** SET 4 technical artifacts (T4.1, T4.2) are preserved as historical evidence. Their transitions are NOT authorized. SET4-T4.3 is NOT the current control task; it is BLOCKED pending independent Orchestrator adjudication of the first drift.
+**Readiness dependency:** `SET4-READINESS-GATE PASS`
 
 ### SET 4 Atomic Task State
 
 ```text
 SET4-READINESS-GATE:
-✅ PASS — TECHNICAL (CONTROL BLOCKED)
+✅ PASS
 🧠 LUNA
-Dependencies: SET2-CLOSE PASS, SET3-CLOSE PASS — TECHNICAL EVIDENCE ONLY (CONTROL AUTHORITY BLOCKED PENDING FIRST-DRIFT RE-ADJUDICATION)
+Dependencies: SET2-CLOSE PASS, SET3-CLOSE PASS, no premature SET4 implementation exists
 
 SET4-T4.1 — Runtime Memory Inventory:
 ✅ PASS
@@ -2021,11 +1992,18 @@ Evidence: docs/set-4/02-weight-residency-model.md
        📌 T4.2 PERSISTENCE COMMIT: `1be3384a9c0de2352d103049201381daa3aa38cc`
 
 SET4-T4.3 — Activation Lifetime Model:
-✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED — NOT AUTHORIZED for downstream advancement
-       Technical artifact: docs/set-4/03-activation-lifetime-model.md (commit 4a73ec3, on origin/main)
+✅ PASS / COMPLETE
 🧠 LUNA
 Dependency: SET4-T4.2 PASS
+Evidence: docs/set-4/03-activation-lifetime-model.md
+       📌 PERSISTED
+       ☁ PUSHED
+       🔎 REMOTE VERIFIED
 
+SET4-T4.4 — Full-Attention State Model:
+🔜 NEXT
+🛠 EXECUTOR
+Dependency: SET4-T4.3 PASS
 ```
 
 ### SET 4 Mission
@@ -2302,8 +2280,7 @@ SET 4 MAY be formally closed only when:
 
 ### SET 4 Closure State
 
-At successful closure (NOT YET REACHED — control authority BLOCKED pending
-first-drift adjudication):
+At successful closure:
 
 `SET4 = ✅ CLOSED`
 
@@ -2467,39 +2444,21 @@ The complete SET 4 output contract, boundary audit, authoritative control state,
 
 # 3. Current Control State
 
-> **Control-plane reconciliation (2026-08-20):** Reconciled to the first-drift
-> adjudication (docs/set-2/12-first-drift-adjudication.md, commit
-> `28e278cea70ca1b81e73c7004bc73d5af6296827`). The authoritative control
-> boundary is:
->
-> ```text
-> LAST LEGITIMATE BASELINE = SET2-T2.7
-> CURRENT CONTROL ACTION = SET2-T2.7-R1 — FIRST-DRIFT RE-ADJUDICATION / ROADMAP RECONCILIATION
-> DOWNSTREAM = BLOCKED PENDING INDEPENDENT ORCHESTRATOR DECISION
-> ```
->
-> The technical-pass records below for SET2-T2.7-R1 through SET4-T4.2 are
-> preserved as historical technical evidence. They do NOT represent current
-> authorization for downstream advancement. SET2-T2.7-R1 itself is RE-ADJUDICATION
-> REQUIRED and is the current control action.
-
 ```text
 CURRENT TECHNICAL SET:
-SET 4 — Runtime Memory Model (T4.1, T4.2, T4.3 complete; technical evidence persisted)
+SET 4 — Runtime Memory Model
 
 CURRENT TECHNICAL TASK:
-SET4-T4.3 — Activation Lifetime Model — ✅ PASS (technical) — docs/set-4/03-activation-lifetime-model.md (commit 4a73ec3)
+SET4-T4.3 — Activation Lifetime Model
 
 CURRENT CONTROL TASK:
-SET2-T2.7-R1 — FIRST-DRIFT AUTHORIZATION RE-ADJUDICATION / ROADMAP RECONCILIATION
+SET4-T4.4 AUTHORIZATION / EXECUTOR DISPATCH
 
-TECHNICAL STATE ≠ CONTROL AUTHORIZATION
-The SET 2 first-drift governance defect does NOT technically invalidate T4.3.
-T4.3 is technically PASS and persisted on origin/main, but its downstream
-authorization is CONTROL AUTHORITY BLOCKED pending first-drift adjudication.
+CURRENT NEXT TASK:
+SET4-T4.4 — Full-Attention State Model
 
-CURRENT SET (control):
-SET 2 — Hardware Reconnaissance (technical evidence complete, control authority blocked)
+NEXT TASK OWNER:
+🛠 EXECUTOR
 
 SET 0:
 ✅ FORMALLY CLOSED
@@ -2514,116 +2473,119 @@ SET 1 FORMAL ACCEPTANCE:
 ✅ CLOSED
 
 SET 2:
-⚠ TECHNICAL COMPLETE — CONTROL AUTHORITY BLOCKED
+✅ CLOSED
 
 SET2-READINESS-GATE:
 ✅ PASS
 
 SET2-CLOSE:
-✅ CLOSED — TECHNICAL (CONTROL AUTHORITY BLOCKED)
-
-CURRENT CONTROL ACTION:
-SET2-T2.7 — FIRST-DRIFT RE-ADJUDICATION / ROADMAP RECONCILIATION
-
-CURRENT NEXT TASK:
-SET2-T2.7-R1 RE-ADJUDICATION (EXECUTOR: ROADMAP CONTROL-STATE RECONCILIATION ONLY)
-
-NEXT TASK OWNER:
-🛠 EXECUTOR (per ORCH-SET2-FIRST-DRIFT-ROADMAP-RECONCILIATION action)
+✅ CLOSED
 
 SET2-T2.1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.2:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.2-R1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.3:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.3-R1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.4:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.4-R1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.4-R2:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.5:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.5-R1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.6:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.6-R1:
-✅ PASS (HISTORICAL)
+✅ PASS
 
 SET2-T2.7:
-✅ PASS — LEGITIMATE BASELINE
+✅ PASS
 
 SET2-T2.7-R1:
-⚠ RE-ADJUDICATION REQUIRED (not independently established before execution)
-
-SET2-T2.7-R1 TECHNICAL EVIDENCE:
-✅ COMPLETE (preserved as historical work — docs/set-2/07 through docs/set-2/11)
+✅ PASS
 
 SET2-T2.8:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9-R1:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9-R2:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET2-T2.9-R3:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET3-READINESS-GATE:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
+✅ PASS
 
 SET3-CLOSE:
-✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
+✅ CLOSED
 
 SET 3:
-✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
+✅ CLOSED
 
 SET4-READINESS-GATE:
-✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
+✅ PASS
 
 SET4-T4.1 — Runtime Memory Inventory:
-✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
-       Evidence: docs/set-4/01-runtime-memory-inventory.md (47 memory objects, RM-001..RM-047)
+✅ PASS
+🧠 LUNA
+Evidence: docs/set-4/01-runtime-memory-inventory.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
 
 SET4-T4.2 — Weight Residency Model:
-✅ PASS / COMPLETE (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
-       Evidence: docs/set-4/02-weight-residency-model.md
+✅ PASS / COMPLETE
+🧠 LUNA
+Evidence: docs/set-4/02-weight-residency-model.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
+📌 T4.2 PERSISTENCE COMMIT: `1be3384a9c0de2352d103049201381daa3aa38cc`
 
 SET4-T4.3 — Activation Lifetime Model:
-✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED — NOT AUTHORIZED for downstream advancement
-       Technical artifact: docs/set-4/03-activation-lifetime-model.md (commit 4a73ec3, on origin/main)
+✅ PASS / CONTROL ACCEPTED / COMPLETE
+🧠 LUNA
+Dependency: SET4-T4.2 PASS
+Evidence: docs/set-4/03-activation-lifetime-model.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
 
-DOWNSTREAM:
-⛔ BLOCKED — no T2.8, SET2-CLOSE, SET3, SET4-CLOSE, T4.4, SET5 advancement authorized
-   (SET4-T4.1, T4.2, T4.3 are technically complete; downstream ADVANCEMENT remains control-blocked)
+SET4-T4.4 — Full-Attention State Model:
+🔜 NEXT
+🛠 EXECUTOR
+Dependency: SET4-T4.3 PASS
 
-SET4-T4.3 technical dependency:
-MET (T4.2 PASS, persisted on origin/main)
-SET4-T4.3 control authorization:
-NOT GRANTED (control authority blocked pending first-drift adjudication)
-```
+SET4 CONTROL BLOCKER:
+NONE
+
+SET2-T2.7 → SET2-T2.7-R1:
+HISTORICAL GOVERNANCE RECORD — PRIOR AUTHORIZATION NOT ESTABLISHED BEFORE EXECUTION
 ```
 
 ---
@@ -2766,13 +2728,6 @@ Executor must use the exact roadmap state supplied by LUNA and must not redesign
 
 # 7. Current Stop Condition
 
-> **Control-plane reconciliation (2026-08-20):** Reconciled to the first-drift
-> adjudication. Current control task is SET2-T2.7-R1 first-drift
-> re-adjudication / ROADMAP reconciliation. Downstream ADVANCEMENT is BLOCKED.
-> SET4 is the CURRENT TECHNICAL SET (T4.1, T4.2, T4.3 technically PASS, persisted).
-> The governance drift does NOT invalidate T4.3 — technical and control state are
-> distinguished below.
-
 ```text
 SET 0:
 ✅ FORMALLY CLOSED
@@ -2781,108 +2736,150 @@ SET 1:
 ✅ FORMALLY CLOSED
 
 SET 2:
-⚠ TECHNICAL COMPLETE — CONTROL AUTHORITY BLOCKED
-
-Current control action:
-SET2-T2.7-R1 — FIRST-DRIFT RE-ADJUDICATION / ROADMAP RECONCILIATION
-
-Current next task:
-SET2-T2.7-R1 RE-ADJUDICATION (EXECUTOR: ROADMAP CONTROL-STATE RECONCILIATION ONLY)
-
-SET2-T2.1:
-✅ PASS (HISTORICAL)
-
-SET2-T2.2:
-✅ PASS (HISTORICAL)
-
-SET2-T2.2-R1:
-✅ PASS (HISTORICAL)
-
-SET2-T2.3:
-✅ PASS (HISTORICAL)
-
-SET2-T2.3-R1:
-✅ PASS (HISTORICAL)
-
-SET2-T2.4:
-✅ PASS (HISTORICAL)
-
-SET2-T2.4-R1:
-✅ PASS (HISTORICAL)
-
-SET2-T2.4-R2:
-✅ PASS (HISTORICAL)
-
-SET2-T2.5:
-✅ PASS (HISTORICAL)
-
-SET2-T2.5-R1:
-✅ PASS (HISTORICAL)
-
-SET2-T2.6:
-✅ PASS (HISTORICAL)
-
-SET2-T2.6-R1:
-✅ PASS (HISTORICAL)
-
-SET2-T2.7:
-✅ PASS — LEGITIMATE BASELINE
-
-SET2-T2.7-R1:
-⚠ RE-ADJUDICATION REQUIRED (not independently established before execution)
-
-SET2-T2.8:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
-
-SET2-T2.9:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
-
-SET2-T2.9-R1:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
-
-SET2-T2.9-R2:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
-
-SET2-T2.9-R3:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
-
-SET2-CLOSE:
-✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
-
-SET3-READINESS-GATE:
-✅ PASS (HISTORICAL — NOT AUTHORIZED)
-
-SET3-CLOSE:
-✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
+✅ CLOSED
 
 SET 3:
-✅ CLOSED (HISTORICAL — NOT AUTHORIZED)
+✅ CLOSED
+
+CURRENT TECHNICAL SET:
+SET 4 — Runtime Memory Model
+
+CURRENT TECHNICAL TASK:
+SET4-T4.3 — Activation Lifetime Model
+
+CURRENT CONTROL TASK:
+SET4-T4.4 AUTHORIZATION / EXECUTOR DISPATCH
+
+CURRENT NEXT TASK:
+SET4-T4.4 — Full-Attention State Model
+
+NEXT TASK OWNER:
+🛠 EXECUTOR
+
+SET2-T2.1:
+✅ PASS
+
+SET2-T2.2:
+✅ PASS
+
+SET2-T2.2-R1:
+✅ PASS
+
+SET2-T2.3:
+✅ PASS
+
+SET2-T2.3-R1:
+✅ PASS
+
+SET2-T2.4:
+✅ PASS
+
+SET2-T2.4-R1:
+✅ PASS
+
+SET2-T2.4-R2:
+✅ PASS
+
+SET2-T2.5:
+✅ PASS
+
+SET2-T2.5-R1:
+✅ PASS
+
+SET2-T2.6:
+✅ PASS
+
+SET2-T2.6-R1:
+✅ PASS
+
+SET2-T2.7:
+✅ PASS
+
+SET2-T2.7-R1:
+✅ PASS
+
+SET2-T2.8:
+✅ PASS
+
+SET2-T2.9:
+✅ PASS
+
+SET2-T2.9-R1:
+✅ PASS
+
+SET2-T2.9-R2:
+✅ PASS
+
+SET2-T2.9-R3:
+✅ PASS
+
+SET2-CLOSE:
+✅ CLOSED
+
+SET3-READINESS-GATE:
+✅ PASS
+
+SET3-CLOSE:
+✅ CLOSED
+
+SET 3:
+✅ CLOSED
 
 SET4-READINESS-GATE:
-✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
+✅ PASS
 
 SET4-T4.1 — Runtime Memory Inventory:
-✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
-       Evidence: docs/set-4/01-runtime-memory-inventory.md (47 memory objects, RM-001..RM-047)
+✅ PASS
+🧠 LUNA
+Evidence: docs/set-4/01-runtime-memory-inventory.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
 
 SET4-T4.2 — Weight Residency Model:
-✅ PASS / COMPLETE (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED
-       Evidence: docs/set-4/02-weight-residency-model.md
+✅ PASS / COMPLETE
+🧠 LUNA
+Evidence: docs/set-4/02-weight-residency-model.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
+📌 T4.2 PERSISTENCE COMMIT: `1be3384a9c0de2352d103049201381daa3aa38cc`
 
 SET4-T4.3 — Activation Lifetime Model:
-✅ PASS (TECHNICAL) / ⛔ CONTROL AUTHORITY BLOCKED — NOT AUTHORIZED for downstream advancement
-       Technical artifact: docs/set-4/03-activation-lifetime-model.md (commit 4a73ec3, on origin/main)
+✅ PASS / CONTROL ACCEPTED / COMPLETE
+🧠 LUNA
+Dependency: SET4-T4.2 PASS
+Evidence: docs/set-4/03-activation-lifetime-model.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
 
-DOWNSTREAM:
-⛔ BLOCKED — no T2.8, SET2-CLOSE, SET3, SET4-CLOSE, T4.4, SET5 advancement authorized
-   (SET4-T4.1, T4.2, T4.3 are technically complete; downstream ADVANCEMENT remains control-blocked)
+CURRENT CONTROL TASK:
+SET4-T4.4 AUTHORIZATION / EXECUTOR DISPATCH
 
-SET4-T4.3 technical dependency:
-MET (T4.2 PASS, persisted on origin/main)
-SET4-T4.3 control authorization:
-NOT GRANTED (control authority blocked pending first-drift adjudication)
+CURRENT NEXT TASK:
+SET4-T4.4 — Full-Attention State Model
+
+NEXT TASK OWNER:
+🛠 EXECUTOR
+
+SET4-T4.4 dependency:
+SET4-T4.3 PASS
+
+SET4-T4.4 execution:
+🔒 NOT STARTED
+
+SET4-T4.4 control state:
+🔜 NEXT / READY FOR SEPARATE EXECUTOR AUTHORIZATION
+
+SET4 CONTROL BLOCKER:
+NONE
+
+SET2-T2.7 → SET2-T2.7-R1:
+HISTORICAL GOVERNANCE RECORD — PRIOR AUTHORIZATION NOT ESTABLISHED BEFORE EXECUTION
 
 SET 3 operator/computation model evidence persisted and verified.
+
 ROADMAP.md:
 PERSISTED
 

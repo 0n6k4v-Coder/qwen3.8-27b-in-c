@@ -1934,7 +1934,8 @@ Dependency: SET4-T4.4 PASS
 
 SET4-T4.6 — Workspace / Buffer Model:
 ✅ PASS / CONTROL CLOSED / COMPLETE
-🛠 EXECUTOR
+EXECUTOR: Evidence / measurement / persistence /
+explicitly delegated execution-support only
 Dependency: SET4-T4.5 PASS
 
 SET4-T4.7 — Peak Runtime Memory Model:
@@ -2543,7 +2544,8 @@ Dependency: SET4-T4.4 PASS
 
 SET4-T4.6 — Workspace / Buffer Model:
 ✅ PASS / CONTROL CLOSED / COMPLETE
-🛠 EXECUTOR
+EXECUTOR: Evidence / measurement / persistence /
+explicitly delegated execution-support only
 Dependency: SET4-T4.5 PASS
 
 SET4-T4.7 — Peak Runtime Memory Model:
@@ -2854,7 +2856,8 @@ Dependency: SET4-T4.4 PASS
 
 SET4-T4.6 — Workspace / Buffer Model:
 ✅ PASS / CONTROL CLOSED / COMPLETE
-🛠 EXECUTOR
+EXECUTOR: Evidence / measurement / persistence /
+explicitly delegated execution-support only
 Dependency: SET4-T4.5 PASS
 
 SET4-T4.7 — Peak Runtime Memory Model:

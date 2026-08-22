@@ -7,12 +7,12 @@
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
 * Last control update: `2026-08-22`
 * Current integrated branch: `main`
-* Current integrated commit: `07acef13d310d90dcd8c1acd8e3d9824e5c17db0`
+* Current integrated commit: `7d68e1a74b4e29dcbc39d4f8946b679b20c3545c`
 * Current integrated commit semantics: The repository HEAD immediately preceding the most recent commit that modified ROADMAP.md (i.e., the parent of the ROADMAP-persistence commit). This is non-self-referential: the field references the parent commit, not the commit containing the field. It is technically stable because the parent SHA is immutable. (Established by SET2-T2.9-R3.)
-* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed; SET 4 current technical set — T4.6 NEXT / AUTHORIZED**
+* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed; SET 4 current technical set — T4.7 NEXT / AUTHORIZED**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **CLOSED**
-* Current control task: **T4.6 successor authorization / execution readiness**
+* Current control task: **T4.7 successor authorization / execution readiness**
 
 ---
 
@@ -43,7 +43,7 @@ PROJECT
 │   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 4 — Runtime Memory Model
-│   🔜 IN PROGRESS — T4.6 NEXT / AUTHORIZED
+│   🔜 IN PROGRESS — T4.7 NEXT / AUTHORIZED
 │
 ├── SET 5 — Reference Inference Engine
 │   🔒 NOT STARTED / NOT AUTHORIZED
@@ -87,7 +87,7 @@ PROJECT
 | SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth                     | ✅ CLOSED               | 🧠 LUNA               |
 | SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | ✅ CLOSED                | 🧠 LUNA + 🛠 EXECUTOR |
 | SET 3  | Define operator and computation model                                                                | ✅ CLOSED                | 🧠 LUNA               |
-| SET 4  | Define runtime memory model                                                                          | 🔜 IN PROGRESS — T4.5 CONTROL CLOSED — T4.6 NEXT / AUTHORIZED | 🧠 LUNA               |
+| SET 4  | Define runtime memory model                                                                          | 🔜 IN PROGRESS — T4.6 CONTROL CLOSED — T4.7 NEXT / AUTHORIZED | 🧠 LUNA               |
 | SET 5  | Build correctness-first reference inference engine                                                   | 🔒 NOT STARTED / NOT AUTHORIZED            | 🧠 LUNA → 🛠 EXECUTOR |
 | SET 6  | Validate numerical/correctness behavior                                                              | 🔒 NOT STARTED           | 🧠 LUNA + 🛠 EXECUTOR |
 | SET 7  | Enable execution under memory constraints                                                            | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
@@ -851,10 +851,7 @@ CPU CAPABILITY MATRIX
 
 **Objective:**
 
-Reconcile T2.2 evidence to strictly distinguish SKU capability, host-observed
-capability, and WSL2 guest-exposed capability. Correct overstatements in host
-vs guest vs SKU evidence, remove host-equivalence claims, fix AVX-512/AMX
-classification, and reclassify cache per-core claims.
+Reconcile T2.2 evidence to strictly distinguish SKU capability, host-observed capability, and WSL2 guest-exposed capability. Correct overstatements in host vs guest vs SKU evidence, remove host-equivalence claims, fix AVX-512/AMX classification, and reclassify cache per-core claims.
 
 Evidence:
 
@@ -1085,9 +1082,7 @@ Example structure:
 
 **Objective:**
 
-Reconcile SET2-T2.6 after the original execution produced technically useful
-runtime evidence but violated the required ROADMAP-first execution-order
-boundary.
+Reconcile SET2-T2.6 after the original execution produced technically useful runtime evidence but violated the required ROADMAP-first execution-order boundary.
 
 This revision must:
 
@@ -1121,10 +1116,7 @@ This revision must:
 ✅ Reconcile the original execution-order violation explicitly
 ```
 
-**Roadmap-first boundary:** This revision exists because the original T2.6
-execution occurred before the required ROADMAP control-state persistence
-boundary. ROADMAP MUST be updated to the R1 reconciliation state and remotely
-verified before the canonical evidence document is modified.
+**Roadmap-first boundary:** This revision exists because the original T2.6 execution occurred before the required ROADMAP control-state persistence boundary. ROADMAP MUST be updated to the R1 reconciliation state and remotely verified before the canonical evidence document is modified.
 
 **Do-not-run:**
 
@@ -1229,12 +1221,7 @@ HARDWARE DATA-MOVEMENT / INTERCONNECT MODEL
 
 **Objective:**
 
-Reconcile SET2-T2.7 evidence after independent review identified unsupported
-promotion of `DEVPKEY_PciDevice_ExpressSpecVersion=2` into `PCIe Gen2 x16`
-link claims, over-interpretation of PnP / PCI hierarchy as proof of exact physical
-silicon-level interconnect topology, over-broad claims regarding NPU shared/system
-memory and absence of device-local or near-compute memory, inadequate provenance
-for the CPU MESI classification, and stale ROADMAP integrated-commit metadata.
+Reconcile SET2-T2.7 evidence after independent review identified unsupported promotion of `DEVPKEY_PciDevice_ExpressSpecVersion=2` into `PCIe Gen2 x16` link claims, over-interpretation of PnP / PCI hierarchy as proof of exact physical silicon-level interconnect topology, over-broad claims regarding NPU shared/system memory and absence of device-local or near-compute memory, inadequate provenance for the CPU MESI classification, and stale ROADMAP integrated-commit metadata.
 
 This revision must:
 
@@ -1251,9 +1238,7 @@ This revision must:
 11. Perform final ACTIVE control-state synchronization.
 12. Commit, push, and remotely verify the reconciled state.
 
-**Roadmap-first boundary:** This revision MUST exist before relying on it as an
-active control state. ROADMAP MUST be updated to the R1 reconciliation state and
-remotely verified before the canonical evidence document is modified.
+**Roadmap-first boundary:** This revision MUST exist before relying on it as an active control state. ROADMAP MUST be updated to the R1 reconciliation state and remotely verified before the canonical evidence document is modified.
 
 **Do-not-run:**
 
@@ -1474,26 +1459,11 @@ docs/set-2/09-set2-boundary-completeness-audit-r3-reconciliation.md
 
 **Objective:**
 
-Reconcile the active ROADMAP control-plane defect left by the SET2-T2.9
-substantive audit commit (`573c821`). The substantive T2.9 evidence remains valid
-and is preserved. This R1 task corrects:
+Reconcile the active ROADMAP control-plane defect left by the SET2-T2.9 substantive audit commit (`573c821`). The substantive T2.9 evidence remains valid and is preserved. This R1 task corrects:
 
-1. Stale `Current integrated commit` metadata (`d10a3ec` — the T2.8 parent commit)
-   that does not match the actual HEAD (`573c821`). Corrected to
-   `573c8211643218fef7fd30dde0bc18826a95caea` per project convention.
-   **Note:** The R1 commit advanced HEAD to `afe6acf`, making `573c821` stale
-   (R1's parent, not the actual HEAD). SET2-T2.9-R2 corrected this to
-   `afe6acf` — the actual HEAD. SET2-T2.9-R3 subsequently established the
-   authoritative non-self-referential semantics for the `integrated-commit`
-   field (parent of the ROADMAP-persistence commit, not the commit itself),
-   making the parent-SHA pattern intentional and stable rather than a defect.
-2. The premature control-state transition to SET2-CLOSE that skipped the
-   intermediate R1 reconciliation task. The `SET2-T2.9-R1` task section is
-   established as the intermediate atomic task between SET2-T2.9 and SET2-CLOSE,
-   following the pattern of T2.1-R1, T2.2-R1, T2.3-R1, T2.4-R2, T2.5-R1,
-   T2.6-R1, and T2.7-R1.
-3. All ACTIVE ROADMAP control representations synchronized to reflect
-   T2.9 = ✅ PASS, T2.9-R1 = ✅ PASS, SET2-CLOSE = 🔜 NEXT.
+1. Stale `Current integrated commit` metadata (`d10a3ec` — the T2.8 parent commit) that does not match the actual HEAD (`573c821`). Corrected to `573c8211643218fef7fd30dde0bc18826a95caea` per project convention. **Note:** The R1 commit advanced HEAD to `afe6acf`, making `573c821` stale (R1's parent, not the actual HEAD). SET2-T2.9-R2 corrected this to `afe6acf` — the actual HEAD. SET2-T2.9-R3 subsequently established the authoritative non-self-referential semantics for the `integrated-commit` field (parent of the ROADMAP-persistence commit, not the commit itself), making the parent-SHA pattern intentional and stable rather than a defect.
+2. The premature control-state transition to SET2-CLOSE that skipped the intermediate R1 reconciliation task. The `SET2-T2.9-R1` task section is established as the intermediate atomic task between SET2-T2.9 and SET2-CLOSE, following the pattern of T2.1-R1, T2.2-R1, T2.3-R1, T2.4-R2, T2.5-R1, T2.6-R1, and T2.7-R1.
+3. All ACTIVE ROADMAP control representations synchronized to reflect T2.9 = ✅ PASS, T2.9-R1 = ✅ PASS, SET2-CLOSE = 🔜 NEXT.
 
 **Scope:**
 
@@ -1509,8 +1479,7 @@ and is preserved. This R1 task corrects:
 ✅ Commit, push, and remotely verify reconciled state
 ```
 
-**Roadmap-first boundary:** ROADMAP.md MUST be updated to the R1 reconciliation
-state and remotely verified. The T2.9 evidence document is NOT modified.
+**Roadmap-first boundary:** ROADMAP.md MUST be updated to the R1 reconciliation state and remotely verified. The T2.9 evidence document is NOT modified.
 
 **Do-not-run:**
 
@@ -1575,29 +1544,11 @@ docs/set-2/09-set2-boundary-completeness-audit-r3-reconciliation.md
 
 **Objective:**
 
-Reconcile the active ROADMAP integrated-commit metadata defect left unresolved
-by the SET2-T2.9-R1 commit (`afe6acf`). The R1 commit wrote `573c821` (its own
-parent) into the `Current integrated commit` field, replicating the exact same
-stale-parent defect that T2.9 and T2.9-R1 exhibited. This R2 task corrects the
-active integrated-commit value to the actual final repository state (`afe6acf`)
-and synchronizes all remaining active control representations.
+Reconcile the active ROADMAP integrated-commit metadata defect left unresolved by the SET2-T2.9-R1 commit (`afe6acf`). The R1 commit wrote `573c821` (its own parent) into the `Current integrated commit` field, replicating the exact same stale-parent defect that T2.9 and T2.9-R1 exhibited. This R2 task corrects the active integrated-commit value to the actual final repository state (`afe6acf`) and synchronizes all remaining active control representations.
 
-1. Stale `Current integrated commit` metadata (`573c821` — the R1 commit's parent)
-   that does not match the actual HEAD (`afe6acf`). Corrected to
-   `afe6acfdceb991bbe1a316f600a2b296ed32a525` per project convention.
-2. All ACTIVE ROADMAP control representations synchronized to include
-   SET2-T2.9-R2 = ✅ PASS alongside SET2-T2.9 = ✅ PASS, SET2-T2.9-R1 = ✅ PASS,
-   SET2-CLOSE = 🔜 NEXT.
-3. T2.9-R2 task section established as the final reconciliation step between
-   T2.9-R1 and SET2-CLOSE, following the pattern of T2.1-R1, T2.2-R1,
-   T2.3-R1, T2.4-R2, T2.5-R1, T2.6-R1, and T2.7-R1.
-   **Note:** R2 correctly identified the self-referential SHA problem but
-   declared PASS under the implicit "field must equal HEAD" invariant, which is
-   technically impossible. SET2-T2.9-R3 resolved this by establishing the
-   authoritative non-self-referential semantics: the field records the parent
-   of the ROADMAP-persistence commit, not the commit containing the field.
-   R2's parent-SHA correction to `afe6acf` is valid under the new contract —
-   `afe6acf` was the HEAD before the R2 follow-up commit `49fd937`.
+1. Stale `Current integrated commit` metadata (`573c821` — the R1 commit's parent) that does not match the actual HEAD (`afe6acf`). Corrected to `afe6acfdceb991bbe1a316f600a2b296ed32a525` per project convention.
+2. All ACTIVE ROADMAP control representations synchronized to include SET2-T2.9-R2 = ✅ PASS alongside SET2-T2.9 = ✅ PASS, SET2-T2.9-R1 = ✅ PASS, SET2-CLOSE = 🔜 NEXT.
+3. T2.9-R2 task section established as the final reconciliation step between T2.9-R1 and SET2-CLOSE, following the pattern of T2.1-R1, T2.2-R1, T2.3-R1, T2.4-R2, T2.5-R1, T2.6-R1, and T2.7-R1. **Note:** R2 correctly identified the self-referential SHA problem but declared PASS under the implicit "field must equal HEAD" invariant, which is technically impossible. SET2-T2.9-R3 resolved this by establishing the authoritative non-self-referential semantics: the field records the parent of the ROADMAP-persistence commit, not the commit itself. R2's parent-SHA correction to `afe6acf` is valid under the new contract — `afe6acf` was the HEAD before the R2 follow-up commit `49fd937`.
 
 **Scope:**
 
@@ -1613,9 +1564,7 @@ and synchronizes all remaining active control representations.
 ✅ Commit, push, and remotely verify reconciled state
 ```
 
-**Roadmap-first boundary:** ROADMAP.md MUST be updated to the R2 reconciliation
-state and remotely verified. The T2.9 evidence document and R1 reconciliation
-document are NOT modified.
+**Roadmap-first boundary:** ROADMAP.md MUST be updated to the R2 reconciliation state and remotely verified. The T2.9 evidence document and R1 reconciliation document are NOT modified.
 
 **Do-not-run:**
 
@@ -1680,52 +1629,23 @@ docs/set-2/09-set2-boundary-completeness-audit-r3-reconciliation.md
 
 **Objective:**
 
-Resolve the unresolved control-plane contradiction identified by SET2-T2.9-R2:
-the `Current integrated commit` field in ROADMAP.md cannot contain the SHA of
-the same Git commit that contains that field content. R2 correctly identified
-that every reconciliation attempt wrote the parent commit's SHA rather than the
-commit's own SHA — but R2 still declared PASS under the implicit assumption
-that the field should equal HEAD, which is an impossible self-referential
-invariant.
+Resolve the unresolved control-plane contradiction identified by SET2-T2.9-R2: the `Current integrated commit` field in ROADMAP.md cannot contain the SHA of the same Git commit that contains that field content. R2 correctly identified that every reconciliation attempt wrote the parent commit's SHA rather than the commit's own SHA — but R2 still declared PASS under the implicit assumption that the field should equal HEAD, which is an impossible self-referential invariant.
 
-R3 establishes and documents the authoritative, non-self-referential semantics
-for the `Current integrated commit` field:
+R3 establishes and documents the authoritative, non-self-referential semantics for the `Current integrated commit` field:
 
-1. **Definition:** The field records the repository HEAD immediately preceding
-   the ROADMAP-persistence commit — i.e., the parent commit of the most recent
-   commit that modified ROADMAP.md. This represents the base repository state
-   from which the current ROADMAP content was authored.
+1. **Definition:** The field records the repository HEAD immediately preceding the ROADMAP-persistence commit — i.e., the parent commit of the most recent commit that modified ROADMAP.md. This represents the base repository state from which the current ROADMAP content was authored.
 
-2. **Technical proof of satisfiability:** Git commit SHAs are cryptographic
-   hashes of commit content. Since ROADMAP.md is part of the commit content,
-   embedding the commit's own SHA in the file creates an unsolvable fixed-point
-   equation `SHA(content_containing_SHA) == SHA`. Writing the parent commit's
-   SHA avoids this entirely: the parent is a distinct, already-finalized Git
-   object whose SHA is immutable and independent of the current commit's
-   content.
+2. **Technical proof of satisfiability:** Git commit SHAs are cryptographic hashes of commit content. Since ROADMAP.md is part of the commit content, embedding the commit's own SHA in the file creates an unsolvable fixed-point equation `SHA(content_containing_SHA) == SHA`. Writing the parent commit's SHA avoids this entirely: the parent is a distinct, already-finalized Git object whose SHA is immutable and independent of the current commit's content.
 
-3. **Historical validation:** Every commit that has ever updated this field —
-   across T2.6-R1 finalization (6682f34), T2.7-R1 finalization (6682f34),
-   T2.9 (573c821), R1 (afe6acf), R2 (77bd8dd), and R2 finalization (49fd937) —
-   has written the parent commit's SHA. This is not a bug to be corrected; it
-   is the only technically possible behavior. R3 formalizes this as the
-   intended, stable semantics.
+3. **Historical validation:** Every commit that has ever updated this field — across T2.6-R1 finalization (6682f34), T2.7-R1 finalization (6682f34), T2.9 (573c821), R1 (afe6acf), R2 (77bd8dd), and R2 finalization (49fd937) — has written the parent commit's SHA. This is not a bug to be corrected; it is the only technically possible behavior. R3 formalizes this as the intended, stable semantics.
 
-4. **Stability:** After a ROADMAP-persistence commit P (with parent B), the field
-   contains B. B is immutable. The field remains correct for the lifetime of P.
-   When the next ROADMAP-persistence commit P' is created, the field is updated
-   to P (the new parent). No "stale" condition can arise — the field is always
-   a valid provenance reference.
+4. **Stability:** After a ROADMAP-persistence commit P (with parent B), the field contains B. B is immutable. The field remains correct for the lifetime of P. When the next ROADMAP-persistence commit P' is created, the field is updated to P (the new parent). No "stale" condition can arise — the field is always a valid provenance reference.
 
 5. **Distinguishing the field from HEAD:**
-   - Current repository HEAD = the latest commit on main (e.g., `49fd937` at
-     R3 authoring time, then the R3 commit itself after persistence).
-   - Latest substantive integration commit = the most recent non-metadata
-     commit (e.g., `77bd8dd` — the R2 reconciliation).
-   - Parent/base commit = HEAD before the ROADMAP-persistence commit (the value
-     stored in the field).
-   - Historical integration commits = all prior commits (3b2c8b0, 6682f34,
-     d10a3ec, 573c821, afe6acf, 77bd8dd) preserved as provenance references.
+   - Current repository HEAD = the latest commit on main (e.g., `49fd937` at R3 authoring time, then the R3 commit itself after persistence).
+   - Latest substantive integration commit = the most recent non-metadata commit (e.g., `77bd8dd` — the R2 reconciliation).
+   - Parent/base commit = HEAD before the ROADMAP-persistence commit (the value stored in the field).
+   - Historical integration commits = all prior commits (3b2c8b0, 6682f34, d10a3ec, 573c821, afe6acf, 77bd8dd) preserved as provenance references.
 
 **Scope:**
 
@@ -1742,9 +1662,7 @@ for the `Current integrated commit` field:
 ✅ Commit, push, and remotely verify reconciled state
 ```
 
-**Roadmap-first boundary:** ROADMAP.md MUST be updated to the R3 reconciliation
-state and remotely verified. The T2.9 evidence document, R1 reconciliation
-document, and R2 reconciliation document are NOT modified.
+**Roadmap-first boundary:** ROADMAP.md MUST be updated to the R3 reconciliation state and remotely verified. The T2.9 evidence document, R1 reconciliation document, and R2 reconciliation document are NOT modified.
 
 **Do-not-run:**
 
@@ -1956,7 +1874,7 @@ SET 2 STOP
 
 **Objective:** Establish a verified, parameterized runtime memory model for the Qwen3.8-27B inference path, covering model weights, activations, attention state, linear-attention state, MTP-related state, workspaces, temporary tensors, and other execution buffers, while explicitly separating VERIFIED FACT, DERIVED FINDING, DOCUMENTED CAPABILITY, CONDITIONAL MODEL, and UNKNOWN.
 
-**Status:** 🔜 IN PROGRESS — T4.5 CONTROL CLOSED — T4.6 NEXT / AUTHORIZED
+**Status:** 🔜 IN PROGRESS — T4.6 CONTROL CLOSED — T4.7 NEXT / AUTHORIZED
 
 **Responsibility:** 🧠 LUNA
 
@@ -2015,9 +1933,14 @@ SET4-T4.5 — Linear-Attention State Model:
 Dependency: SET4-T4.4 PASS
 
 SET4-T4.6 — Workspace / Buffer Model:
+✅ PASS / CONTROL CLOSED / COMPLETE
+🧠 ORCHESTRATOR
+Dependency: SET4-T4.5 PASS
+
+SET4-T4.7 — Peak Runtime Memory Model:
 🔜 NEXT / AUTHORIZED
 🛠 EXECUTOR
-Dependency: SET4-T4.5 PASS
+Dependency: SET4-T4.6 PASS
 ```
 
 ### SET 4 Mission
@@ -2463,13 +2386,13 @@ CURRENT TECHNICAL SET:
 SET 4 — Runtime Memory Model
 
 CURRENT TECHNICAL TASK:
-SET4-T4.6 — Workspace / Buffer Model
+SET4-T4.7 — Peak Runtime Memory Model
 
 CURRENT CONTROL TASK:
-SET4-T4.6 successor authorization / execution readiness
+SET4-T4.7 successor authorization / execution readiness
 
 CURRENT NEXT TASK:
-SET4-T4.6 — Workspace / Buffer Model
+SET4-T4.7 — Peak Runtime Memory Model
 
 NEXT TASK OWNER:
 🛠 EXECUTOR
@@ -2605,9 +2528,14 @@ SET4-T4.5 — Linear-Attention State Model:
 Dependency: SET4-T4.4 PASS
 
 SET4-T4.6 — Workspace / Buffer Model:
+✅ PASS / CONTROL CLOSED / COMPLETE
+🧠 ORCHESTRATOR
+Dependency: SET4-T4.5 PASS
+
+SET4-T4.7 — Peak Runtime Memory Model:
 🔜 NEXT / AUTHORIZED
 🛠 EXECUTOR
-Dependency: SET4-T4.5 PASS
+Dependency: SET4-T4.6 PASS
 
 SET4 CONTROL BLOCKER:
 NONE
@@ -2773,13 +2701,13 @@ CURRENT TECHNICAL SET:
 SET 4 — Runtime Memory Model
 
 CURRENT TECHNICAL TASK:
-SET4-T4.6 — Workspace / Buffer Model
+SET4-T4.7 — Peak Runtime Memory Model
 
 CURRENT CONTROL TASK:
-SET4-T4.6 successor authorization / execution readiness
+SET4-T4.7 successor authorization / execution readiness
 
 CURRENT NEXT TASK:
-SET4-T4.6 — Workspace / Buffer Model
+SET4-T4.7 — Peak Runtime Memory Model
 
 NEXT TASK OWNER:
 🛠 EXECUTOR
@@ -2897,9 +2825,14 @@ SET4-T4.5 — Linear-Attention State Model:
 Dependency: SET4-T4.4 PASS
 
 SET4-T4.6 — Workspace / Buffer Model:
+✅ PASS / CONTROL CLOSED / COMPLETE
+🧠 ORCHESTRATOR
+Dependency: SET4-T4.5 PASS
+
+SET4-T4.7 — Peak Runtime Memory Model:
 🔜 NEXT / AUTHORIZED
 🛠 EXECUTOR
-Dependency: SET4-T4.5 PASS
+Dependency: SET4-T4.6 PASS
 
 SET4 CONTROL BLOCKER:
 NONE

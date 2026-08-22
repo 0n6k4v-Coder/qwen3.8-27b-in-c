@@ -7,12 +7,12 @@
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
 * Last control update: `2026-08-22`
 * Current integrated branch: `main`
-* Current integrated commit: `7d68e1a74b4e29dcbc39d4f8946b679b20c3545c`
+* Current integrated commit: `28222ce6054d928da38e0ff932cede3988f92a5f`
 * Current integrated commit semantics: The repository HEAD immediately preceding the most recent commit that modified ROADMAP.md (i.e., the parent of the ROADMAP-persistence commit). This is non-self-referential: the field references the parent commit, not the commit containing the field. It is technically stable because the parent SHA is immutable. (Established by SET2-T2.9-R3.)
-* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed; SET 4 current technical set — T4.7 NEXT / AUTHORIZED**
+* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed; SET 4 current technical set — T4.6 PASS — T4.7 NEXT / AUTHORIZED**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **CLOSED**
-* Current control task: **T4.7 successor authorization / execution readiness**
+* Current control task: **T4.7 peak runtime memory model authorization / execution readiness**
 
 ---
 
@@ -43,7 +43,7 @@ PROJECT
 │   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 4 — Runtime Memory Model
-│   🔜 IN PROGRESS — T4.7 NEXT / AUTHORIZED
+│   🔜 IN PROGRESS — T4.6 CONTROL CLOSED — T4.7 NEXT / AUTHORIZED
 │
 ├── SET 5 — Reference Inference Engine
 │   🔒 NOT STARTED / NOT AUTHORIZED
@@ -1934,13 +1934,20 @@ Dependency: SET4-T4.4 PASS
 
 SET4-T4.6 — Workspace / Buffer Model:
 ✅ PASS / CONTROL CLOSED / COMPLETE
-🧠 ORCHESTRATOR
+🛠 EXECUTOR
 Dependency: SET4-T4.5 PASS
 
 SET4-T4.7 — Peak Runtime Memory Model:
 🔜 NEXT / AUTHORIZED
-🛠 EXECUTOR
+🧠 ORCHESTRATOR
 Dependency: SET4-T4.6 PASS
+
+T4.7 TECHNICAL AUTHORITY:
+ORCHESTRATOR
+
+EXECUTOR:
+Evidence / measurement / persistence /
+explicitly delegated execution-support only
 ```
 
 ### SET 4 Mission
@@ -2389,13 +2396,20 @@ CURRENT TECHNICAL TASK:
 SET4-T4.7 — Peak Runtime Memory Model
 
 CURRENT CONTROL TASK:
-SET4-T4.7 successor authorization / execution readiness
+SET4-T4.7 peak runtime memory model authorization / execution readiness
 
 CURRENT NEXT TASK:
 SET4-T4.7 — Peak Runtime Memory Model
 
 NEXT TASK OWNER:
-🛠 EXECUTOR
+🧠 ORCHESTRATOR
+
+T4.7 TECHNICAL AUTHORITY:
+ORCHESTRATOR
+
+EXECUTOR:
+Evidence / measurement / persistence /
+explicitly delegated execution-support only
 
 SET 0:
 ✅ FORMALLY CLOSED
@@ -2529,13 +2543,20 @@ Dependency: SET4-T4.4 PASS
 
 SET4-T4.6 — Workspace / Buffer Model:
 ✅ PASS / CONTROL CLOSED / COMPLETE
-🧠 ORCHESTRATOR
+🛠 EXECUTOR
 Dependency: SET4-T4.5 PASS
 
 SET4-T4.7 — Peak Runtime Memory Model:
 🔜 NEXT / AUTHORIZED
-🛠 EXECUTOR
+🧠 ORCHESTRATOR
 Dependency: SET4-T4.6 PASS
+
+T4.7 TECHNICAL AUTHORITY:
+ORCHESTRATOR
+
+EXECUTOR:
+Evidence / measurement / persistence /
+explicitly delegated execution-support only
 
 SET4 CONTROL BLOCKER:
 NONE
@@ -2704,13 +2725,20 @@ CURRENT TECHNICAL TASK:
 SET4-T4.7 — Peak Runtime Memory Model
 
 CURRENT CONTROL TASK:
-SET4-T4.7 successor authorization / execution readiness
+SET4-T4.7 peak runtime memory model authorization / execution readiness
 
 CURRENT NEXT TASK:
 SET4-T4.7 — Peak Runtime Memory Model
 
 NEXT TASK OWNER:
-🛠 EXECUTOR
+🧠 ORCHESTRATOR
+
+T4.7 TECHNICAL AUTHORITY:
+ORCHESTRATOR
+
+EXECUTOR:
+Evidence / measurement / persistence /
+explicitly delegated execution-support only
 
 SET2-T2.1:
 ✅ PASS
@@ -2826,13 +2854,20 @@ Dependency: SET4-T4.4 PASS
 
 SET4-T4.6 — Workspace / Buffer Model:
 ✅ PASS / CONTROL CLOSED / COMPLETE
-🧠 ORCHESTRATOR
+🛠 EXECUTOR
 Dependency: SET4-T4.5 PASS
 
 SET4-T4.7 — Peak Runtime Memory Model:
 🔜 NEXT / AUTHORIZED
-🛠 EXECUTOR
+🧠 ORCHESTRATOR
 Dependency: SET4-T4.6 PASS
+
+T4.7 TECHNICAL AUTHORITY:
+ORCHESTRATOR
+
+EXECUTOR:
+Evidence / measurement / persistence /
+explicitly delegated execution-support only
 
 SET4 CONTROL BLOCKER:
 NONE

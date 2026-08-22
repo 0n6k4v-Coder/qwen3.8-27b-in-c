@@ -5,14 +5,14 @@
 * Document: `ROADMAP.md`
 * Role: Project Control / Roadmap State
 * Project Source of Truth: `https://github.com/0n6k4v-Coder/qwen3.8-27b-in-c`
-* Last control update: `2026-08-20`
+* Last control update: `2026-08-22`
 * Current integrated branch: `main`
 * Current integrated commit: `1be3384a9c0de2352d103049201381daa3aa38cc`
 * Current integrated commit semantics: The repository HEAD immediately preceding the most recent commit that modified ROADMAP.md (i.e., the parent of the ROADMAP-persistence commit). This is non-self-referential: the field references the parent commit, not the commit containing the field. It is technically stable because the parent SHA is immutable. (Established by SET2-T2.9-R3.)
-* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed; SET 4 current technical set — T4.4 technical PASS; T4.5 next**
+* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed; SET 4 current technical set — T4.5 TECHNICAL PASS / CONTROL CLOSURE PENDING; T4.6 next (NOT STARTED / NOT AUTHORIZED)**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **CLOSED**
-* Current control task: **SET4-T4.5 — Linear-Attention State Model — SUCCESSOR DETERMINATION**
+* Current control task: **T4.5 technical acceptance / control closure**
 
 ---
 
@@ -43,10 +43,10 @@ PROJECT
 │   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 4 — Runtime Memory Model
-│   🔜 IN PROGRESS — T4.4 TECHNICAL PASS — T4.5 NEXT
+│   🔜 IN PROGRESS — T4.5 TECHNICAL PASS / CONTROL CLOSURE PENDING
 │
 ├── SET 5 — Reference Inference Engine
-│   🔒 NOT STARTED
+│   🔒 NOT STARTED / NOT AUTHORIZED
 │
 ├── SET 6 — Correctness / Validation
 │   🔒 NOT STARTED
@@ -87,8 +87,8 @@ PROJECT
 | SET 1  | Establish verified tensor, parameter, logical-byte, and checkpoint-storage truth                     | ✅ CLOSED               | 🧠 LUNA               |
 | SET 2  | Establish verified hardware capability, constraints, software accessibility, and data-movement truth | ✅ CLOSED                | 🧠 LUNA + 🛠 EXECUTOR |
 | SET 3  | Define operator and computation model                                                                | ✅ CLOSED                | 🧠 LUNA               |
-| SET 4  | Define runtime memory model                                                                          | 🔜 IN PROGRESS — T4.3 COMPLETE — T4.4 NEXT | 🧠 LUNA               |
-| SET 5  | Build correctness-first reference inference engine                                                   | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
+| SET 4  | Define runtime memory model                                                                          | 🔜 IN PROGRESS — T4.4 COMPLETE — T4.5 TECHNICAL PASS / CONTROL CLOSURE PENDING | 🧠 LUNA               |
+| SET 5  | Build correctness-first reference inference engine                                                   | 🔒 NOT STARTED / NOT AUTHORIZED            | 🧠 LUNA → 🛠 EXECUTOR |
 | SET 6  | Validate numerical/correctness behavior                                                              | 🔒 NOT STARTED           | 🧠 LUNA + 🛠 EXECUTOR |
 | SET 7  | Enable execution under memory constraints                                                            | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
 | SET 8  | Introduce streaming/data movement strategy                                                           | 🔒 NOT STARTED           | 🧠 LUNA → 🛠 EXECUTOR |
@@ -1956,7 +1956,7 @@ SET 2 STOP
 
 **Objective:** Establish a verified, parameterized runtime memory model for the Qwen3.8-27B inference path, covering model weights, activations, attention state, linear-attention state, MTP-related state, workspaces, temporary tensors, and other execution buffers, while explicitly separating VERIFIED FACT, DERIVED FINDING, DOCUMENTED CAPABILITY, CONDITIONAL MODEL, and UNKNOWN.
 
-**Status:** 🔜 IN PROGRESS — T4.3 COMPLETE — T4.4 NEXT
+**Status:** 🔜 IN PROGRESS — T4.4 COMPLETE — T4.5 TECHNICAL PASS / CONTROL CLOSURE PENDING
 
 **Responsibility:** 🧠 LUNA
 
@@ -2010,9 +2010,14 @@ Evidence: docs/set-4/04-full-attention-state-model.md
        🔎 REMOTE VERIFIED
 
 SET4-T4.5 — Linear-Attention State Model:
-🔒 NOT STARTED
-🛠 EXECUTOR
+✅ PASS / CONTROL CLOSURE PENDING
+🧠 ORCHESTRATOR
 Dependency: SET4-T4.4 PASS
+
+SET4-T4.6 — Workspace / Buffer Model:
+🔒 NOT STARTED / NOT AUTHORIZED
+🛠 EXECUTOR (future technical execution owner)
+Dependency: SET4-T4.5 PASS
 ```
 
 ### SET 4 Mission
@@ -2323,7 +2328,7 @@ The complete SET 4 output contract, boundary audit, authoritative control state,
 
 **Objective:** Implement a correctness-first reference inference path.
 
-**Status:** 🔒 NOT STARTED
+**Status:** 🔒 NOT STARTED / NOT AUTHORIZED
 
 **Responsibility:** 🧠→🛠 LUNA → EXECUTOR
 
@@ -2458,10 +2463,10 @@ CURRENT TECHNICAL SET:
 SET 4 — Runtime Memory Model
 
 CURRENT TECHNICAL TASK:
-SET4-T4.4 — Full-Attention State Model
+SET4-T4.5 — Linear-Attention State Model
 
 CURRENT CONTROL TASK:
-SET4-T4.5 — Linear-Attention State Model — SUCCESSOR DETERMINATION
+T4.5 technical acceptance / control closure
 
 CURRENT NEXT TASK:
 SET4-T4.5 — Linear-Attention State Model
@@ -2595,9 +2600,14 @@ Evidence: docs/set-4/04-full-attention-state-model.md
 🔎 REMOTE VERIFIED
 
 SET4-T4.5 — Linear-Attention State Model:
-🔒 NOT STARTED
-🛠 EXECUTOR
+✅ PASS / CONTROL CLOSURE PENDING
+🧠 ORCHESTRATOR
 Dependency: SET4-T4.4 PASS
+
+SET4-T4.6 — Workspace / Buffer Model:
+🔒 NOT STARTED / NOT AUTHORIZED
+🛠 EXECUTOR (future technical execution owner)
+Dependency: SET4-T4.5 PASS
 
 SET4 CONTROL BLOCKER:
 NONE
@@ -2763,10 +2773,10 @@ CURRENT TECHNICAL SET:
 SET 4 — Runtime Memory Model
 
 CURRENT TECHNICAL TASK:
-SET4-T4.4 — Full-Attention State Model
+SET4-T4.5 — Linear-Attention State Model
 
 CURRENT CONTROL TASK:
-SET4-T4.5 — Linear-Attention State Model — SUCCESSOR DETERMINATION
+T4.5 technical acceptance / control closure
 
 CURRENT NEXT TASK:
 SET4-T4.5 — Linear-Attention State Model
@@ -2882,9 +2892,14 @@ Evidence: docs/set-4/04-full-attention-state-model.md
 🔎 REMOTE VERIFIED
 
 SET4-T4.5 — Linear-Attention State Model:
-🔒 NOT STARTED
-🛠 EXECUTOR
+✅ PASS / CONTROL CLOSURE PENDING
+🧠 ORCHESTRATOR
 Dependency: SET4-T4.4 PASS
+
+SET4-T4.6 — Workspace / Buffer Model:
+🔒 NOT STARTED / NOT AUTHORIZED
+🛠 EXECUTOR (future technical execution owner)
+Dependency: SET4-T4.5 PASS
 
 SET4 CONTROL BLOCKER:
 NONE

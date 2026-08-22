@@ -9,10 +9,10 @@
 * Current integrated branch: `main`
 * Current integrated commit: `1be3384a9c0de2352d103049201381daa3aa38cc`
 * Current integrated commit semantics: The repository HEAD immediately preceding the most recent commit that modified ROADMAP.md (i.e., the parent of the ROADMAP-persistence commit). This is non-self-referential: the field references the parent commit, not the commit containing the field. It is technically stable because the parent SHA is immutable. (Established by SET2-T2.9-R3.)
-* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed; SET 4 current technical set — T4.3 complete; T4.4 next**
+* Current project phase: **SET 0 formally closed; SET 1 formally closed; SET 2 formally closed; SET 3 formally closed; SET 4 current technical set — T4.4 technical PASS; T4.5 next**
 * SET 1 execution: **CLOSED**
 * SET 2 execution: **CLOSED**
-* Current control task: **SET4-T4.4 — Full-Attention State Model — AUTHORIZATION / EXECUTOR DISPATCH**
+* Current control task: **SET4-T4.5 — Linear-Attention State Model — SUCCESSOR DETERMINATION**
 
 ---
 
@@ -43,7 +43,7 @@ PROJECT
 │   ✅ FORMAL CONTROL CLOSURE
 │
 ├── SET 4 — Runtime Memory Model
-│   🔜 IN PROGRESS — T4.3 COMPLETE — T4.4 NEXT
+│   🔜 IN PROGRESS — T4.4 TECHNICAL PASS — T4.5 NEXT
 │
 ├── SET 5 — Reference Inference Engine
 │   🔒 NOT STARTED
@@ -2001,9 +2001,18 @@ Evidence: docs/set-4/03-activation-lifetime-model.md
        🔎 REMOTE VERIFIED
 
 SET4-T4.4 — Full-Attention State Model:
-🔜 NEXT
-🛠 EXECUTOR
+✅ PASS / CONTROL CLOSED / COMPLETE
+🧠 LUNA
 Dependency: SET4-T4.3 PASS
+Evidence: docs/set-4/04-full-attention-state-model.md
+       📌 PERSISTED
+       ☁ PUSHED
+       🔎 REMOTE VERIFIED
+
+SET4-T4.5 — Linear-Attention State Model:
+🔒 NOT STARTED
+🛠 EXECUTOR
+Dependency: SET4-T4.4 PASS
 ```
 
 ### SET 4 Mission
@@ -2449,16 +2458,16 @@ CURRENT TECHNICAL SET:
 SET 4 — Runtime Memory Model
 
 CURRENT TECHNICAL TASK:
-SET4-T4.3 — Activation Lifetime Model
-
-CURRENT CONTROL TASK:
-SET4-T4.4 AUTHORIZATION / EXECUTOR DISPATCH
-
-CURRENT NEXT TASK:
 SET4-T4.4 — Full-Attention State Model
 
+CURRENT CONTROL TASK:
+SET4-T4.5 — Linear-Attention State Model — SUCCESSOR DETERMINATION
+
+CURRENT NEXT TASK:
+SET4-T4.5 — Linear-Attention State Model
+
 NEXT TASK OWNER:
-🛠 EXECUTOR
+🧠 ORCHESTRATOR
 
 SET 0:
 ✅ FORMALLY CLOSED
@@ -2577,9 +2586,18 @@ Evidence: docs/set-4/03-activation-lifetime-model.md
 🔎 REMOTE VERIFIED
 
 SET4-T4.4 — Full-Attention State Model:
-🔜 NEXT
-🛠 EXECUTOR
+✅ PASS / CONTROL CLOSED / COMPLETE
+🧠 LUNA
 Dependency: SET4-T4.3 PASS
+Evidence: docs/set-4/04-full-attention-state-model.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
+
+SET4-T4.5 — Linear-Attention State Model:
+🔒 NOT STARTED
+🛠 EXECUTOR
+Dependency: SET4-T4.4 PASS
 
 SET4 CONTROL BLOCKER:
 NONE
@@ -2745,16 +2763,16 @@ CURRENT TECHNICAL SET:
 SET 4 — Runtime Memory Model
 
 CURRENT TECHNICAL TASK:
-SET4-T4.3 — Activation Lifetime Model
-
-CURRENT CONTROL TASK:
-SET4-T4.4 AUTHORIZATION / EXECUTOR DISPATCH
-
-CURRENT NEXT TASK:
 SET4-T4.4 — Full-Attention State Model
 
+CURRENT CONTROL TASK:
+SET4-T4.5 — Linear-Attention State Model — SUCCESSOR DETERMINATION
+
+CURRENT NEXT TASK:
+SET4-T4.5 — Linear-Attention State Model
+
 NEXT TASK OWNER:
-🛠 EXECUTOR
+🧠 ORCHESTRATOR
 
 SET2-T2.1:
 ✅ PASS
@@ -2854,23 +2872,19 @@ Evidence: docs/set-4/03-activation-lifetime-model.md
 ☁ PUSHED
 🔎 REMOTE VERIFIED
 
-CURRENT CONTROL TASK:
-SET4-T4.4 AUTHORIZATION / EXECUTOR DISPATCH
+SET4-T4.4 — Full-Attention State Model:
+✅ PASS / CONTROL CLOSED / COMPLETE
+🧠 LUNA
+Dependency: SET4-T4.3 PASS
+Evidence: docs/set-4/04-full-attention-state-model.md
+📌 PERSISTED
+☁ PUSHED
+🔎 REMOTE VERIFIED
 
-CURRENT NEXT TASK:
-SET4-T4.4 — Full-Attention State Model
-
-NEXT TASK OWNER:
-🛠 EXECUTOR
-
-SET4-T4.4 dependency:
-SET4-T4.3 PASS
-
-SET4-T4.4 execution:
+SET4-T4.5 — Linear-Attention State Model:
 🔒 NOT STARTED
-
-SET4-T4.4 control state:
-🔜 NEXT / READY FOR SEPARATE EXECUTOR AUTHORIZATION
+🛠 EXECUTOR
+Dependency: SET4-T4.4 PASS
 
 SET4 CONTROL BLOCKER:
 NONE
